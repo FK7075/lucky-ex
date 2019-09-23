@@ -141,7 +141,6 @@ public class Model {
 
 	/**
 	 * 向request域中取String类型值
-	 * 
 	 * @param name
 	 * @return
 	 */
