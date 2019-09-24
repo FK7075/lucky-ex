@@ -2,10 +2,12 @@ package xfl.fk.mapper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +41,13 @@ public class LuckyMapperProxy {
 		sqlMap=new HashMap<>();
 	}
 	
-
-	public <T> T getMapperProxyObject(Class<T> clazz) throws InstantiationException, IllegalAccessException {
+	/**
+	 * 初始化sqlMap,将配置类中的SQl语句加载到sqlMap中
+	 * @param clazz 配置类的Class
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	private <T> void initSqlMap(Class<T> clazz) throws InstantiationException, IllegalAccessException {
 		if(clazz.isAnnotationPresent(Mapper.class)) {
 			Mapper map=clazz.getAnnotation(Mapper.class);
 			Class<?> sqlClass=map.value();
@@ -51,286 +58,452 @@ public class LuckyMapperProxy {
 				sqlMap.put(fi.getName().toUpperCase(), (String)fi.get(sqlPo));
 			}
 		}
-		InvocationHandler handler = (proxy, method, args) -> {
-			SqlFragProce sql_fp = new SqlFragProce();
-			if (method.isAnnotationPresent(Select.class)) {
-				Class<?> c = method.getReturnType();
-				Select sel = method.getAnnotation(Select.class);
-				if(sel.byid()) {
-					if(args.length==2) {
-						return sqlCore.getOne((Class<?>)args[0], args[1]);
-					}else if(args.length==1) {
-						return sqlCore.getOne(method.getReturnType(), args[0]);
-					}else {
-						return false;
-					}
-				}else {
-					String sql = sel.value();
-					if ("".equals(sql)) {
-						if ("".equals(sel.columns())) {
-							if (c.isAssignableFrom(List.class)) {
-								return sqlCore.getList(args[0]);
-							} else {
-								return sqlCore.getObject(args[0]);
-							}
-						} else {// 有指定列的标注
-							if (c.isAssignableFrom(List.class)) {
-								ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-								Type[] entry = type.getActualTypeArguments();
-								Class<?> cla = (Class<?>) entry[0];
-								return sqlCore.getListJoinLeftResult(cla, sel.columns(), args);
-							} else {
-								List<?> list = sqlCore.getListJoinLeftResult(c, sel.columns(), args);
-								if (list == null || list.isEmpty()) {
-									return null;
-								} else {
-									return list.get(0);
-								}
-							}
-						}
+	}
+	
+	/**
+	 * 执行带有SQL的接口方法
+	 * @param method 接口方法
+	 * @param args 参数列表
+	 * @param sql_fp SQl片段化
+	 * @param sql sql语句
+	 * @return
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
+	private boolean updateSql(Method method,Object[] args,SqlFragProce sql_fp,String sql) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		if(sql.contains("#{")) {
+			Class<?> obc = args[0].getClass();
+			SqlAndArray sqlArr = noSqlTo(obc,sql);
+			if(method.isAnnotationPresent(Change.class)) {
+				return dynamicUpdateSql(sql_fp,sqlArr.getSql(),sqlArr.getArray());
+			}else {
+				return sqlCore.update(sqlArr.getSql(),sqlArr.getArray());
+			}
+		}else {
+			if(method.isAnnotationPresent(Change.class)) {
+				return dynamicUpdateSql(sql_fp,sql,args);
+			}else {
+				return sqlCore.update(sql, args);
+			}
+		}
+	}
+	
+	/**
+	 * 将含有#{}的sql转化为预编译的sql
+	 * @param obj 上下文对象
+	 * @param noSql 包含#{}的sql
+	 * @return SqlAndArray对象包含预编译sql和执行参数
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
+	private SqlAndArray noSqlTo(Object obj,String noSql) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException{
+		SqlAndArray sqlArr=new SqlAndArray();
+		List<String> fieldname = LuckyUtils.getSqlField(noSql);
+		noSql = LuckyUtils.getSqlStatem(noSql);
+		List<Object> fields = new ArrayList<>();
+		for (String field : fieldname) {
+			Field fie = obj.getClass().getDeclaredField(field);
+			fie.setAccessible(true);
+			fields.add(fie.get(obj));
+		}
+		sqlArr.setSql(noSql);
+		sqlArr.setArray(fields.toArray());
+		return sqlArr;
+	}
+	
+
+	/**
+	 * 基于非空检查的SQL语句的执行
+	 * @param sql_fp SQL片段化
+	 * @param sql sql语句(预编译)
+	 * @param args	执行参数
+	 * @return
+	 */
+	private boolean dynamicUpdateSql(SqlFragProce sql_fp,String sql,Object[] args) {
+		SqlAndObject so = sql_fp.filterSql(sql, args);
+		return sqlCore.update(so.getSqlStr(), so.getObjects());
+	}
+
+	/**
+	 * 处理被@Select注解标注的接口方法
+	 * @param method 接口方法
+	 * @param args 参数列表
+	 * @param sql_fp SQl片段化类
+	 * @return Object
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
+	private <T> Object select(Method method, Object[] args, SqlFragProce sql_fp) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		Class<?> c = method.getReturnType();
+		Select sel = method.getAnnotation(Select.class);
+		if(sel.byid()) {
+			if(args.length==2) {
+				return sqlCore.getOne((Class<?>)args[0], args[1]);
+			}else if(args.length==1) {
+				return sqlCore.getOne(method.getReturnType(), args[0]);
+			}else {
+				return false;
+			}
+		}else {
+			String sql = sel.value();
+			if ("".equals(sql)) {
+				if ("".equals(sel.columns())) {
+					if (c.isAssignableFrom(List.class)) {
+						return sqlCore.getList(args[0]);
 					} else {
-						if (sql.contains("#{")) {
-							List<String> fieldname = LuckyUtils.getSqlField(sql);
-							sql = LuckyUtils.getSqlStatem(sql);
-							Class<?> obc = args[0].getClass();
-							List<Object> fields = new ArrayList<>();
-							for (String field : fieldname) {
-								Field fie = obc.getDeclaredField(field);
-								fie.setAccessible(true);
-								fields.add(fie.get(args[0]));
-							}
-							if (c.isAssignableFrom(List.class)) {
-								ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-								Type[] entry = type.getActualTypeArguments();
-								Class<?> cla = (Class<?>) entry[0];
-								if(method.isAnnotationPresent(Change.class)) {
-									SqlAndObject so = sql_fp.filterSql(sql, fields.toArray());
-									return sqlCore.getList(cla, so.getSqlStr(), so.getObjects());
-								}else {
-									return sqlCore.getList(cla, sql, fields.toArray());
-								}
-							} else {
-								List<T> list=new ArrayList<>();
-								if(method.isAnnotationPresent(Change.class)) {
-									SqlAndObject so = sql_fp.filterSql(sql, fields.toArray());
-									list = (List<T>) sqlCore.getList(c, so.getSqlStr(), so.getObjects());
-								}else {
-									list = (List<T>) sqlCore.getList(c, sql, fields.toArray());
-								}
-								if (list == null || list.isEmpty())
-									return null;
-								else
-									return list.get(0);
-							}
+						return sqlCore.getObject(args[0]);
+					}
+				} else {// 有指定列的标注
+					if (c.isAssignableFrom(List.class)) {
+						ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
+						Type[] entry = type.getActualTypeArguments();
+						Class<?> cla = (Class<?>) entry[0];
+						return sqlCore.getListJoinLeftResult(cla, sel.columns(), args);
+					} else {
+						List<?> list = sqlCore.getListJoinLeftResult(c, sel.columns(), args);
+						if (list == null || list.isEmpty()) {
+							return null;
 						} else {
-							if (c.isAssignableFrom(List.class)) {
-								ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-								Type[] entry = type.getActualTypeArguments();
-								Class<?> cla = (Class<?>) entry[0];
-								if(method.isAnnotationPresent(Change.class)) {
-									SqlAndObject so = sql_fp.filterSql(sql, args);
-									return sqlCore.getList(cla, so.getSqlStr(), so.getObjects());
-								}else {
-									return sqlCore.getList(cla, sql, args);
-								}
-							} else {
-								List<T> list=new ArrayList<>();
-								if(method.isAnnotationPresent(Change.class)) {
-									SqlAndObject so = sql_fp.filterSql(sql, args);
-									list = (List<T>) sqlCore.getList(c, so.getSqlStr(), so.getObjects());
-								}else {
-									list = (List<T>) sqlCore.getList(c, sql, args);
-								}
-								if (list == null || list.isEmpty())
-									return null;
-								else
-									return list.get(0);
-							}
+							return list.get(0);
 						}
 					}
-				}
-			} else if (method.isAnnotationPresent(Update.class)) {
-				Update upd = method.getAnnotation(Update.class);
-				String sql = upd.value();
-				if ("".equals(sql)) {
-					return sqlCore.update(args[0]);
-				} else if (sql.contains("#{")) {
-					List<String> fieldname = LuckyUtils.getSqlField(sql);
-					sql = LuckyUtils.getSqlStatem(sql);
-					Class<?> obc = args[0].getClass();
-					List<Object> fields = new ArrayList<>();
-					for (String field : fieldname) {
-						Field fie = obc.getDeclaredField(field);
-						fie.setAccessible(true);
-						fields.add(fie.get(args[0]));
-					}
-					if(method.isAnnotationPresent(Change.class)) {
-						SqlAndObject so = sql_fp.filterSql(sql, fields.toArray());
-						return sqlCore.update(so.getSqlStr(), so.getObjects());
-					}else {
-						return sqlCore.update(sql, fields.toArray());
-					}
-				} else {
-					if(method.isAnnotationPresent(Change.class)) {
-						SqlAndObject so = sql_fp.filterSql(sql, args);
-						return sqlCore.update(so.getSqlStr(), so.getObjects());
-					}else {
-						return sqlCore.update(sql, args);
-					}
-				}
-			} else if (method.isAnnotationPresent(Delete.class)) {
-				Delete del = method.getAnnotation(Delete.class);
-				if(del.byid()) {
-					return sqlCore.delete((Class<?>)args[0], args[1]);
-				}else {
-					String sql = del.value();
-					if ("".equals(sql)) {
-						return sqlCore.delete(args[0]);
-					} else if (sql.contains("#{")) {
-						List<String> fieldname = LuckyUtils.getSqlField(sql);
-						sql = LuckyUtils.getSqlStatem(sql);
-						Class<?> obc = args[0].getClass();
-						List<Object> fields = new ArrayList<>();
-						for (String field : fieldname) {
-							Field fie = obc.getDeclaredField(field);
-							fie.setAccessible(true);
-							fields.add(fie.get(args[0]));
-						}
-						if(method.isAnnotationPresent(Change.class)) {
-							SqlAndObject so = sql_fp.filterSql(sql, fields.toArray());
-							return sqlCore.delete(so.getSqlStr(), so.getObjects());
-						}else {
-							return sqlCore.delete(sql, fields.toArray());
-						}
-						
-					} else {
-						if(method.isAnnotationPresent(Change.class)) {
-							SqlAndObject so = sql_fp.filterSql(sql, args);
-							return sqlCore.delete(so.getSqlStr(), so.getObjects());
-						}else {
-							return sqlCore.delete(sql, args);
-						}
-					}
-				}
-			} else if (method.isAnnotationPresent(Insert.class)) {
-				Insert ins = method.getAnnotation(Insert.class);
-				String sql = ins.value();
-				if ("".equals(sql)) {
-					if(ins.batch()) {
-						return sqlCore.saveListBatch((List<T>) args[0]);
-					}else {
-						return sqlCore.save(args[0]);
-					}
-				} else if (sql.contains("#{")) {
-					List<String> fieldname = LuckyUtils.getSqlField(sql);
-					sql = LuckyUtils.getSqlStatem(sql);
-					Class<?> obc = args[0].getClass();
-					List<Object> fields = new ArrayList<>();
-					for (String field : fieldname) {
-						Field fie = obc.getDeclaredField(field);
-						fie.setAccessible(true);
-						fields.add(fie.get(args[0]));
-					}
-					return sqlCore.save(sql, fields.toArray());
-				} else {
-					SqlAndObject so = sql_fp.filterSql(sql, args);
-					return sqlCore.save(so.getSqlStr(), so.getObjects());
-				}
-			} else if (method.isAnnotationPresent(Join.class)) {
-				Join join = method.getAnnotation(Join.class);
-				ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-				Type[] entry = type.getActualTypeArguments();
-				Class<?> cla = (Class<?>) entry[0];
-				if ("".equals(join.value()))
-					return sqlCore.getListJoin(cla, args);
-				else
-					return sqlCore.getListJoinResult(cla, join.value(), args);
-			} else if (method.isAnnotationPresent(LeftJoin.class)) {
-				LeftJoin join = method.getAnnotation(LeftJoin.class);
-				ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-				Type[] entry = type.getActualTypeArguments();
-				Class<?> cla = (Class<?>) entry[0];
-				if ("".equals(join.value()))
-					return sqlCore.getListJoinLeft(cla, args);
-				else
-					return sqlCore.getListJoinLeftResult(cla, join.value(), args);
-			} else if (method.isAnnotationPresent(RightJoin.class)) {
-				RightJoin join = method.getAnnotation(RightJoin.class);
-				ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-				Type[] entry = type.getActualTypeArguments();
-				Class<?> cla = (Class<?>) entry[0];
-				if ("".equals(join.value()))
-					return sqlCore.getListJoinRight(cla, args);
-				else
-					return sqlCore.getListJoinRightResult(cla, join.value(), args);
-			} else if (method.isAnnotationPresent(Page.class)) {
-				Page page = method.getAnnotation(Page.class);
-				if (!"".equals(page.value())) {
-					ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-					Type[] entry = type.getActualTypeArguments();
-					Paging paging=new Paging(page.value());
-					Class<?> cla = (Class<?>) entry[0];
-					return paging.getLimitList(cla, args);
-				} else {
-					String strategy = page.strategy();
-					String strategymtthod = page.method();
-					Paging pageing = null;
-					Object strategyobj = null;
-					if (strategy.contains(".")) {
-						Class<?> clzz = Class.forName(strategy);
-						strategyobj = clzz.newInstance();
-					} else {
-						ApplicationBeans apps = ApplicationBeans.getApplicationBeans();
-						strategyobj = apps.getBean(strategy);
-					}
-					pageing = new Paging(strategyobj, strategymtthod);
-					int currentpagenum = (int) args[0];
-					int pagesize = (int) args[1];
-					return pageing.getPageList(currentpagenum, pagesize);
 				}
 			} else {
-				if(sqlMap.containsKey(method.getName().toUpperCase())) {
-					String methodName=method.getName().toUpperCase();
-					String sqlStr=sqlMap.get(methodName);
-					String sqlCopy=sqlStr.toUpperCase();
-					if(sqlCopy.contains("SELECT")) {
-						if("C:".equalsIgnoreCase(sqlCopy.substring(0, 2))) {
-							sqlStr=sqlStr.substring(2,sqlStr.length());
-							SqlAndObject so = sql_fp.filterSql(sqlStr, args);
-							if(List.class.isAssignableFrom(method.getReturnType())) {
-								ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-								Type[] entry = type.getActualTypeArguments();
-								Class<?> cla = (Class<?>) entry[0];
-								return sqlCore.getList(cla, so.getSqlStr(), so.getObjects());
-							}else {
-								return sqlCore.getObject(method.getReturnType(), so.getSqlStr(), so.getObjects());
-							}
-						}else {
-							if(List.class.isAssignableFrom(method.getReturnType())) {
-								ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-								Type[] entry = type.getActualTypeArguments();
-								Class<?> cla = (Class<?>) entry[0];
-								return sqlCore.getList(cla, sqlStr,args);
-							}else {
-								return sqlCore.getObject(method.getReturnType(), sqlStr,args);
-							}
-						}
-					}else {
-						if("C:".equalsIgnoreCase(sqlCopy.substring(0, 2))) {
-							sqlStr=sqlStr.substring(2,sqlStr.length());
-							SqlAndObject so = sql_fp.filterSql(sqlStr, args);
-							return sqlCore.delete(so.getSqlStr(), so.getObjects());
-						}else {
-							return sqlCore.delete(sqlStr,args);
-						}
+				if (sql.contains("#{")) {
+					List<String> fieldname = LuckyUtils.getSqlField(sql);
+					sql = LuckyUtils.getSqlStatem(sql);
+					Class<?> obc = args[0].getClass();
+					List<Object> fields = new ArrayList<>();
+					for (String field : fieldname) {
+						Field fie = obc.getDeclaredField(field);
+						fie.setAccessible(true);
+						fields.add(fie.get(args[0]));
 					}
-				}else {
-					return null;
+					if (c.isAssignableFrom(List.class)) {
+						ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
+						Type[] entry = type.getActualTypeArguments();
+						Class<?> cla = (Class<?>) entry[0];
+						if(method.isAnnotationPresent(Change.class)) {
+							SqlAndObject so = sql_fp.filterSql(sql, fields.toArray());
+							return sqlCore.getList(cla, so.getSqlStr(), so.getObjects());
+						}else {
+							return sqlCore.getList(cla, sql, fields.toArray());
+						}
+					} else {
+						List<T> list=new ArrayList<>();
+						if(method.isAnnotationPresent(Change.class)) {
+							SqlAndObject so = sql_fp.filterSql(sql, fields.toArray());
+							list = (List<T>) sqlCore.getList(c, so.getSqlStr(), so.getObjects());
+						}else {
+							list = (List<T>) sqlCore.getList(c, sql, fields.toArray());
+						}
+						if (list == null || list.isEmpty())
+							return null;
+						else
+							return list.get(0);
+					}
+				} else {
+					if (c.isAssignableFrom(List.class)) {
+						ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
+						Type[] entry = type.getActualTypeArguments();
+						Class<?> cla = (Class<?>) entry[0];
+						if(method.isAnnotationPresent(Change.class)) {
+							SqlAndObject so = sql_fp.filterSql(sql, args);
+							return sqlCore.getList(cla, so.getSqlStr(), so.getObjects());
+						}else {
+							return sqlCore.getList(cla, sql, args);
+						}
+					} else {
+						List<T> list=new ArrayList<>();
+						if(method.isAnnotationPresent(Change.class)) {
+							SqlAndObject so = sql_fp.filterSql(sql, args);
+							list = (List<T>) sqlCore.getList(c, so.getSqlStr(), so.getObjects());
+						}else {
+							list = (List<T>) sqlCore.getList(c, sql, args);
+						}
+						if (list == null || list.isEmpty())
+							return null;
+						else
+							return list.get(0);
+					}
 				}
 			}
+		}
+	}
+	
 
+	/**
+	 * 处理被@Update注解标注的接口方法
+	 * @param method 接口方法
+	 * @param args 参数列表
+	 * @param sql_fp SQl片段化类
+	 * @return true/false
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
+	private boolean update(Method method, Object[] args,SqlFragProce sql_fp) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		Update upd = method.getAnnotation(Update.class);
+		String sql = upd.value();
+		if ("".equals(sql)) 
+			return sqlCore.update(args[0]);
+		else 
+			return updateSql(method,args,sql_fp,sql);
+	}
+	
+	/**
+	 * 处理被@Delete注解标注的接口方法
+	 * @param method 接口方法
+	 * @param args 参数列表
+	 * @param sql_fp SQl片段化类
+	 * @return true/false
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
+	private boolean delete(Method method, Object[] args,SqlFragProce sql_fp) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		Delete del = method.getAnnotation(Delete.class);
+		if(del.byid()) {
+			return sqlCore.delete((Class<?>)args[0], args[1]);
+		}else {
+			String sql = del.value();
+			if ("".equals(sql))
+				return sqlCore.delete(args[0]);
+			else
+				return updateSql(method,args,sql_fp,sql);
+		}
+	}
+	
+	
+	/**
+	 * 处理被@Insert注解标注的接口方法
+	 * @param method 接口方法
+	 * @param args 参数列表
+	 * @param sql_fp SQl片段化类
+	 * @return true/false
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
+	private <T> boolean insert(Method method, Object[] args,SqlFragProce sql_fp) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		Insert ins = method.getAnnotation(Insert.class);
+		String sql = ins.value();
+		if ("".equals(sql)) {
+			if(ins.batch()) {
+				return sqlCore.saveListBatch((List<T>) args[0]);
+			}else {
+				return sqlCore.save(args[0]);
+			}
+		} else {
+			return updateSql(method,args,sql_fp,sql);
+		}
+	}
+	
+	/**
+	 * 处理被@Joint注解标注的接口方法
+	 * @param method 接口方法
+	 * @param args 参数列表
+	 * @return Object
+	 */
+	private Object join(Method method, Object[] args){
+		Join join = method.getAnnotation(Join.class);
+		ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
+		Type[] entry = type.getActualTypeArguments();
+		Class<?> cla = (Class<?>) entry[0];
+		if ("".equals(join.value()))
+			return sqlCore.getListJoin(cla, args);
+		else
+			return sqlCore.getListJoinResult(cla, join.value(), args);
+	}
+	
+	/**
+	 * 处理被@LeftJoint注解标注的接口方法
+	 * @param method 接口方法
+	 * @param args 参数列表
+	 * @return Object
+	 */
+	private Object leftJoin(Method method, Object[] args) {
+		LeftJoin join = method.getAnnotation(LeftJoin.class);
+		ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
+		Type[] entry = type.getActualTypeArguments();
+		Class<?> cla = (Class<?>) entry[0];
+		if ("".equals(join.value()))
+			return sqlCore.getListJoinLeft(cla, args);
+		else
+			return sqlCore.getListJoinLeftResult(cla, join.value(), args);
+	}
+	
+	/**
+	 * 处理被@RightJoint注解标注的接口方法
+	 * @param method 接口方法
+	 * @param args 参数列表
+	 * @return Object
+	 */
+	private Object rightJoin(Method method, Object[] args) {
+		RightJoin join = method.getAnnotation(RightJoin.class);
+		ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
+		Type[] entry = type.getActualTypeArguments();
+		Class<?> cla = (Class<?>) entry[0];
+		if ("".equals(join.value()))
+			return sqlCore.getListJoinRight(cla, args);
+		else
+			return sqlCore.getListJoinRightResult(cla, join.value(), args);
+	}
+	
+	/**
+	 * 处理被@Page注解标注的接口方法
+	 * @param method 接口方法
+	 * @param args 参数列表
+	 * @return Object
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	private Object page(Method method, Object[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		Page page = method.getAnnotation(Page.class);
+		if (!"".equals(page.value())) {
+			ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
+			Type[] entry = type.getActualTypeArguments();
+			Paging paging=new Paging(page.value());
+			Class<?> cla = (Class<?>) entry[0];
+			return paging.getLimitList(cla, args);
+		} else {
+			String strategy = page.strategy();
+			String strategymtthod = page.method();
+			Paging pageing = null;
+			Object strategyobj = null;
+			if (strategy.contains(".")) {
+				Class<?> clzz = Class.forName(strategy);
+				strategyobj = clzz.newInstance();
+			} else {
+				ApplicationBeans apps = ApplicationBeans.getApplicationBeans();
+				strategyobj = apps.getBean(strategy);
+			}
+			pageing = new Paging(strategyobj, strategymtthod);
+			int currentpagenum = (int) args[0];
+			int pagesize = (int) args[1];
+			return pageing.getPageList(currentpagenum, pagesize);
+		}
+	}
+
+	/**
+	 * 处理被没有被注解标注的接口方法
+	 * @param method 接口方法
+	 * @param args 参数列表
+	 * @param sql_fp SQl片段化类
+	 * @return Object
+	 */
+	private Object notHave(Method method, Object[] args, SqlFragProce sql_fp) {
+		if(sqlMap.containsKey(method.getName().toUpperCase())) {
+			String methodName=method.getName().toUpperCase();
+			String sqlStr=sqlMap.get(methodName);
+			String sqlCopy=sqlStr.toUpperCase();
+			if(sqlCopy.contains("SELECT")) {
+				if("C:".equalsIgnoreCase(sqlCopy.substring(0, 2))) {
+					sqlStr=sqlStr.substring(2,sqlStr.length());
+					SqlAndObject so = sql_fp.filterSql(sqlStr, args);
+					if(List.class.isAssignableFrom(method.getReturnType())) {
+						ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
+						Type[] entry = type.getActualTypeArguments();
+						Class<?> cla = (Class<?>) entry[0];
+						return sqlCore.getList(cla, so.getSqlStr(), so.getObjects());
+					}else {
+						return sqlCore.getObject(method.getReturnType(), so.getSqlStr(), so.getObjects());
+					}
+				}else {
+					if(List.class.isAssignableFrom(method.getReturnType())) {
+						ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
+						Type[] entry = type.getActualTypeArguments();
+						Class<?> cla = (Class<?>) entry[0];
+						return sqlCore.getList(cla, sqlStr,args);
+					}else {
+						return sqlCore.getObject(method.getReturnType(), sqlStr,args);
+					}
+				}
+			}else {
+				if("C:".equalsIgnoreCase(sqlCopy.substring(0, 2))) {
+					sqlStr=sqlStr.substring(2,sqlStr.length());
+					SqlAndObject so = sql_fp.filterSql(sqlStr, args);
+					return sqlCore.delete(so.getSqlStr(), so.getObjects());
+				}else {
+					return sqlCore.delete(sqlStr,args);
+				}
+			}
+		}else {
+			return null;
+		}
+	}
+
+	/**
+	 * 返回接口的代理对象
+	 * @param clazz 接口的Class
+	 * @return T
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	public <T> T getMapperProxyObject(Class<T> clazz) throws InstantiationException, IllegalAccessException {
+		initSqlMap(clazz);
+		InvocationHandler handler = (proxy, method, args) -> {
+			SqlFragProce sql_fp = SqlFragProce.getSqlFP();
+			if (method.isAnnotationPresent(Select.class))
+				return select(method,args,sql_fp);
+			else if (method.isAnnotationPresent(Update.class))
+				return update(method,args,sql_fp);
+			else if (method.isAnnotationPresent(Delete.class))
+				return delete(method,args,sql_fp);
+			else if (method.isAnnotationPresent(Insert.class))
+				return insert(method,args,sql_fp);
+			else if (method.isAnnotationPresent(Join.class))
+				return join(method,args);
+			else if (method.isAnnotationPresent(LeftJoin.class))
+				return leftJoin(method,args);
+			else if (method.isAnnotationPresent(RightJoin.class))
+				return rightJoin(method,args);
+			else if (method.isAnnotationPresent(Page.class))
+				return page(method,args);
+			else 
+				return notHave(method,args,sql_fp);
 		};
 		return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[] { clazz }, handler);
 	}
 
+}
+
+class SqlAndArray{
+	
+	private String sql;
+	
+	private Object[] array;
+
+	public String getSql() {
+		return sql;
+	}
+
+	public void setSql(String sql) {
+		this.sql = sql;
+	}
+
+	public Object[] getArray() {
+		return array;
+	}
+
+	public void setArray(Object[] array) {
+		this.array = array;
+	}
+
+	@Override
+	public String toString() {
+		return "SqlAndArray [sql=" + sql + ", array=" + Arrays.toString(array) + "]";
+	}
+	
+	
 }

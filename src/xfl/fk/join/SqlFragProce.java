@@ -4,12 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 用于处理Sql片段化操作的类
+ * 用于处理Sql片段化操作的类(单例模式)
  * 
  * @author fk7075
  *
  */
 public class SqlFragProce {
+	
+	private static SqlFragProce sqlfp;
+	
+	private SqlFragProce() {};
+	
+	public static SqlFragProce getSqlFP() {
+		if(sqlfp==null)
+			return new SqlFragProce();
+		else
+			return sqlfp;
+	}
 
 	// 截取个个属性对应的Sql片段
 	private List<String> sqlTruncation(String sqlStr) {
