@@ -121,11 +121,23 @@ public class LuckyMapperProxy {
 	 * @param sql_fp SQL片段化
 	 * @param sql sql语句(预编译)
 	 * @param args	执行参数
-	 * @return
+	 * @return true/false
 	 */
 	private boolean dynamicUpdateSql(SqlFragProce sql_fp,String sql,Object[] args) {
 		SqlAndObject so = sql_fp.filterSql(sql, args);
 		return sqlCore.update(so.getSqlStr(), so.getObjects());
+	}
+	
+	/**
+	 * 得到List的泛型的Class
+	 * @param method 接口方法
+	 * @return List的泛型类型的Class
+	 */
+	private Class<?> getListGeneric(Method method){
+		ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
+		Type[] entry = type.getActualTypeArguments();
+		Class<?> cla = (Class<?>) entry[0];
+		return cla;
 	}
 
 	/**
@@ -161,10 +173,7 @@ public class LuckyMapperProxy {
 					}
 				} else {// 有指定列的标注
 					if (c.isAssignableFrom(List.class)) {
-						ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-						Type[] entry = type.getActualTypeArguments();
-						Class<?> cla = (Class<?>) entry[0];
-						return sqlCore.getListJoinLeftResult(cla, sel.columns(), args);
+						return sqlCore.getListJoinLeftResult(getListGeneric(method), sel.columns(), args);
 					} else {
 						List<?> list = sqlCore.getListJoinLeftResult(c, sel.columns(), args);
 						if (list == null || list.isEmpty()) {
@@ -176,61 +185,39 @@ public class LuckyMapperProxy {
 				}
 			} else {
 				if (sql.contains("#{")) {
-					List<String> fieldname = LuckyUtils.getSqlField(sql);
-					sql = LuckyUtils.getSqlStatem(sql);
-					Class<?> obc = args[0].getClass();
-					List<Object> fields = new ArrayList<>();
-					for (String field : fieldname) {
-						Field fie = obc.getDeclaredField(field);
-						fie.setAccessible(true);
-						fields.add(fie.get(args[0]));
-					}
+					SqlAndArray sqlArr = noSqlTo(args[0],sql);
 					if (c.isAssignableFrom(List.class)) {
-						ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-						Type[] entry = type.getActualTypeArguments();
-						Class<?> cla = (Class<?>) entry[0];
 						if(method.isAnnotationPresent(Change.class)) {
-							SqlAndObject so = sql_fp.filterSql(sql, fields.toArray());
-							return sqlCore.getList(cla, so.getSqlStr(), so.getObjects());
+							SqlAndObject so = sql_fp.filterSql(sqlArr.getSql(),sqlArr.getArray());
+							return (List<T>) sqlCore.getList(getListGeneric(method), so.getSqlStr(), so.getObjects());
 						}else {
-							return sqlCore.getList(cla, sql, fields.toArray());
+							return (List<T>) sqlCore.getList(getListGeneric(method), sqlArr.getSql(), sqlArr.getArray());
 						}
 					} else {
 						List<T> list=new ArrayList<>();
 						if(method.isAnnotationPresent(Change.class)) {
-							SqlAndObject so = sql_fp.filterSql(sql, fields.toArray());
-							list = (List<T>) sqlCore.getList(c, so.getSqlStr(), so.getObjects());
+							SqlAndObject so = sql_fp.filterSql(sqlArr.getSql(), sqlArr.getArray());
+							return (T) sqlCore.getObject(c, so.getSqlStr(), so.getObjects());
 						}else {
-							list = (List<T>) sqlCore.getList(c, sql, fields.toArray());
+							return (T) sqlCore.getObject(c, sqlArr.getSql(), sqlArr.getArray());
 						}
-						if (list == null || list.isEmpty())
-							return null;
-						else
-							return list.get(0);
 					}
 				} else {
 					if (c.isAssignableFrom(List.class)) {
-						ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-						Type[] entry = type.getActualTypeArguments();
-						Class<?> cla = (Class<?>) entry[0];
 						if(method.isAnnotationPresent(Change.class)) {
 							SqlAndObject so = sql_fp.filterSql(sql, args);
-							return sqlCore.getList(cla, so.getSqlStr(), so.getObjects());
+							return (List<T>) sqlCore.getList(getListGeneric(method), so.getSqlStr(), so.getObjects());
 						}else {
-							return sqlCore.getList(cla, sql, args);
+							return (List<T>) sqlCore.getList(getListGeneric(method), sql, args);
 						}
 					} else {
 						List<T> list=new ArrayList<>();
 						if(method.isAnnotationPresent(Change.class)) {
 							SqlAndObject so = sql_fp.filterSql(sql, args);
-							list = (List<T>) sqlCore.getList(c, so.getSqlStr(), so.getObjects());
+							return (T) sqlCore.getObject(c, so.getSqlStr(), so.getObjects());
 						}else {
-							list = (List<T>) sqlCore.getList(c, sql, args);
+							return (T) sqlCore.getObject(c, sql, args);
 						}
-						if (list == null || list.isEmpty())
-							return null;
-						else
-							return list.get(0);
 					}
 				}
 			}
@@ -401,12 +388,21 @@ public class LuckyMapperProxy {
 	 * @param args 参数列表
 	 * @param sql_fp SQl片段化类
 	 * @return Object
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
+	 * @throws SecurityException 
+	 * @throws NoSuchFieldException 
 	 */
-	private Object notHave(Method method, Object[] args, SqlFragProce sql_fp) {
+	private Object notHave(Method method, Object[] args, SqlFragProce sql_fp) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		if(sqlMap.containsKey(method.getName().toUpperCase())) {
 			String methodName=method.getName().toUpperCase();
 			String sqlStr=sqlMap.get(methodName);
 			String sqlCopy=sqlStr.toUpperCase();
+			if(sqlCopy.contains("#{")) {
+				SqlAndArray sqlArr = noSqlTo(args[0],sqlStr);
+				sqlStr=sqlArr.getSql();
+				args=sqlArr.getArray();
+			}
 			if(sqlCopy.contains("SELECT")) {
 				if("C:".equalsIgnoreCase(sqlCopy.substring(0, 2))) {
 					sqlStr=sqlStr.substring(2,sqlStr.length());
@@ -432,8 +428,7 @@ public class LuckyMapperProxy {
 			}else {
 				if("C:".equalsIgnoreCase(sqlCopy.substring(0, 2))) {
 					sqlStr=sqlStr.substring(2,sqlStr.length());
-					SqlAndObject so = sql_fp.filterSql(sqlStr, args);
-					return sqlCore.delete(so.getSqlStr(), so.getObjects());
+					return dynamicUpdateSql(sql_fp,sqlStr,args);
 				}else {
 					return sqlCore.delete(sqlStr,args);
 				}
