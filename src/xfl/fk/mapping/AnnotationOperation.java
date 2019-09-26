@@ -222,9 +222,8 @@ public class AnnotationOperation {
 
 	/**
 	 * 得到将要执行的Controller方法的参数列表的值
-	 * @param model
+	 * @param model Model对象
 	 * @param method 将要执行的Controller方法
-	 * @param restMap
 	 * @return 将要执行的Controller方法的参数列表
 	 * @throws IOException
 	 * @throws ServletException
@@ -262,6 +261,8 @@ public class AnnotationOperation {
 				}else {
 					if(model.getArray(getParamName(parameters[i]), parameters[i].getType())!=null) {
 						args[i]=model.getArray(getParamName(parameters[i]), parameters[i].getType())[0];
+					}else if(!model.getRestMap().isEmpty()){
+						args[i]=model.getRestParam(getParamName(parameters[i]), parameters[i].getType());
 					}
 				}
 			}
@@ -272,7 +273,7 @@ public class AnnotationOperation {
 
 	
 	/**
-	 * 为Controller方法中的pojo属性注入request域中对应的值
+	 * 为Controller方法中的pojo属性注入request域或RestMap中对应的值
 	 * @param request 
 	 * @param pojo
 	 * @return

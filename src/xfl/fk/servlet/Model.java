@@ -167,12 +167,6 @@ public class Model {
 		return req.getParameter(name);
 	}
 
-	/**
-	 * 设置转发或重定向的目的地 1.转发到页面：无前缀 2.转发到Controller方法:forward:method
-	 * 3.重定向到页面：page:pageing 4.重定向到Controller方法：redirect:method
-	 * 
-	 * @param view
-	 */
 
 	/**
 	 * 向session域中存值
@@ -306,9 +300,18 @@ public class Model {
 	}
 	
 	/**
-	 * 得到parameterMap中String[]转型后的T[]
+	 * 得到parameterMap中key对应String[]
 	 * @param key 键
-	 * @param clzz 目标类型
+	 * @return
+	 */
+	public String[] getArray(String key) {
+		return parameterMap.get(key);
+	}
+	
+	/**
+	 * 得到parameterMap中key对应String[]转型后的T[]
+	 * @param key 键
+	 * @param clzz 目标类型T的Class
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -317,9 +320,18 @@ public class Model {
 	}
 	
 	/**
-	 * 得到RestParamMap中String转型后的T
+	 * 得到parameterMap中key对应String[]
 	 * @param key
-	 * @param clzz
+	 * @return
+	 */
+	public String getRestParam(String key) {
+		return restMap.get(key);
+	}
+	
+	/**
+	 * 得到RestParamMap中key对应的String转型后的T
+	 * @param key 键
+	 * @param clzz 目标类型T的Class
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
