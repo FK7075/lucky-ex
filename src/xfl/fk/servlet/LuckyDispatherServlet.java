@@ -71,7 +71,6 @@ public class LuckyDispatherServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
-
 			this.method=urlParsMap.chagenMethod(req,resp,this.method);
 			String uri = req.getRequestURI();
 			uri=java.net.URLDecoder.decode(new String(uri.getBytes(app.getEncod()), req.getCharacterEncoding()), req.getCharacterEncoding());
@@ -94,7 +93,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 			}
 			ControllerAndMethod controllerAndMethod = urlParsMap.pars(beans,app.getPre_suf(),handerMaps, path);
 			model.setRestMap(controllerAndMethod.getRestKV());
-			urlParsMap.setCross(resp, controllerAndMethod);
+			urlParsMap.setCross(req,resp, controllerAndMethod);
 			String murl = controllerAndMethod.getUrl();
 			if(url_path.containsKey(murl)) {
 				List<String> pre_suf=app.getSetter_pre_suf();
