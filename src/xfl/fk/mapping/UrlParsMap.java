@@ -59,7 +59,7 @@ public class UrlParsMap {
 	}
 	
 	/**
-	 * 根据参数"_method"的值改变请求的类型
+	 * 根据POST请求参数"_method"的值改变请求的类型
 	 * @param request Request对象
 	 * @param method 当前的请求类型
 	 * @return
@@ -69,20 +69,23 @@ public class UrlParsMap {
 		request.setCharacterEncoding("utf8");
 		response.setCharacterEncoding("utf8");
 		response.setHeader("Content-Type", "text/html;charset=utf-8");
-		String hihMeth=request.getParameter("_method");
-		if(hihMeth!=null) {
-			hihMeth=hihMeth.toUpperCase();
-			if("POST".equals(hihMeth))
-				return RequestMethod.POST;
-			else if("GET".equals(hihMeth))
-				return RequestMethod.GET;
-			else if("PUT".equals(hihMeth))
-				return RequestMethod.PUT;
-			else if("DELETE".equals(hihMeth))
-				return RequestMethod.DELETE;
-		}else {
-			return method;
+		if(method==RequestMethod.POST) {
+			String hihMeth=request.getParameter("_method");
+			if(hihMeth!=null) {
+				hihMeth=hihMeth.toUpperCase();
+				if("POST".equals(hihMeth))
+					return RequestMethod.POST;
+				else if("GET".equals(hihMeth))
+					return RequestMethod.GET;
+				else if("PUT".equals(hihMeth))
+					return RequestMethod.PUT;
+				else if("DELETE".equals(hihMeth))
+					return RequestMethod.DELETE;
+			}else {
+				return method;
+			}
 		}
+		
 		return method;
 	}
 	

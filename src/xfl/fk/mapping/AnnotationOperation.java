@@ -33,11 +33,12 @@ import xfl.fk.utils.LuckyUtils;
 @SuppressWarnings("all")
 public class AnnotationOperation {
 	
+
 	/**
-	 * 得到具体的MultipartFile
-	 * @param request
-	 * @param formName
-	 * @return
+	 * 根据参数得到具体的MultipartFile
+	 * @param model Model对象
+	 * @param formName formName 表单上<input type="file">的"name"属性值
+	 * @return 返回MultipartFile对象
 	 * @throws IOException
 	 * @throws ServletException
 	 */
@@ -47,10 +48,10 @@ public class AnnotationOperation {
 		return new MultipartFile(part,projectPath);
 	}
 	
+
 	/**
 	 * 基于MultipartFile的多文件上传
-	 * @param request request对象
-	 * @param response response对象
+	 * @param model Model对象
 	 * @param method 将要执行的Controller方法
 	 * @return 由Controller方法参数名和其对应的值所组成的Map(针对MultipartFile)
 	 * @throws IOException
@@ -69,8 +70,7 @@ public class AnnotationOperation {
 	
 	/**
 	 * 执行文件上传操作(将上传的文件写入服务器的具体位置)
-	 * @param request request对象
-	 * @param response response对象
+	 * @param model Model对象
 	 * @param formName 表单上<input type="file">的"name"属性值
 	 * @param path 要上传到服务器的哪个文件夹？
 	 * @param type 允许上传的文件类型
@@ -124,12 +124,10 @@ public class AnnotationOperation {
 		}
 	}
 	
-
 	
 	/**
 	 * 批量文件上传@Upload注解方式
-	 * @param request request对象
-	 * @param response response对象
+	 * @param model Model对象
 	 * @param method 将要执行的Controller方法
 	 * @return 上传后的文件名与表单name属性所组成的Map
 	 * @throws IOException
@@ -158,11 +156,10 @@ public class AnnotationOperation {
 	}
 	
 	/**
-	 * 处理对象Pojo参数类型
-	 * @param request request对象
-	 * @param response response对象
+	 * 返回Controller方法参数名与参数值所组成的Map(针对Pojo类型的参数)
+	 * @param model Model对象
 	 * @param method 将要执行的Controller方法
-	 * @param uploadMap 
+	 * @param uploadMap 上传后的文件名与表单name属性所组成的Map
 	 * @return Controller方法参数名与参数值所组成的Map(针对Pojo类型的参数)
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
@@ -186,6 +183,7 @@ public class AnnotationOperation {
 				for(Field fi:fields) {
 					fi.setAccessible(true);
 					Object fi_obj=fi.get(pojo);
+					//pojo中含有@Upload返回的文件名
 					if(uploadMap.containsKey(fi.getName())&&fi_obj==null) 
 						fi.set(pojo, uploadMap.get(fi.getName()));
 				}
@@ -196,11 +194,11 @@ public class AnnotationOperation {
 		return map;
 		
 	}
+
 	/**
 	 * 文件下载操作@Download
-	 * @param request
-	 * @param response
-	 * @param method
+	 * @param model Model对象
+	 * @param method 将要执行的Controller方法
 	 * @throws IOException
 	 */
 	public void download(Model model, Method method) throws IOException {
@@ -221,19 +219,19 @@ public class AnnotationOperation {
 		out.close();
 	}
 	
+
 	/**
 	 * 得到将要执行的Controller方法的参数列表的值
-	 * @param request request对象
-	 * @param response reaponse对象
+	 * @param model
 	 * @param method 将要执行的Controller方法
-	 * @param reqMethod 
+	 * @param restMap
 	 * @return 将要执行的Controller方法的参数列表
 	 * @throws IOException
 	 * @throws ServletException
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
 	 */
-	public Object getControllerMethodParam(Model model, Method method,Map<String,String>restMap) throws IOException, ServletException, InstantiationException, IllegalAccessException {
+	public Object getControllerMethodParam(Model model, Method method) throws IOException, ServletException, InstantiationException, IllegalAccessException {
 		Parameter[] parameters = method.getParameters();
 		Object[] args = new Object[parameters.length];
 		Map<String,String> uploadMap=moreUpload(model,method);
@@ -257,7 +255,7 @@ public class AnnotationOperation {
 			}else if(parameters[i].isAnnotationPresent(RestParam.class)){
 				RestParam rp=parameters[i].getAnnotation(RestParam.class);
 				String restKey=rp.value();
-				args[i]=LuckyUtils.typeCast(restMap.get(restKey),parameters[i].getType().getSimpleName());
+				args[i]=LuckyUtils.typeCast(model.getRestMap().get(restKey),parameters[i].getType().getSimpleName());
 			}else {
 				if(parameters[i].getType().isArray()) {
 					args[i]=model.getArray(getParamName(parameters[i]), parameters[i].getType());
@@ -291,6 +289,9 @@ public class AnnotationOperation {
 				}else {
 					if(model.getArray(fie.getName(), fie.getType())!=null) {
 						fie.set(pojo,model.getArray(fie.getName(), fie.getType())[0]);
+					}
+					if(model.getRestMap().containsKey(fie.getName())) {
+						fie.set(pojo,model.getRestParam(fie.getName(), fie.getType()));
 					}
 				}
 			}else {

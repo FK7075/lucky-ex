@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import xfl.fk.aop.RequestMethod;
 import xfl.fk.json.LSON;
 import xfl.fk.utils.ArrayCast;
+import xfl.fk.utils.LuckyUtils;
 
 public class Model {
 
@@ -24,6 +25,7 @@ public class Model {
 	private HttpServletResponse resp;
 	private RequestMethod requestMethod;
 	private Map<String, String[]> parameterMap;
+	private Map<String,String> restMap;
 
 	public Model(HttpServletRequest request,HttpServletResponse response,RequestMethod requestMethod,String encod) {
 		this.encod=encod;
@@ -31,9 +33,26 @@ public class Model {
 		resp =response;
 		this.requestMethod=requestMethod;
 		this.parameterMap=getRequestParameterMap();
+		restMap=new HashMap<>();
 	}
 	
-	
+	/**
+	 * 得到RestParamMap
+	 * @return
+	 */
+	public Map<String, String> getRestMap() {
+		return restMap;
+	}
+
+	/**
+	 * 设置RestParamMap
+	 * @param restMap
+	 */
+	public void setRestMap(Map<String, String> restMap) {
+		this.restMap = restMap;
+	}
+
+
 	/**
 	 * 得到RequestParameterMap
 	 * @return parameterMap--><Map<String,String[]>>
@@ -295,6 +314,17 @@ public class Model {
 	@SuppressWarnings("unchecked")
 	public <T> T[] getArray(String key,Class<T> clzz){
 		return (T[]) ArrayCast.strToList(parameterMap.get(key), clzz.getSimpleName());
+	}
+	
+	/**
+	 * 得到RestParamMap中String转型后的T
+	 * @param key
+	 * @param clzz
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T getRestParam(String key,Class<T> clzz) {
+		return (T) LuckyUtils.typeCast(restMap.get(key), clzz.getSimpleName());
 	}
 
 }

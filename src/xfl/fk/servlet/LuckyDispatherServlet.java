@@ -93,6 +93,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 				path = path.substring(0, path.lastIndexOf("."));
 			}
 			ControllerAndMethod controllerAndMethod = urlParsMap.pars(beans,app.getPre_suf(),handerMaps, path);
+			model.setRestMap(controllerAndMethod.getRestKV());
 			urlParsMap.setCross(resp, controllerAndMethod);
 			String murl = controllerAndMethod.getUrl();
 			if(url_path.containsKey(murl)) {
@@ -124,7 +125,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 					app.autowReqAdnResp(obj,model);
 					Object[] args;
 					Object obj1 = new Object();
-					args = (Object[]) anop.getControllerMethodParam(model,method,controllerAndMethod.getRestKV());
+					args = (Object[]) anop.getControllerMethodParam(model,method);
 					obj1 = method.invoke(obj, args);
 					if (isDownload == true)//ÏÂÔØ²Ù×÷
 						anop.download(model, method);
