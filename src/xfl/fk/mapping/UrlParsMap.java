@@ -30,9 +30,8 @@ public class UrlParsMap {
 		if(come.getController().getClass().isAnnotationPresent(CrossOrigin.class)||come.getMethod().isAnnotationPresent(CrossOrigin.class)) {
 			response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
 			response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-			response.setHeader("Access-Control-Max-Age", "3600");
+			response.setHeader("Access-Control-Max-Age", "0");
 			response.setHeader("Access-Control-Allow-Headers", "Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With,userId,token");
-			response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
 			response.setHeader("Access-Control-Allow-Credentials", "true");
 			response.setHeader("XDomainRequestAllowed","1"); 
 		}
