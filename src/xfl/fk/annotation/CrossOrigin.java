@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 
 /**
  * 用于处理跨域的问题
+ * origins:允许可访问的域列表
+ * maxAge:准备响应前的缓存持续的最大时间（以秒为单位）
  * @author fk-7075
  *
  */
@@ -15,6 +17,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface CrossOrigin {
-	String value() default "";
+
+	String origins() default "*";
+	
+	String maxAge() default "1800";
+	
+	String allowCredentials() default "false";
 	
 }
