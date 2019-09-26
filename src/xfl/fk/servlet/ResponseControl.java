@@ -5,8 +5,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import xfl.fk.utils.LuckyUtils;
 
@@ -27,23 +25,23 @@ public class ResponseControl {
 	 * @throws IOException
 	 * @throws ServletException
 	 */
-	private void toPage(HttpServletRequest req,HttpServletResponse resp,String info,List<String> pre_suf) throws IOException, ServletException {
+	private void toPage(Model model,String info,List<String> pre_suf) throws IOException, ServletException {
 		String topage="";
 		if(info.contains("page:")) {//重定向到页面
 			info=info.replaceAll("page:", "");
-			topage=req.getContextPath()+pre_suf.get(0)+info+pre_suf.get(1);
+			topage=model.getRequest().getContextPath()+pre_suf.get(0)+info+pre_suf.get(1);
 			topage=topage.replaceAll(" ", "");
-			resp.sendRedirect(topage);
+			model.getResponse().sendRedirect(topage);
 		}else if(info.contains("forward:")) {//转发到本Controller的某个方法
 			info=info.replaceAll("forward:", "");
-			req.getRequestDispatcher(info).forward(req, resp);
+			model.getRequest().getRequestDispatcher(info).forward(model.getRequest(), model.getResponse());
 		}else if(info.contains("redirect:")) {//重定向到本Controller的某个方法
 			info=info.replaceAll("redirect:", "");
-			resp.sendRedirect(info);
+			model.getResponse().sendRedirect(info);
 		}else {//转发到页面
 			topage=pre_suf.get(0)+info+pre_suf.get(1);
 			topage=topage.replaceAll(" ", "");
-			req.getRequestDispatcher(topage).forward(req, resp);
+			model.getRequest().getRequestDispatcher(topage).forward(model.getRequest(), model.getResponse());
 		}
 	}
 
@@ -57,13 +55,13 @@ public class ResponseControl {
 	 * @throws IOException
 	 * @throws ServletException
 	 */
-	public void jump(HttpServletRequest req, HttpServletResponse resp,List<String> pre_suf, Method method, Object obj)
+	public void jump(Model model,List<String> pre_suf, Method method, Object obj)
 			throws IOException, ServletException {
 		if (obj != null) {
 			String res="";
 			if (LuckyUtils.isJavaClass(obj.getClass())) {
 				res=obj.toString();
-				toPage(req,resp,res,pre_suf);
+				toPage(model,res,pre_suf);
 			} 
 		}
 	}

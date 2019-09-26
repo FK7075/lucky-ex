@@ -93,7 +93,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 			}
 			ControllerAndMethod controllerAndMethod = urlParsMap.pars(beans,app.getPre_suf(),handerMaps, path);
 			model.setRestMap(controllerAndMethod.getRestKV());
-			urlParsMap.setCross(req,resp, controllerAndMethod);
+			urlParsMap.setCross(resp, controllerAndMethod);
 			String murl = controllerAndMethod.getUrl();
 			if(url_path.containsKey(murl)) {
 				List<String> pre_suf=app.getSetter_pre_suf();
@@ -128,7 +128,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 					obj1 = method.invoke(obj, args);
 					if (isDownload == true)//ÏÂÔØ²Ù×÷
 						anop.download(model, method);
-					responseControl.jump(req, resp,pre_suf, method, obj1);
+					responseControl.jump(model,pre_suf, method, obj1);
 				}
 
 			}

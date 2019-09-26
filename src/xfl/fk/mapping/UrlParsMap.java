@@ -26,14 +26,40 @@ public class UrlParsMap {
 	 * @param response Response对象
 	 * @param come ControllerAndMethod对象
 	 */
-	public void setCross(HttpServletRequest request,HttpServletResponse response,ControllerAndMethod come) {
-		if(come.getController().getClass().isAnnotationPresent(CrossOrigin.class)||come.getMethod().isAnnotationPresent(CrossOrigin.class)) {
-			response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
-			response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-			response.setHeader("Access-Control-Max-Age", "0");
-			response.setHeader("Access-Control-Allow-Headers", "Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With,userId,token");
-			response.setHeader("Access-Control-Allow-Credentials", "true");
-			response.setHeader("XDomainRequestAllowed","1"); 
+	public void setCross(HttpServletResponse response,ControllerAndMethod come) {
+		if(come.getController().getClass().isAnnotationPresent(CrossOrigin.class)) {
+			CrossOrigin crso=come.getController().getClass().getAnnotation(CrossOrigin.class);
+			String url;
+			String isCookie="false";
+			if(crso.allowCredentials())
+				isCookie="true";
+			if(!"".equals(crso.origins()))
+				url=crso.origins();
+			else
+				url=crso.value();
+			response.setHeader("Access-Control-Allow-Origin", url);
+			response.setHeader("Access-Control-Allow-Methods", crso.method());
+			response.setHeader("Access-Control-Max-Age", crso.maxAge()+"");
+			response.setHeader("Access-Control-Allow-Headers", crso.allowedHeaders());
+			response.setHeader("Access-Control-Allow-Credentials", isCookie);
+			response.setHeader("XDomainRequestAllowed","1");
+		}
+		if(come.getMethod().isAnnotationPresent(CrossOrigin.class)) {
+			CrossOrigin crso=come.getMethod().getAnnotation(CrossOrigin.class);
+			String url;
+			String isCookie="false";
+			if(crso.allowCredentials())
+				isCookie="true";
+			if(!"".equals(crso.origins()))
+				url=crso.origins();
+			else
+				url=crso.value();
+			response.setHeader("Access-Control-Allow-Origin", url);
+			response.setHeader("Access-Control-Allow-Methods", crso.method());
+			response.setHeader("Access-Control-Max-Age", crso.maxAge()+"");
+			response.setHeader("Access-Control-Allow-Headers", crso.allowedHeaders());
+			response.setHeader("Access-Control-Allow-Credentials", isCookie);
+			response.setHeader("XDomainRequestAllowed","1");
 		}
 	}
 	
