@@ -443,7 +443,7 @@ public class HanderMapping {
 							}
 							
 						}
-					} else if((!"request".equals(auto.value()))&&(!"response".equals(auto.value()))) {
+					} else if((!"request".equals(auto.value()))&&(!"response".equals(auto.value()))&&(!"session".equals(auto.value()))) {
 						Object obj = beans.get(auto.value());
 						try {
 							field.set(instance, obj);

@@ -8,14 +8,29 @@ import java.util.Map;
 
 public class ControllerAndMethod {
 	
+	/**
+	 * Controller对象
+	 */
 	private Object controller;
 	
+	/**
+	 * Rest风格参数名与值的Map
+	 */
 	private Map<String,String> restKV;
 	
+	/**
+	 * 前后缀参数
+	 */
 	private List<String> preAndSuf;
 	
+	/**
+	 * Controller方法
+	 */
 	private Method method;
 	
+	/**
+	 * Url请求
+	 */
 	private String url;
 	
 	public void setPrefix(String presix) {

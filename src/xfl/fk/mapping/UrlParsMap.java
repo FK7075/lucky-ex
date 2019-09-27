@@ -22,9 +22,10 @@ import xfl.fk.aop.RequestMethod;
  */
 public class UrlParsMap {
 
+
 	/**
-	 * 配置跨域访问配置
-	 * 
+	 * 跨域访问配置
+	 * @param request Request对象
 	 * @param response Response对象
 	 * @param come ControllerAndMethod对象
 	 */
@@ -67,7 +68,6 @@ public class UrlParsMap {
 
 	/**
 	 * 判断当前请求是否符合Controller方法的限定请求
-	 * 
 	 * @param method 响应当前的请求的方法对象
 	 * @param reqMet 当前请求的类型
 	 * @return
@@ -89,7 +89,6 @@ public class UrlParsMap {
 
 	/**
 	 * 根据POST请求参数"_method"的值改变请求的类型
-	 * 
 	 * @param request  Request对象
 	 * @param method  当前的请求类型
 	 * @return
@@ -122,7 +121,6 @@ public class UrlParsMap {
 
 	/**
 	 * 将url映射为ControllerAndMethod对象
-	 * 
 	 * @param beans IOC容器
 	 * @param style 前后缀配置
 	 * @param urlMap URL-Controller容器
@@ -173,7 +171,6 @@ public class UrlParsMap {
 
 	/**
 	 * 过滤掉url中的参数项（rest风格参数）
-	 * 
 	 * @param urlMap
 	 * @param url
 	 * @return
