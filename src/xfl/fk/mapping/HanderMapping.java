@@ -35,6 +35,7 @@ import xfl.fk.xml.LuckyXmlConfig;
 
 public class HanderMapping {
 
+	private PackageScan ps;
 	private Set<String> controllerMaps;
 	private Map<String, String> pre_suf;
 	private List<String> setter_pre_suf;
@@ -99,6 +100,7 @@ public class HanderMapping {
 
 	// 初始化容器
 	public HanderMapping() {
+		ps=new PackageScan();
 		pre_suf = new HashMap<>();
 		setter_pre_suf = new ArrayList<>();
 		controllerMaps = new HashSet<String>();
@@ -111,25 +113,39 @@ public class HanderMapping {
 		expandmethodMap = new HashMap<String, Method>();
 		List<String> pack = LuckyManager.getPropCfg().getScans();
 		List<String> scanmappers=LuckyManager.getPropCfg().getScans_mapper();
-		if(pack.size()!=0) {
+		if(pack.isEmpty()) {
+			ps.loadComponent(classNames);
+		}else {
 			for (String str : pack) {
 				scanIocComponent(str);
 			}
 		}
-		if(scanmappers.size()!=0) {
+		if(scanmappers.isEmpty()) {
+			ps.loadMapper(mapperclassNames);
+		}else {
 			for (String str : scanmappers) {
 				scanMapper(str);
 			}
 		}
 	}
 	
+	/**
+	 * 创建IOC组件
+	 * @param basePackage 所要扫描的包的绝对路径
+	 */
 	public void scanIocComponent(String basePackage) {
 		doScan(basePackage,false);
 	}
 	
+	/**
+	 * 创建Mapper接口组件
+	 * @param basePackage 所要扫描的包的绝对路径
+	 */
 	public void scanMapper(String basePackage) {
 		doScan(basePackage,true);
 	}
+	
+	
 
 
 	/**
