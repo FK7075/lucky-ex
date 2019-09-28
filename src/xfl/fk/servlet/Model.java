@@ -18,15 +18,50 @@ import xfl.fk.json.LSON;
 import xfl.fk.utils.ArrayCast;
 import xfl.fk.utils.LuckyUtils;
 
+/**
+ * mvc的核心中转类
+ * @author fk-7075
+ *
+ */
 public class Model {
 
+	/**
+	 * 解码方式
+	 */
 	private String encod;
+	
+	/**
+	 * Request对象
+	 */
 	private HttpServletRequest req;
+	
+	/**
+	 * Response对象
+	 */
 	private HttpServletResponse resp;
+	
+	/**
+	 * url请求的方法
+	 */
 	private RequestMethod requestMethod;
+	
+	/**
+	 * 页面参数集合Map<String,String[]>
+	 */
 	private Map<String, String[]> parameterMap;
+	
+	/**
+	 * Rest风格的参数集合Map<String,String>
+	 */
 	private Map<String,String> restMap;
 
+	/**
+	 *  Model构造器
+	 * @param request Request对象
+	 * @param response Response对象
+	 * @param requestMethod url请求的方法
+	 * @param encod  解码方式
+	 */
 	public Model(HttpServletRequest request,HttpServletResponse response,RequestMethod requestMethod,String encod) {
 		this.encod=encod;
 		req =request;
@@ -37,7 +72,7 @@ public class Model {
 	}
 	
 	/**
-	 * 得到RestParamMap
+	 * 得到所有的Rest风格的参数集合RestParamMap
 	 * @return
 	 */
 	public Map<String, String> getRestMap() {
@@ -48,13 +83,13 @@ public class Model {
 	 * 设置RestParamMap
 	 * @param restMap
 	 */
-	public void setRestMap(Map<String, String> restMap) {
+	protected void setRestMap(Map<String, String> restMap) {
 		this.restMap = restMap;
 	}
 
 
 	/**
-	 * 得到RequestParameterMap
+	 * 得到所有页面参数集合RequestParameterMap
 	 * @return parameterMap--><Map<String,String[]>>
 	 */
 	public Map<String, String[]> getParameterMap() {
@@ -65,7 +100,6 @@ public class Model {
 
 	/**
 	 * 得到当前请求的请求类型
-	 * 
 	 * @return
 	 */
 	public RequestMethod getRequestMethod() {
@@ -74,22 +108,17 @@ public class Model {
 
 	/**
 	 * 设置当前请求的请求类型
-	 * 
 	 * @param requestMethod
 	 */
-	public void setRequestMethod(RequestMethod requestMethod) {
+	protected void setRequestMethod(RequestMethod requestMethod) {
 		this.requestMethod = requestMethod;
 	}
 
 	/**
 	 * 将文本信息写入Cookie
-	 * 
-	 * @param name
-	 *            "K"
-	 * @param value
-	 *            "V"
-	 * @param maxAge
-	 *            内容的最长保存时间
+	 * @param name "K"
+	 * @param value "V"
+	 * @param maxAge  内容的最长保存时间
 	 */
 	public void setCookieContent(String name, String value, int maxAge) {
 		Cookie cookie = new Cookie(name, value);
@@ -99,11 +128,8 @@ public class Model {
 
 	/**
 	 * 根据"name"获取Cookit中的文本信息,并转化为指定的编码格式
-	 * 
-	 * @param name
-	 *            NAME
-	 * @param encoding
-	 *            编码方式
+	 * @param name NAME
+	 * @param encoding 编码方式
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
@@ -121,7 +147,6 @@ public class Model {
 
 	/**
 	 * 根据"name"获取Cookit中的文本信息(UTF-8)
-	 * 
 	 * @param name
 	 * @return
 	 * @throws UnsupportedEncodingException
@@ -140,7 +165,6 @@ public class Model {
 
 	/**
 	 * 向request域对象中存值
-	 * 
 	 * @param name
 	 * @param value
 	 */
@@ -150,7 +174,6 @@ public class Model {
 
 	/**
 	 * 向request域中取Object类型值
-	 * 
 	 * @param name
 	 * @return
 	 */
@@ -159,7 +182,7 @@ public class Model {
 	}
 
 	/**
-	 * 向request域中取String类型值
+	 * 得到String类型的页面参数
 	 * @param name
 	 * @return
 	 */
@@ -170,7 +193,6 @@ public class Model {
 
 	/**
 	 * 向session域中存值
-	 * 
 	 * @param name
 	 * @param object
 	 */
@@ -180,7 +202,6 @@ public class Model {
 
 	/**
 	 * 向session域中取值
-	 * 
 	 * @param name
 	 * @return
 	 */
@@ -190,7 +211,6 @@ public class Model {
 
 	/**
 	 * 使用response对象的printIn方法写出数据
-	 * 
 	 * @param info
 	 * @throws IOException
 	 */
@@ -203,9 +223,7 @@ public class Model {
 
 	/**
 	 * 使用response对象的printIn方法将对象模型写出为JSON格式数据
-	 * 
-	 * @param pojo
-	 *            对象模型(数组，对象，List)
+	 * @param pojo  对象模型(数组，对象，List)
 	 * @throws IOException
 	 */
 	public void printJson(Object pojo) throws IOException {
@@ -215,7 +233,6 @@ public class Model {
 
 	/**
 	 * 使用response对象的Writer方法将对象模型写出为JSON格式数据
-	 * 
 	 * @param pojo(数组，对象，List)
 	 * @throws IOException
 	 */
@@ -226,7 +243,6 @@ public class Model {
 
 	/**
 	 * 使用response对象的Writer方法写出数据
-	 * 
 	 * @param info
 	 * @throws IOException
 	 */
@@ -239,7 +255,6 @@ public class Model {
 
 	/**
 	 * 返回项目发布后file文件(夹)的绝对路径
-	 * 
 	 * @param file
 	 * @return
 	 */
@@ -249,7 +264,6 @@ public class Model {
 
 	/**
 	 * 得到request对象
-	 * 
 	 * @return
 	 */
 	public HttpServletRequest getRequest() {
@@ -258,7 +272,6 @@ public class Model {
 
 	/**
 	 * 得到response对象
-	 * 
 	 * @return
 	 */
 	public HttpServletResponse getResponse() {
@@ -267,7 +280,6 @@ public class Model {
 
 	/**
 	 * 得到session对象
-	 * 
 	 * @return
 	 */
 	public HttpSession getSession() {
@@ -297,6 +309,17 @@ public class Model {
 			res.put(entry.getKey(), mapStr_cpoy);
 		}
 		return res;
+	}
+	
+	/**
+	 * 将String类型的数组转为其他类型的数组String[]->{Integer[],Double[]....}
+	 * @param strArr
+	 * @param changTypeClass
+	 * @return T[]
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T[] strArrayChange(String[] strArr,Class<T> changTypeClass) {
+		return (T[]) ArrayCast.strToList(strArr, changTypeClass.getSimpleName());
 	}
 	
 	/**
