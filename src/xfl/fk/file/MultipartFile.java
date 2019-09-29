@@ -1,12 +1,16 @@
 package xfl.fk.file;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 public class MultipartFile {
@@ -62,6 +66,30 @@ public class MultipartFile {
 		}
 		outfile.flush();
 		outfile.close();
+	}
+	
+	/**
+	 * 文件下载
+	 * @param response Response对象
+	 * @param file 要下载的文件
+	 * @throws IOException
+	 */
+	public static void downloadFile(HttpServletResponse response,File file) throws IOException {
+		@SuppressWarnings("resource")
+		InputStream bis = new BufferedInputStream(new FileInputStream(file));
+        //转码，免得文件名中文乱码  
+        String filename = URLEncoder.encode(file.getName(),"UTF-8");  
+        //设置文件下载头  
+        response.addHeader("Content-Disposition", "attachment;filename=" + filename);    
+        //1.设置文件ContentType类型，这样设置，会自动判断下载文件类型    
+        response.setContentType("multipart/form-data");   
+        BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());  
+        int len = 0;  
+        while((len = bis.read()) != -1){  
+            out.write(len);  
+            out.flush();  
+        }  
+        out.close();  
 	}
 	
 	/**
