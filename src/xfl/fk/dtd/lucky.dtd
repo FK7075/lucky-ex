@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT lucky (orm?,beans?,mvc?)>
+<!ELEMENT beans (bean*)>
+<!ELEMENT mvc (mapping*,setting?)>
+<!ELEMENT setting (style?,url-path*,uri-encoding?)>
+<!ELEMENT style ANY>
+<!ELEMENT url-path ANY>
+<!ELEMENT uri-encoding (#PCDATA)>
+<!ELEMENT orm (jdbc-driver?,jdbc-url?,jdbc-user?,jdbc-pass?,pool?,debug?,cache?,reverse-package?,create-table?,classpath?,scan?,scan-mapper?)>
+<!ELEMENT jdbc-driver (#PCDATA)>
+<!ELEMENT jdbc-url (#PCDATA)>
+<!ELEMENT jdbc-user (#PCDATA)>
+<!ELEMENT jdbc-pass (#PCDATA)>
+<!ELEMENT pool ANY>
+<!ELEMENT debug (#PCDATA)>
+<!ELEMENT cache (#PCDATA)>
+<!ELEMENT field-length (#PCDATA)>
+<!ELEMENT reverse-package (#PCDATA)>
+<!ELEMENT classpath (#PCDATA)>
+<!ELEMENT scan (#PCDATA)>
+<!ELEMENT scan-mapper (#PCDATA)>
+<!ELEMENT create-table (c-url*,field-length?)>
+<!ELEMENT c-url (#PCDATA)>
+<!ELEMENT bean (property*)>
+<!ELEMENT property (array*,list*,map*,set*)>
+<!ELEMENT array (value*,value-ref*)>
+<!ELEMENT list (value*,value-ref*)>
+<!ELEMENT set (value*,value-ref*)>
+<!ELEMENT map (entry+)>
+<!ELEMENT entry (#PCDATA)>
+<!ELEMENT value (#PCDATA)>
+<!ELEMENT value-ref (#PCDATA)>
+<!ELEMENT mapping (method+)>
+<!ELEMENT method (param*)>
+<!ELEMENT param (#PCDATA)>
+<!ATTLIST array type CDATA #IMPLIED>
+<!ATTLIST list type CDATA #IMPLIED>
+<!ATTLIST set type CDATA #IMPLIED>
+<!ATTLIST map key-type CDATA #IMPLIED>
+<!ATTLIST map value-type CDATA #IMPLIED>
+<!ATTLIST entry key CDATA #IMPLIED>
+<!ATTLIST entry key-ref CDATA #IMPLIED>
+<!ATTLIST entry value CDATA #IMPLIED>
+<!ATTLIST entry value-ref CDATA #IMPLIED>
+<!ATTLIST style prefix CDATA #REQUIRED>
+<!ATTLIST style suffix CDATA #REQUIRED>
+<!ATTLIST url-path url CDATA #REQUIRED>
+<!ATTLIST url-path path CDATA #REQUIRED>
+<!ATTLIST mapping prefix CDATA #IMPLIED>
+<!ATTLIST mapping suffix CDATA #IMPLIED>
+<!ATTLIST pool min CDATA #REQUIRED>
+<!ATTLIST pool max CDATA #REQUIRED>
+<!ATTLIST mapping controller-id CDATA #REQUIRED>
+<!ATTLIST method request-mapping CDATA #REQUIRED>
+<!ATTLIST method method-name CDATA #REQUIRED>
+<!ATTLIST bean id CDATA #REQUIRED>
+<!ATTLIST bean class CDATA #REQUIRED>
+<!ATTLIST bean no-param-method CDATA #IMPLIED>
+<!ATTLIST property name CDATA #REQUIRED>
+<!ATTLIST property value CDATA #IMPLIED>
+<!ATTLIST property ref IDREF #IMPLIED>
