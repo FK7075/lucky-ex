@@ -246,9 +246,9 @@ public class AnnotationOperation {
 			}else if(ServletRequest.class.isAssignableFrom(parameters[i].getType())){
 				args[i]=model.getRequest();
 			}else if(HttpSession.class.isAssignableFrom(parameters[i].getType())){
-				args[i]=model.getResponse();
-			}else if(ServletResponse.class.isAssignableFrom(parameters[i].getType())){
 				args[i]=model.getSession();
+			}else if(ServletResponse.class.isAssignableFrom(parameters[i].getType())){
+				args[i]=model.getResponse();
 			}else if(Model.class.isAssignableFrom(parameters[i].getType())){
 				args[i]=model;
 			}else if(parameters[i].isAnnotationPresent(RestParam.class)){
