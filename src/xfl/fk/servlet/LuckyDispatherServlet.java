@@ -88,7 +88,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 			}
 			String context = req.getContextPath();
 			String path = uri.replace(context, "");
-			if (path.endsWith(".do")||path.endsWith(".xfl")||path.endsWith("fk")||path.endsWith(".cl")||path.endsWith(".lcl")) {
+			if (path.endsWith(".do")||path.endsWith(".xfl")||path.endsWith("fk")||path.endsWith(".cad")||path.endsWith(".lcl")) {
 				path = path.substring(0, path.lastIndexOf("."));
 			}
 			ControllerAndMethod controllerAndMethod = urlParsMap.pars(beans,app.getPre_suf(),handerMaps, path);

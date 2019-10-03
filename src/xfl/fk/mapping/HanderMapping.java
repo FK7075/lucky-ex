@@ -459,7 +459,7 @@ public class HanderMapping {
 							}
 							
 						}
-					} else if((!"request".equals(auto.value()))&&(!"response".equals(auto.value()))&&(!"session".equals(auto.value()))) {
+					} else if((!"request".equals(auto.value()))&&(!"response".equals(auto.value()))&&(!"session".equals(auto.value())&&(!"model".equals(auto.value())))) {
 						Object obj = beans.get(auto.value());
 						try {
 							field.set(instance, obj);
@@ -615,7 +615,7 @@ public class HanderMapping {
 	}
 
 	/**
-	 * 在执行Controller方法时为对象注入全局的Request对象 Response对象和Session对象
+	 * 在执行Controller方法时为对象注入全局的Request对象 Response对象Session对象和Model对象
 	 * @param obj controller对象
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
@@ -637,6 +637,10 @@ public class HanderMapping {
 				if ("session".equals(val)) {
 					field.setAccessible(true);
 					field.set(obj, model.getSession());
+				}
+				if("model".equals(val)) {
+					field.setAccessible(true);
+					field.set(obj, model);
 				}
 			}
 		}
