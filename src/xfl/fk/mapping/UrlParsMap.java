@@ -13,6 +13,8 @@ import xfl.fk.annotation.Controller;
 import xfl.fk.annotation.CrossOrigin;
 import xfl.fk.annotation.RequestMapping;
 import xfl.fk.aop.RequestMethod;
+import xfl.fk.servlet.LuckyWebContext;
+import xfl.fk.servlet.Model;
 
 /**
  * url解析，将url映射为ControllerAndMethod对象,并且负责一些关于请求转化与判定的事务,以及跨域问题的解决
@@ -183,6 +185,24 @@ public class UrlParsMap {
 		int end = url.lastIndexOf('/');
 		url = url.substring(0, end);
 		return getKey(urlMap, url);
+	}
+	
+	/**
+	 * 为上下文对象赋值
+	 * @param model
+	 */
+	public void setLuckyWebContext(Model model) {
+		LuckyWebContext luckyWebContext = LuckyWebContext.createContext();
+		luckyWebContext.setRequest(model.getRequest());
+		luckyWebContext.setResponse(model.getResponse());
+		LuckyWebContext.setContext(luckyWebContext);
+	}
+	
+	/**
+	 * 清除上下文内容
+	 */
+	public void closeLuckyWebContext() {
+		LuckyWebContext.clearContext();
 	}
 
 }

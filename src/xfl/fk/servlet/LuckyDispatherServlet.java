@@ -75,6 +75,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 			String uri = req.getRequestURI();
 			uri=java.net.URLDecoder.decode(new String(uri.getBytes(app.getEncod()), req.getCharacterEncoding()), req.getCharacterEncoding());
 			Model model=new Model(req,resp,this.method,app.getEncod());
+			urlParsMap.setLuckyWebContext(model);
 			try {
 				app.findExpandMethod();
 				app.pourProxyObject();
@@ -142,6 +143,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 			e.printStackTrace();
 		} finally {
 			this.method=RequestMethod.POST;
+			urlParsMap.closeLuckyWebContext();
 		}
 	}
 
