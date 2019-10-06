@@ -136,6 +136,8 @@ public class Model {
 	public String getCookieContent(String name, String encoding) throws UnsupportedEncodingException {
 		String info = null;
 		Cookie[] cookies = req.getCookies();
+		if(cookies==null)
+			return null;
 		for (Cookie cookie : cookies) {
 			if (name.equals(cookie.getName())) {
 				info = cookie.getValue();
@@ -154,6 +156,8 @@ public class Model {
 	public String getCookieContent(String name) throws UnsupportedEncodingException {
 		String info = null;
 		Cookie[] cookies = req.getCookies();
+		if(cookies==null)
+			return null;
 		for (Cookie cookie : cookies) {
 			if (name.equals(cookie.getName())) {
 				info = cookie.getValue();

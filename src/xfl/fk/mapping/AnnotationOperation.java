@@ -215,6 +215,7 @@ public class AnnotationOperation {
 		int length = 0;
 		while ((length = fis.read(bt)) != -1) {
 			out.write(bt, 0, length);
+			out.flush();
 		}
 		out.close();
 	}

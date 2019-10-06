@@ -38,10 +38,14 @@ public class DBConnectionPool {
 	 * @return 返回一个连接对象
 	 */
 	public synchronized Connection getConnection() {
-		int last_index=pool.size()-1;
-		Connection conn=pool.get(last_index);
-		pool.remove(last_index);
-		return conn;
+		if(pool.size()==0) {
+			return JdbcUtils.createConnection();
+		}else {
+			int last_index=pool.size()-1;
+			Connection conn=pool.get(last_index);
+			pool.remove(last_index);
+			return conn;
+		}
 	}
 	/**
 	 * 关闭链接，当连接池中的链接对象超过最大值时才真正的关闭
