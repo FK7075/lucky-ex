@@ -24,54 +24,62 @@ import xfl.fk.servlet.Model;
  */
 public class UrlParsMap {
 
-
 	/**
 	 * 跨域访问配置
-	 * @param request Request对象
-	 * @param response Response对象
-	 * @param come ControllerAndMethod对象
+	 * 
+	 * @param request
+	 *            Request对象
+	 * @param response
+	 *            Response对象
+	 * @param come
+	 *            ControllerAndMethod对象
 	 */
-	public void setCross(HttpServletRequest request,HttpServletResponse response, ControllerAndMethod come) {
-		if(come.getController().getClass().isAnnotationPresent(CrossOrigin.class)) {
-			CrossOrigin crso=come.getController().getClass().getAnnotation(CrossOrigin.class);
-			String url=request.getHeader("Origin");
-			String[] url_v=crso.value();
-			String[] url_o=crso.origins();
-			if((url_v.length!=0&&url_o.length!=0)&&(!Arrays.asList(url_v).contains(url)&&!Arrays.asList(url_o).contains(url)))
-				url="fk-xfl-cl";
-			String isCookie="false";
-			if(crso.allowCredentials())
-				isCookie="true";
+	public void setCross(HttpServletRequest request, HttpServletResponse response, ControllerAndMethod come) {
+		if (come.getController().getClass().isAnnotationPresent(CrossOrigin.class)) {
+			CrossOrigin crso = come.getController().getClass().getAnnotation(CrossOrigin.class);
+			String url = request.getHeader("Origin");
+			String[] url_v = crso.value();
+			String[] url_o = crso.origins();
+			if ((url_v.length != 0 && url_o.length != 0)
+					&& (!Arrays.asList(url_v).contains(url) && !Arrays.asList(url_o).contains(url)))
+				url = "fk-xfl-cl";
+			String isCookie = "false";
+			if (crso.allowCredentials())
+				isCookie = "true";
 			response.setHeader("Access-Control-Allow-Origin", url);
 			response.setHeader("Access-Control-Allow-Methods", crso.method());
-			response.setHeader("Access-Control-Max-Age", crso.maxAge()+"");
+			response.setHeader("Access-Control-Max-Age", crso.maxAge() + "");
 			response.setHeader("Access-Control-Allow-Headers", crso.allowedHeaders());
 			response.setHeader("Access-Control-Allow-Credentials", isCookie);
-			response.setHeader("XDomainRequestAllowed","1");
+			response.setHeader("XDomainRequestAllowed", "1");
 		}
-		if(come.getMethod().isAnnotationPresent(CrossOrigin.class)) {
-			CrossOrigin crso=come.getMethod().getAnnotation(CrossOrigin.class);
-			String url=request.getHeader("Origin");
-			String[] url_v=crso.value();
-			String[] url_o=crso.origins();
-			if((url_v.length!=0&&url_o.length!=0)&&(!Arrays.asList(url_v).contains(url)&&!Arrays.asList(url_o).contains(url)))
-				url="fk-xfl-cl";
-			String isCookie="false";
-			if(crso.allowCredentials())
-				isCookie="true";
+		if (come.getMethod().isAnnotationPresent(CrossOrigin.class)) {
+			CrossOrigin crso = come.getMethod().getAnnotation(CrossOrigin.class);
+			String url = request.getHeader("Origin");
+			String[] url_v = crso.value();
+			String[] url_o = crso.origins();
+			if ((url_v.length != 0 && url_o.length != 0)
+					&& (!Arrays.asList(url_v).contains(url) && !Arrays.asList(url_o).contains(url)))
+				url = "fk-xfl-cl";
+			String isCookie = "false";
+			if (crso.allowCredentials())
+				isCookie = "true";
 			response.setHeader("Access-Control-Allow-Origin", url);
 			response.setHeader("Access-Control-Allow-Methods", crso.method());
-			response.setHeader("Access-Control-Max-Age", crso.maxAge()+"");
+			response.setHeader("Access-Control-Max-Age", crso.maxAge() + "");
 			response.setHeader("Access-Control-Allow-Headers", crso.allowedHeaders());
 			response.setHeader("Access-Control-Allow-Credentials", isCookie);
-			response.setHeader("XDomainRequestAllowed","1");
+			response.setHeader("XDomainRequestAllowed", "1");
 		}
 	}
 
 	/**
 	 * 判断当前请求是否符合Controller方法的限定请求
-	 * @param method 响应当前的请求的方法对象
-	 * @param reqMet 当前请求的类型
+	 * 
+	 * @param method
+	 *            响应当前的请求的方法对象
+	 * @param reqMet
+	 *            当前请求的类型
 	 * @return
 	 */
 	public boolean isExistRequestMethod(Method method, RequestMethod reqMet) {
@@ -91,8 +99,11 @@ public class UrlParsMap {
 
 	/**
 	 * 根据POST请求参数"_method"的值改变请求的类型
-	 * @param request  Request对象
-	 * @param method  当前的请求类型
+	 * 
+	 * @param request
+	 *            Request对象
+	 * @param method
+	 *            当前的请求类型
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
@@ -123,10 +134,15 @@ public class UrlParsMap {
 
 	/**
 	 * 将url映射为ControllerAndMethod对象
-	 * @param beans IOC容器
-	 * @param style 前后缀配置
-	 * @param urlMap URL-Controller容器
-	 * @param url 去掉项目名的URL地址
+	 * 
+	 * @param beans
+	 *            IOC容器
+	 * @param style
+	 *            前后缀配置
+	 * @param urlMap
+	 *            URL-Controller容器
+	 * @param url
+	 *            去掉项目名的URL地址
 	 * @return
 	 */
 	public ControllerAndMethod pars(Map<String, Object> beans, Map<String, String> style,
@@ -139,16 +155,37 @@ public class UrlParsMap {
 		Method method = come.getMethod();
 		RequestMapping rm = method.getAnnotation(RequestMapping.class);
 		String rmvalue = rm.value();
-		if (rmvalue.contains("->"))
-			;
-		{
+		if (rmvalue.contains("->")) {
 			String restParamStr = url.replaceAll(mapping + "/", "");
 			String[] restVs = restParamStr.split("/");
 			int start = rmvalue.indexOf("->");
 			rmvalue = rmvalue.substring(start + 2, rmvalue.length());
-			String[] restKs = rmvalue.split(",");
-			for (int i = 0; i < restKs.length; i++)
-				come.restPut(restKs[i], restVs[i]);
+			String[] restKs = rmvalue.split("/");
+			if(restVs.length!=restKs.length)
+				return null;
+			for (int i = 0; i < restKs.length; i++) {
+				String currKey=restKs[i];
+				if(currKey.startsWith("#")) {//以#开头，表示完全匹配
+					String ck=currKey.substring(1, currKey.length());
+					if(!restVs[i].equals(ck))
+						return null;
+				}else if(currKey.startsWith("*")&&!currKey.endsWith("*")) {//以*开头，表示以*后面的字符结尾即可
+					String ck=currKey.substring(1, currKey.length());
+					if(!restVs[i].endsWith(ck))
+						return null;
+				}else if(!currKey.startsWith("*")&&currKey.endsWith("*")) {//以*结尾，表示以*前面的字符开头即可
+					String ck=currKey.substring(0, currKey.length()-1);
+					if(!restVs[i].startsWith(ck))
+						return null;
+				}else if(currKey.startsWith("*")&&currKey.endsWith("*")) {//以*开头以*结尾,表示存在中间的字符即可
+					String ck=currKey.substring(1, currKey.length()-1);
+					if(!restVs[i].contains(ck))
+						return null;
+				}else if("?".equals(currKey)) {//只有?,表示匹配任意一个非空字符
+				}else {//没有特殊字符表示Rest值
+					come.restPut(restKs[i], restVs[i]);
+				}
+			}
 		}
 		if (come.getController().getClass().isAnnotationPresent(Controller.class)) {
 			Controller cot = come.getController().getClass().getAnnotation(Controller.class);
@@ -173,6 +210,7 @@ public class UrlParsMap {
 
 	/**
 	 * 过滤掉url中的参数项（rest风格参数）
+	 * 
 	 * @param urlMap
 	 * @param url
 	 * @return
@@ -186,9 +224,10 @@ public class UrlParsMap {
 		url = url.substring(0, end);
 		return getKey(urlMap, url);
 	}
-	
+
 	/**
 	 * 为上下文对象赋值
+	 * 
 	 * @param model
 	 */
 	public void setLuckyWebContext(Model model) {
@@ -197,7 +236,7 @@ public class UrlParsMap {
 		luckyWebContext.setResponse(model.getResponse());
 		LuckyWebContext.setContext(luckyWebContext);
 	}
-	
+
 	/**
 	 * 清除上下文内容
 	 */

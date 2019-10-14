@@ -3,7 +3,6 @@ package xfl.fk.servlet;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +92,10 @@ public class LuckyDispatherServlet extends HttpServlet {
 				path = path.substring(0, path.lastIndexOf("."));
 			}
 			ControllerAndMethod controllerAndMethod = urlParsMap.pars(beans,app.getPre_suf(),handerMaps, path);
+			if(controllerAndMethod==null) {
+				resp.getWriter().print("<h3>找不与请求相匹配的映射资源,请检查您的URL是否正确[404:"+req.getRequestURL()+"]....</h3>");
+				return;
+			}
 			model.setRestMap(controllerAndMethod.getRestKV());
 			urlParsMap.setCross(req,resp, controllerAndMethod);
 			String murl = controllerAndMethod.getUrl();
@@ -112,7 +115,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 					return;
 				}
 				if(!urlParsMap.isExistRequestMethod(method,this.method)&&method.isAnnotationPresent(RequestMapping.class)) {
-					resp.getWriter().print("<h3>500:方法只接受"+Arrays.toString(method.getAnnotation(RequestMapping.class).method())+"类型请求，您的请求为"+this.method+"不合法！</h3>");
+					resp.getWriter().print("<h3>500:您的请求类型为"+this.method+",当前方法并不支！</h3>");
 				}else {
 					boolean isDownload = method.isAnnotationPresent(Download.class);
 					List<String> pre_suf;
