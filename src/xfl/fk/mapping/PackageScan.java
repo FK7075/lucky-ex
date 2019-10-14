@@ -25,7 +25,7 @@ public class PackageScan {
 	 */
 	public void loadComponent(List<String> components) {
 		List<String> clist=new ArrayList<>();
-		findDafaultFolder(clist,projectPath,"controller","server","dao","bean");
+		findDafaultFolder(clist,projectPath,"controller","service","dao","bean");
 		addClassPath(components,clist);
 	}
 	
