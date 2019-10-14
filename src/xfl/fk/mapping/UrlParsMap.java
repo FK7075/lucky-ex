@@ -165,10 +165,9 @@ public class UrlParsMap {
 				return null;
 			for (int i = 0; i < restKs.length; i++) {
 				String currKey=restKs[i];
-				if(currKey.startsWith("#")) {//以#开头，表示完全匹配
+				if( currKey.startsWith("#")) {//以#开头，表示Rest参数名
 					String ck=currKey.substring(1, currKey.length());
-					if(!restVs[i].equals(ck))
-						return null;
+					come.restPut(ck, restVs[i]);
 				}else if(currKey.startsWith("*")&&!currKey.endsWith("*")) {//以*开头，表示以*后面的字符结尾即可
 					String ck=currKey.substring(1, currKey.length());
 					if(!restVs[i].endsWith(ck))
@@ -181,9 +180,11 @@ public class UrlParsMap {
 					String ck=currKey.substring(1, currKey.length()-1);
 					if(!restVs[i].contains(ck))
 						return null;
-				}else if("?".equals(currKey)) {//只有?,表示匹配任意一个非空字符
-				}else {//没有特殊字符表示Rest值
-					come.restPut(restKs[i], restVs[i]);
+				}else if("?".equals(currKey)) {
+					//只有?,表示匹配任意一个非空字符
+				}else {//没有特殊字符表示参数全匹配
+					if(!restVs[i].equals(currKey))
+						return null;
 				}
 			}
 		}
