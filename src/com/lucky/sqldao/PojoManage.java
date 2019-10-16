@@ -81,12 +81,18 @@ public class PojoManage {
 	public static String getTableField(Field field) {
 		if(field.isAnnotationPresent(Column.class)) {
 			Column coumn=field.getAnnotation(Column.class);
+			if("".equals(coumn.value()))
+				return field.getName().toLowerCase();
 			return coumn.value().toLowerCase();
 		}else if(field.isAnnotationPresent(Id.class)) {
 			Id id=field.getAnnotation(Id.class);
+			if("".equals(id.value()))
+				return field.getName().toLowerCase();
 			return id.value().toLowerCase();
 		}else if(field.isAnnotationPresent(Key.class)) {
 			Key key=field.getAnnotation(Key.class);
+			if("".equals(key.value()))
+				return field.getName().toLowerCase();
 			return key.value().toLowerCase();
 		}else {
 			return field.getName().toLowerCase();

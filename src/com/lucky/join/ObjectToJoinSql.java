@@ -16,6 +16,10 @@ public class ObjectToJoinSql {
 		this.obj = obj;
 	}
 
+	/**
+	 * 得到JOIN ON部分的SQl
+	 * @return
+	 */
 	private String onFragment() {
 		String sql = "";
 		for(int i=0;i<obj.length;i++) {
@@ -42,6 +46,10 @@ public class ObjectToJoinSql {
 		return sql;
 	}
 
+	/**
+	 * 得到AND 部分的SQL
+	 * @return
+	 */
 	private String andFragment() {
 		String sql = "";
 		int p=0;
@@ -55,10 +63,10 @@ public class ObjectToJoinSql {
 					fk = fields[j].get(obj[i]);
 					if (fk != null) {
 						if(p==0) {
-							sql += " WHERE " + PojoManage.getTable(clzz) + "." + fields[j].getName() + "=?";
+							sql += " WHERE " + PojoManage.getTable(clzz) + "." + PojoManage.getTableField(fields[j]) + "=?";
 							p++;
 						}else {
-							sql += " AND " + PojoManage.getTable(clzz) + "." + fields[j].getName() + "=?";
+							sql += " AND " + PojoManage.getTable(clzz) + "." + PojoManage.getTableField(fields[j]) + "=?";
 							
 						}
 					}
@@ -97,6 +105,10 @@ public class ObjectToJoinSql {
 		return list.toArray();
 	}
 
+	/**
+	 * 得到连接操作的SQL
+	 * @return
+	 */
 	public String getJoinSql() {
 		return "SELECT * FROM "+onFragment() + andFragment();
 	}
