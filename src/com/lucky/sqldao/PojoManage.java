@@ -36,8 +36,19 @@ public class PojoManage {
 		List<Object> fieldvalue = new ArrayList<>();
 		Field idField=getIdField(clzz);
 		if(getIdType(clzz)==Type.AUTO_UUID) {
+			idField.setAccessible(true);
+			String uuid=UUID.randomUUID().toString().replaceAll("-", "");
 			fieldname.add(getTableField(idField));
-			fieldvalue.add(UUID.randomUUID().toString().replaceAll("_", ""));
+			fieldvalue.add(uuid);
+			try {
+				idField.set(pojo, uuid);
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		for (Field field : fields) {
 			try {
@@ -79,6 +90,23 @@ public class PojoManage {
 			return key.value().toLowerCase();
 		}else {
 			return field.getName().toLowerCase();
+		}
+	}
+	
+	/**
+	 * 得到属性的长度配置
+	 * @param field
+	 * @return
+	 */
+	public static int getLength(Field field) {
+		if(field.isAnnotationPresent(Id.class)) {
+			return field.getAnnotation(Id.class).length();
+		}else if(field.isAnnotationPresent(Key.class)) {
+			return field.getAnnotation(Key.class).length();
+		}else if(field.isAnnotationPresent(Column.class)) {
+			return field.getAnnotation(Column.class).length();
+		}else {
+			return 35;
 		}
 	}
 	
@@ -139,6 +167,8 @@ public class PojoManage {
 	public static String getIdString(Class<?> pojoClass) {
 		Field idField = getIdField(pojoClass);
 		Id id = idField.getAnnotation(Id.class);
+		if("".equals(id.value()))
+			return idField.getName();
 		return id.value();
 	}
 	

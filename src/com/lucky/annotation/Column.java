@@ -17,4 +17,5 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Column {
 	String value() default "";
+	int length() default 35;
 }

@@ -18,5 +18,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Key {
 	String value() default "";
+	int length() default 35;
 	Class<?> pojo() default Void.class;
 }

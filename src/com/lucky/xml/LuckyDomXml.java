@@ -250,7 +250,6 @@ public class LuckyDomXml {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder documentBuilder;
 		ProperConfig proper = new ProperConfig();
-		proper.setFieldlength(35);
 		proper.setPoolmax(100);
 		proper.setPoolmin(10);
 		try {
@@ -295,9 +294,7 @@ public class LuckyDomXml {
 						NodeList ct = n2.getChildNodes();
 						for (int p = 0; p < ct.getLength(); p++) {
 							Node ct1 = ct.item(p);
-							if ("field-length".equals(ct1.getNodeName()))
-								proper.setFieldlength(Integer.parseInt(ct1.getFirstChild().getNodeValue()));
-							else if ("c-url".equals(ct1.getNodeName()))
+							 if ("c-url".equals(ct1.getNodeName()))
 								c_url.add(ct1.getFirstChild().getNodeValue());
 						}
 						proper.setClaurl(c_url);

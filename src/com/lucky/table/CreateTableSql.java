@@ -4,12 +4,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucky.annotation.Table;
 import com.lucky.enums.Type;
 import com.lucky.sqldao.PojoManage;
 import com.lucky.sqldao.TypeChange;
-import com.lucky.utils.LuckyManager;
-import com.lucky.utils.ProperConfig;
 
 /**
  * 生成建表语句的类
@@ -20,37 +17,36 @@ import com.lucky.utils.ProperConfig;
 @SuppressWarnings("all")
 public class CreateTableSql {
 	private static TypeChange tych = new TypeChange();
-	private static ProperConfig propCfg=LuckyManager.getPropCfg();
 
 	/**
 	 * 根据类的Class信息生成建表语句
 	 * @param clzz 目标类的Class
 	 * @return
 	 */
-	public static String getCreateTable(Class clzz) {
-		String sql = "create table if not exists " + PojoManage.getTable(clzz)+ " (";
+	public static String getCreateTable(Class<?> clzz) {
+		String sql = "CREATE TABLE IF NOT EXISTS " + PojoManage.getTable(clzz)+ " (";
 		Field[] fields = clzz.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
 			if (i < fields.length - 1) {
-				if (PojoManage.getTableField(fields[i]).equals(PojoManage.getIdString(clzz)))
-					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "("+propCfg.getFieldlength()+") "
-							+ "not null "+isAutoInt(clzz)+" primary key,";
+				if (PojoManage.getIdField(clzz).equals(fields[i]))
+					sql += PojoManage.getIdString(clzz) + " " + tych.toMysql(fields[i].getType().toString()) + "("+PojoManage.getLength(fields[i])+") "
+							+ "NOT NULL "+isAutoInt(clzz)+" PRIMARY KEY,";
 				else if (!("double".equals(tych.toMysql(fields[i].getType().toString()))
 						|| "datetime".equals(tych.toMysql(fields[i].getType().toString()))
 						|| "date".equals(tych.toMysql(fields[i].getType().toString())))) {
-					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "("+propCfg.getFieldlength()+") "
+					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "("+PojoManage.getLength(fields[i])+") "
 							+ " DEFAULT NULL,";
 				} else {
 					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "  DEFAULT NULL,";
 				}
 			} else {
 				if (PojoManage.getTableField(fields[i]).equals(PojoManage.getIdString(clzz)))
-					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "("+propCfg.getFieldlength()+") "
-							+ "not null auto_increment primary key";
+					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "("+PojoManage.getLength(fields[i])+") "
+							+ "NOT NULL AUTO_INCREMENT PRIMARY KEY";
 				else if (!("double".equals(tych.toMysql(fields[i].getType().toString()))
 						|| "datetime".equals(tych.toMysql(fields[i].getType().toString()))
 						|| "date".equals(tych.toMysql(fields[i].getType().toString())))) {
-					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "("+propCfg.getFieldlength()+") "
+					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "("+PojoManage.getLength(fields[i])+") "
 							+ " DEFAULT NULL";
 				} else {
 					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "  DEFAULT NULL";
@@ -67,18 +63,17 @@ public class CreateTableSql {
 	 * 目标类的Class
 	 * @return
 	 */
-	public static List<String> getForeignKey(Class clzz) {
+	public static List<String> getForeignKey(Class<?> clzz) {
 		List<String> stlist = new ArrayList<String>();
 		List<String> keys = (List<String>) PojoManage.getKeyFields(clzz, true);
 		if (keys.isEmpty()) {
 			return null;
 		} else {
-			Table lucy=(Table) clzz.getAnnotation(Table.class);
 			List<Class<?>> cs = (List<Class<?>>) PojoManage.getKeyFields(clzz, false);
 			for (int i = 0; i < cs.size(); i++) {
-				String sql = "alter table " + PojoManage.getTable(clzz) + " add constraint " + getRandomStr()
-						+ " foreign key (" + keys.get(i) + ") references " + PojoManage.getTable(cs.get(i)) + "("
-						+ PojoManage.getIdString(cs.get(i)) + ")"+isCascadeDel(clzz)+isCascadeUpd(clzz);
+				String sql = "ALTER TABLE " + PojoManage.getTable(clzz) + " ADD CONSTRAINT " + getRandomStr()
+						+ " FOREIGN KEY (" + keys.get(i) + ") REFERENCES " + PojoManage.getTable(cs.get(i)) + "("
+						+ PojoManage.getIdString(cs.get(i)) + ")"+isCascadeDel(cs.get(i))+isCascadeUpd(cs.get(i));
 				stlist.add(sql);
 			}
 			return stlist;

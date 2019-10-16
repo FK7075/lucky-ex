@@ -14,12 +14,11 @@
 <!ELEMENT pool ANY>
 <!ELEMENT debug (#PCDATA)>
 <!ELEMENT cache (#PCDATA)>
-<!ELEMENT field-length (#PCDATA)>
 <!ELEMENT reverse-package (#PCDATA)>
 <!ELEMENT classpath (#PCDATA)>
 <!ELEMENT scan (#PCDATA)>
 <!ELEMENT scan-mapper (#PCDATA)>
-<!ELEMENT create-table (c-url*,field-length?)>
+<!ELEMENT create-table (c-url*)>
 <!ELEMENT c-url (#PCDATA)>
 <!ELEMENT bean (property*)>
 <!ELEMENT property (array*,list*,map*,set*)>

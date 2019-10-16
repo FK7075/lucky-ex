@@ -1,5 +1,6 @@
 package com.lucky.xml;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.lucky.mapping.PackageScan;
@@ -20,7 +21,9 @@ public class LuckyXmlConfig {
 		this.mvcxml=LuckyDomXml.getLuckyMappings();
 		this.proper=LuckyDomXml.getProperties();
 		if(proper.getClaurl().isEmpty()) {
-			new PackageScan().loadComponent(proper.getClaurl(),"pojo","entity");
+			List<String> classpaths=new ArrayList<>();	
+			new PackageScan().loadComponent(classpaths,"pojo","entity");
+			classpaths.stream().forEach((entry)->{entry=entry.substring(0,entry.length()-6);proper.getClaurl().add(entry);});
 		}
 		
 	}

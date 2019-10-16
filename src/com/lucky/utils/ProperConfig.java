@@ -15,7 +15,6 @@ public class ProperConfig {
 	private String password;//jdbc.password
 	private boolean log;//控制台信息
 	private boolean cache;//查询缓存
-	private Integer fieldlength;//建表时字段的长度
 	private String packages;//逆向工程创建的类的所在的包
 	private String srcPath;//逆向工程创建类时需要知道的src文件夹的绝对路径
 	private Integer poolmin;//连接池最小链接数量
@@ -105,12 +104,6 @@ public class ProperConfig {
 	}
 	public void setCache(boolean cache) {
 		this.cache = cache;
-	}
-	public Integer getFieldlength() {
-		return fieldlength;
-	}
-	public void setFieldlength(Integer fieldlength) {
-		this.fieldlength = fieldlength;
 	}
 	public String getPackages() {
 		return packages;

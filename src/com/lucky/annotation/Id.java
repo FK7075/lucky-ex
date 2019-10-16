@@ -21,4 +21,5 @@ import com.lucky.enums.Type;
 public @interface Id {
 	String value() default "";
 	Type type() default Type.DEFAULT;
+	int length() default 35;
 }
