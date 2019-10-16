@@ -2,6 +2,7 @@ package com.lucky.xml;
 
 import java.util.List;
 
+import com.lucky.mapping.PackageScan;
 import com.lucky.utils.ProperConfig;
 
 public class LuckyXmlConfig {
@@ -18,6 +19,10 @@ public class LuckyXmlConfig {
 		this.beans=LuckyDomXml.getLuckyBeans();
 		this.mvcxml=LuckyDomXml.getLuckyMappings();
 		this.proper=LuckyDomXml.getProperties();
+		if(proper.getClaurl().isEmpty()) {
+			new PackageScan().loadComponent(proper.getClaurl(),"pojo","entity");
+		}
+		
 	}
 	
 	public static LuckyXmlConfig loadLuckyXmlConfig() {

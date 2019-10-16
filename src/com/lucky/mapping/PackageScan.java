@@ -20,12 +20,12 @@ public class PackageScan {
 	}
 	
 	/**
-	 * 找到所有Ioc组件所在文件夹的绝对路径，并存入到的集合中
+	 * 找到所有Ioc组件所在文件夹的包路径，并存入到的集合中
 	 * @param components 普通Ioc组件
 	 */
-	public void loadComponent(List<String> components) {
+	public void loadComponent(List<String> components,String...suffix) {
 		List<String> clist=new ArrayList<>();
-		findDafaultFolder(clist,projectPath,"controller","service","dao","bean");
+		findDafaultFolder(clist,projectPath,suffix);
 		addClassPath(components,clist);
 	}
 	
