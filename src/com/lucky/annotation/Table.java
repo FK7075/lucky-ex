@@ -20,11 +20,10 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Table {
 	String value() default "";
+	String primary() default "";
+	String[] index() default {};
+	String[] unique() default {};
+	String[] fulltext() default {};
 	boolean cascadeDelete() default false;
 	boolean cascadeUpdate() default false;
-//	String id() default "";
-//	boolean auto() default true;
-//	String table() default "";
-//	String[] key() default "";
-//	Class<?>[] url() default {};
 }

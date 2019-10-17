@@ -4,6 +4,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lucky.annotation.Column;
+import com.lucky.annotation.Id;
+import com.lucky.annotation.Key;
+import com.lucky.annotation.Table;
 import com.lucky.enums.Type;
 import com.lucky.sqldao.PojoManage;
 import com.lucky.sqldao.TypeChange;
@@ -28,32 +32,32 @@ public class CreateTableSql {
 		Field[] fields = clzz.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
 			if (i < fields.length - 1) {
-				if (PojoManage.getIdField(clzz).equals(fields[i]))
-					sql += PojoManage.getIdString(clzz) + " " + tych.toMysql(fields[i].getType().toString()) + "("+PojoManage.getLength(fields[i])+") "
-							+ "NOT NULL "+isAutoInt(clzz)+" PRIMARY KEY,";
+				if (PojoManage.getTableField(fields[i]).equals(PojoManage.getIdString(clzz)))
+					sql += PojoManage.getIdString(clzz) + " " + tych.toMysql(fields[i].getType().toString()) + "("+PojoManage.getLength(fields[i])+")"
+							+ " NOT NULL "+isAutoInt(clzz)+" PRIMARY KEY,";
 				else if (!("double".equals(tych.toMysql(fields[i].getType().toString()))
 						|| "datetime".equals(tych.toMysql(fields[i].getType().toString()))
 						|| "date".equals(tych.toMysql(fields[i].getType().toString())))) {
 					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "("+PojoManage.getLength(fields[i])+") "
-							+ " DEFAULT NULL,";
+							+ allownull(fields[i])+",";
 				} else {
-					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "  DEFAULT NULL,";
+					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + allownull(fields[i])+",";
 				}
 			} else {
 				if (PojoManage.getTableField(fields[i]).equals(PojoManage.getIdString(clzz)))
-					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "("+PojoManage.getLength(fields[i])+") "
-							+ "NOT NULL AUTO_INCREMENT PRIMARY KEY";
+					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "("+PojoManage.getLength(fields[i])+")"
+							+ " NOT NULL AUTO_INCREMENT PRIMARY KEY";
 				else if (!("double".equals(tych.toMysql(fields[i].getType().toString()))
 						|| "datetime".equals(tych.toMysql(fields[i].getType().toString()))
 						|| "date".equals(tych.toMysql(fields[i].getType().toString())))) {
 					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "("+PojoManage.getLength(fields[i])+") "
-							+ " DEFAULT NULL";
+							+allownull(fields[i]);
 				} else {
-					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + "  DEFAULT NULL";
+					sql += PojoManage.getTableField(fields[i]) + " " + tych.toMysql(fields[i].getType().toString()) + allownull(fields[i]);
 				}
 			}
 		}
-		sql += ") ENGINE=InnoDB DEFAULT CHARSET=utf8";
+		sql += ") ENGINE=InnoDB DEFAULT CHARSET=UTF8";
 		return sql;
 	}
 
@@ -78,6 +82,49 @@ public class CreateTableSql {
 			}
 			return stlist;
 		}
+	}
+	
+	/**
+	 * 生成添加索引的sql语句集合
+	 * @param clzz
+	 * @return
+	 */
+	public static List<String> getIndexKey(Class<?> clzz){
+		String table_name=PojoManage.getTable(clzz);
+		List<String> indexlist = new ArrayList<String>();
+		String primary = PojoManage.primary(clzz);
+		String[] indexs = PojoManage.index(clzz);
+		String[] fulltextes = PojoManage.fulltext(clzz);
+		String[] uniques = PojoManage.unique(clzz);
+		if(!"".equals(primary)){
+			String p_key="ALTER TABLE "+table_name+" ADD PRIMARY KEY("+primary+")";
+			indexlist.add(p_key);
+		}
+		addAll(indexlist,table_name,indexs,"INDEX");
+		addAll(indexlist,table_name,fulltextes,"FULLTEXT");
+		addAll(indexlist,table_name,uniques,"UNIQUE");
+		return indexlist;
+	}
+
+	/**
+	 * 拼接该实体中需要配置的所有索引信息
+	 * @param indexlist
+	 * @param tablename
+	 * @param indexs
+	 * @param type
+	 */
+	private static void addAll(List<String> indexlist, String tablename, String[] indexs, String type) {
+		String key="ALTER TABLE "+tablename+" ADD ";
+		for(String index:indexs) {
+			String indexkey;
+			if("INDEX".equals(type))
+				indexkey=key+type+" "+getRandomStr()+"(";
+			else
+				indexkey=key+type+"(";
+			 indexkey+=index+")";
+			indexlist.add(indexkey);
+		}
+		
 	}
 
 	/**
@@ -131,4 +178,18 @@ public class CreateTableSql {
 			return " ON UPDATE CASCADE";
 		return "";
 	}
+	
+	/**
+	 * 是否允许为NULL
+	 * @param field
+	 * @return
+	 */
+	private static String allownull(Field field) {
+		if(PojoManage.allownull(field)) {
+			return " DEFAULT NULL ";
+		}
+		return " NOT NULL ";
+	}
+	
 }
+

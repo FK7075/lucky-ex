@@ -39,7 +39,7 @@ public class DeleteKeySql {
 			try {
 				Class<?> clazz = Class.forName(str);
 				String table = PojoManage.getTable(clazz);
-				String sql = "show create table " + table;
+				String sql = "SHOW CREATE TABLE " + table;
 				ResultSet rs = sqlop.getResultSet(sql);
 				List<String> keyList=new ArrayList<>();
 				if (rs != null) {
@@ -55,7 +55,7 @@ public class DeleteKeySql {
 					}
 				}
 				for (String wkey : keyList) {
-					String sqlStr = "alter table " + table + " drop foreign key " + wkey;
+					String sqlStr = "ALTER TABLE " + table + " DROP FOREIGN KEY " + wkey;
 					sqlop.setSql(sqlStr);
 				}
 			} catch (ClassNotFoundException e) {
@@ -71,19 +71,7 @@ public class DeleteKeySql {
 	 * 得到数据库的名字和删除数据库所有表外键的sql语句集合并封装到属性中
 	 */
 	public DeleteKeySql() {
-//		String url = propCfg.getUrl();
-//		this.databasename = url.substring((url.lastIndexOf("/") + 1), url.length());
-//		String sql = "SELECT CONCAT('ALTER TABLE ',TABLE_SCHEMA,'.',TABLE_NAME,' DROP FOREIGN KEY ',CONSTRAINT_NAME,' ;') "
-//				+ "FROM information_schema.TABLE_CONSTRAINTS c "
-//				+ "WHERE c.TABLE_SCHEMA=? AND c.CONSTRAINT_TYPE='FOREIGN KEY';";
-//		ResultSet rs = sqlop.getResultSet(sql, this.databasename);
-//		try {
-//			while (rs.next()) {
-//				this.delkeysql.add(rs.getString(1));
-//			}
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
+
 	}
 
 	/**

@@ -100,6 +100,21 @@ public class PojoManage {
 	}
 	
 	/**
+	 * 得到该字段是否可以为null的配置
+	 * @param field
+	 * @return
+	 */
+	public static boolean allownull(Field field) {
+		if(field.isAnnotationPresent(Column.class)) {
+			return field.getAnnotation(Column.class).allownull();
+		}else if(field.isAnnotationPresent(Key.class)) {
+			return field.getAnnotation(Key.class).allownull();
+		}else {
+			return true;
+		}
+	}
+	
+	/**
 	 * 得到属性的长度配置
 	 * @param field
 	 * @return
@@ -139,6 +154,8 @@ public class PojoManage {
 	public static String getTable(Class<?> pojoClass) {
 		if(pojoClass.isAnnotationPresent(Table.class)) {
 			Table table=pojoClass.getAnnotation(Table.class);
+			if("".equals(table.value()))
+				return pojoClass.getSimpleName().toLowerCase();
 			return table.value().toLowerCase();
 		}else {
 			return pojoClass.getSimpleName().toLowerCase();
@@ -217,7 +234,7 @@ public class PojoManage {
 	}
 	
 	/**
-	 * 判断该实体对应表的主键类型
+	 * 判断该实体对应表的主键类型(自增int主键/UUID主键/普通主键)
 	 * @param pojoClass
 	 * @return
 	 */
@@ -227,4 +244,43 @@ public class PojoManage {
 		return id.type();
 	}
 	
+	/**
+	 * 得到设置主键索引的信息
+	 * @param pojoClass
+	 * @return
+	 */
+	public static String primary(Class<?> pojoClass) {
+		Table table=pojoClass.getAnnotation(Table.class);
+		return table.primary();
+	}
+	
+	/**
+	 * 得到设置普通索引的信息
+	 * @param pojoClass
+	 * @return
+	 */
+	public static String[] index(Class<?> pojoClass) {
+		Table table=pojoClass.getAnnotation(Table.class);
+		return table.index();
+	}
+	
+	/**
+	 * 得到设置唯一值索引的信息
+	 * @param pojoClass
+	 * @return
+	 */
+	public static String[] unique(Class<?> pojoClass) {
+		Table table=pojoClass.getAnnotation(Table.class);
+		return table.unique();
+	}
+	
+	/**
+	 * 得到设置全文索引的信息
+	 * @param pojoClass
+	 * @return
+	 */
+	public static String[] fulltext(Class<?> pojoClass) {
+		Table table=pojoClass.getAnnotation(Table.class);
+		return table.fulltext();
+	}
 }
