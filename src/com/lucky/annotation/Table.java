@@ -7,11 +7,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 /**
  * ORM操作中重要的注解
- * 	id:用于标注主键属性
- * 	auto:(默认为true:自动建表机制会设置主键自增，insert操作时会自动注入主键值)
- * 	table:类与表之间的关系映射
- * 	key：与自动建表机制中生成外键有关,指定子表中的外键属性
- * 	url: 与自动建表机制中生成外键有关,指定子表所关联的父表
+ * 	value 表名映射
+ * 	primary 添加主键索引
+ *  index 添加普通索引
+ *  unique 添加唯一值索引
+ *  fulltext 添加全文索引
+ *  cascadeDelete 设置与子表级联删除
+ *  cascadeUpdate 设置与子表级联更新
  * @author fk-7075
  *
  */
