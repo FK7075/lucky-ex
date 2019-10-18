@@ -2,6 +2,7 @@ package com.lucky.join;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.lucky.sqldao.PojoManage;
@@ -112,6 +113,29 @@ public class ObjectToJoinSql {
 	public String getJoinSql() {
 		return "SELECT * FROM "+onFragment() + andFragment();
 	}
-	
+	public static void main(String[] args) {
+		ObjectToJoinSql os=new ObjectToJoinSql("JOIN",new Stort(),new Author(),new Book());
+		System.out.println(os.getJoinSql());
+		System.out.println(Arrays.toString(os.getJoinObject()));
+		
+	}
 
+}
+
+class Book {
+	
+	private Integer bid;
+	
+	private Integer autid;
+	
+	private Integer stid;
+	
+}
+
+class Author{
+	private Integer autid;
+}
+
+class Stort{
+	private Integer stid;
 }

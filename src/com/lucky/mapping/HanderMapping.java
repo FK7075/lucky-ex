@@ -115,14 +115,14 @@ public class HanderMapping {
 		List<String> pack = LuckyManager.getPropCfg().getScans();
 		List<String> scanmappers=LuckyManager.getPropCfg().getScans_mapper();
 		if(pack.isEmpty()) {
-			ps.loadComponent(classNames,"controller","service","dao","bean");
+			ps.loadComponent(classNames,"controller","service","dao","repository");
 		}else {
 			for (String str : pack) {
 				scanIocComponent(str);
 			}
 		}
 		if(scanmappers.isEmpty()) {
-			ps.loadMapper(mapperclassNames);
+			ps.loadMapper(mapperclassNames,"mapper");
 		}else {
 			for (String str : scanmappers) {
 				scanMapper(str);

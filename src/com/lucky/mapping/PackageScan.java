@@ -33,9 +33,9 @@ public class PackageScan {
 	 * 找到所有Mapper组件所在文件夹的绝对路径，并存入到的集合中
 	 * @param mappers mapper接口组件
 	 */
-	public void loadMapper(List<String> mappers) {
+	public void loadMapper(List<String> mappers,String...suffix) {
 		List<String> mlist=new ArrayList<>();
-		findDafaultFolder(mlist,projectPath,"mapper");
+		findDafaultFolder(mlist,projectPath,suffix);
 		addClassPath(mappers,mlist);
 	}
 	
