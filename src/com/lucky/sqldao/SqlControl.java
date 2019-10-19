@@ -195,12 +195,12 @@ public class SqlControl implements SqlCore {
 	 *            包含添加信息的包装类的对象
 	 * @return
 	 */
-	public <T> boolean save(T t) {
+	public <T> boolean save(T t,boolean...addId) {
 		boolean isOk=false;
 		if (!cache) 
-			return start.save(t);
+			return start.save(t,addId);
 		else 
-			return start.saveCache(t);
+			return start.saveCache(t,addId);
 	}
 
 	/**
@@ -336,11 +336,11 @@ public class SqlControl implements SqlCore {
 	 *            包含保存信息的对象数组
 	 * @return
 	 */
-	public boolean saveArrayBatch(Object... obj) {
+	public boolean saveArrayBatch(boolean addId,Object... obj) {
 		if (!cache)
-			return start.saveBatchByArray(obj);
+			return start.saveBatchByArray(addId,obj);
 		else
-			return start.saveBatchByArrayCache(obj);
+			return start.saveBatchByArrayCache(addId,obj);
 	}
 
 	/**
@@ -582,5 +582,6 @@ public class SqlControl implements SqlCore {
 	public void clear() {
 		start.clear();
 	}
+
 
 }

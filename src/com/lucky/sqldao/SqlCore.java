@@ -171,7 +171,7 @@ public interface SqlCore {
 	 * 包含添加信息的包装类的对象
 	 * @return
 	 */
-	public <T> boolean save(T t);
+	public <T> boolean save(T t,boolean...addId);
 	
 	/**
 	 * 批量保存-数组模式
@@ -179,7 +179,7 @@ public interface SqlCore {
 	 * 包含保存信息的对象数组
 	 * @return
 	 */
-	public boolean saveArrayBatch(Object...obj);
+	public boolean saveArrayBatch(boolean addId,Object...obj);
 	
 	/**
 	 * 批量保存操作

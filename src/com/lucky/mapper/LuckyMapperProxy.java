@@ -1,5 +1,11 @@
 package com.lucky.mapper;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -11,10 +17,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 
+import com.lucky.annotation.AutoId;
 import com.lucky.annotation.Change;
 import com.lucky.annotation.Delete;
+import com.lucky.annotation.Id;
 import com.lucky.annotation.Insert;
 import com.lucky.annotation.Join;
 import com.lucky.annotation.LeftJoin;
@@ -27,6 +37,7 @@ import com.lucky.join.Paging;
 import com.lucky.join.SqlAndObject;
 import com.lucky.join.SqlFragProce;
 import com.lucky.mapping.ApplicationBeans;
+import com.lucky.sqldao.PojoManage;
 import com.lucky.sqldao.SqlCore;
 import com.lucky.utils.LuckyUtils;
 
@@ -51,15 +62,70 @@ public class LuckyMapperProxy {
 		if(clazz.isAnnotationPresent(Mapper.class)) {
 			Mapper map=clazz.getAnnotation(Mapper.class);
 			Class<?> sqlClass=map.value();
-			Object sqlPo=sqlClass.newInstance();
-			Field[] fields=sqlClass.getDeclaredFields();
-			for(Field fi:fields) {
-				fi.setAccessible(true);
-				sqlMap.put(fi.getName().toUpperCase(), (String)fi.get(sqlPo));
+			if(!sqlClass.isAssignableFrom(Void.class)) {
+				Object sqlPo=sqlClass.newInstance();
+				Field[] fields=sqlClass.getDeclaredFields();
+				for(Field fi:fields) {
+					fi.setAccessible(true);
+					sqlMap.put(fi.getName().toUpperCase(), (String)fi.get(sqlPo));
+				}
 			}
 		}
 	}
 	
+	/**
+	 * 加载写在.properties配置文件中Sql语句
+	 * @param clzz
+	 */
+	private <T> void initSqlMapProperty(Class<T> clzz){
+		if(clzz.isAnnotationPresent(Mapper.class)) {
+			Mapper mapper=clzz.getAnnotation(Mapper.class);
+			String[] propertys=mapper.properties();
+			String coding=mapper.codedformat();
+			for(String path:propertys) {
+				String propertyPath=this.getClass().getClassLoader().getResource(path).getPath();
+				loadProperty(clzz,propertyPath,coding);
+
+			}
+		}
+	}
+	
+	/**
+	 * 加载写在.properties配置文件中Sql语句
+	 * @param clzz
+	 * @param propertyPath
+	 * @param coding
+	 */
+	private void loadProperty(Class<?> clzz,String propertyPath,String coding){
+		try{
+			Properties p=new Properties();
+			p.load(new BufferedReader(new InputStreamReader(new FileInputStream(propertyPath),coding)));
+			Method[] methods=clzz.getDeclaredMethods();
+			for(Method method:methods) {
+				if(!method.isAnnotationPresent(Select.class)&&!method.isAnnotationPresent(Insert.class)
+				   &&!method.isAnnotationPresent(Update.class)&&!method.isAnnotationPresent(Delete.class)	
+				   &&!method.isAnnotationPresent(Join.class)&&!method.isAnnotationPresent(LeftJoin.class)
+				   &&!method.isAnnotationPresent(RightJoin.class)&&!method.isAnnotationPresent(Page.class)) {
+					String key=method.getName();
+					String value=p.getProperty(key);
+					if(value!=null)
+						sqlMap.put(key.toUpperCase(), value);
+				}
+			}
+		} catch (UnsupportedEncodingException e) {
+			System.err.println("找不到文件->"+propertyPath);
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			System.err.println("找不到文件->"+propertyPath);
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.err.println("找不到文件->"+propertyPath);
+			e.printStackTrace();
+		}
+
+		
+	}
+
 	/**
 	 * 执行带有SQL的接口方法
 	 * @param method 接口方法
@@ -288,7 +354,7 @@ public class LuckyMapperProxy {
 			if(ins.batch()) {
 				return sqlCore.saveListBatch((List<T>) args[0]);
 			}else {
-				return sqlCore.save(args[0]);
+				return sqlCore.save(args[0],ins.setautoId());
 			}
 		} else {
 			return updateSql(method,args,sql_fp,sql);
@@ -399,6 +465,16 @@ public class LuckyMapperProxy {
 			String sqlStr=sqlMap.get(methodName);
 			String sqlCopy=sqlStr.toUpperCase();
 			if(sqlCopy.contains("#{")) {
+				if(method.isAnnotationPresent(AutoId.class)) {
+					Field idField = PojoManage.getIdField(args[0].getClass());
+					Id id=idField.getAnnotation(Id.class);
+					if(id.type()==com.lucky.enums.Type.AUTO_INT)
+						LuckyUtils.pojoSetId(args[0]);
+					else if(id.type()==com.lucky.enums.Type.AUTO_UUID){
+						idField.setAccessible(true);
+						idField.set(args[0], UUID.randomUUID().toString().replaceAll("-", ""));
+					}
+				}
 				SqlAndArray sqlArr = noSqlTo(args[0],sqlStr);
 				sqlStr=sqlArr.getSql();
 				args=sqlArr.getArray();
@@ -447,6 +523,7 @@ public class LuckyMapperProxy {
 	 */
 	public <T> T getMapperProxyObject(Class<T> clazz) throws InstantiationException, IllegalAccessException {
 		initSqlMap(clazz);
+		initSqlMapProperty(clazz);
 		InvocationHandler handler = (proxy, method, args) -> {
 			SqlFragProce sql_fp = SqlFragProce.getSqlFP();
 			if (method.isAnnotationPresent(Select.class))
@@ -499,6 +576,5 @@ class SqlAndArray{
 	public String toString() {
 		return "SqlAndArray [sql=" + sql + ", array=" + Arrays.toString(array) + "]";
 	}
-	
 	
 }

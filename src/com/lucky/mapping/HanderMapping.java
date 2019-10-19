@@ -409,7 +409,7 @@ public class HanderMapping {
 		if(!mapperclassNames.isEmpty()&&mapperclassNames!=null) {
 			try {
 				SqlCore sql=SqlCoreFactory.getSqlCore();
-				beans.put("lucky_xfl_fk_cl_7075_0721_58314_SqlCore", sql);
+				beans.put("lucky_xfl_fk_lcl_7075_0721_0911_0205_SqlCore", sql);
 				for(String str:mapperclassNames) {
 					String classStr = str.replace(".class", "");
 					try {
@@ -587,6 +587,12 @@ public class HanderMapping {
 				if(clzz.isAnnotationPresent(RequestMapping.class)) {
 					RequestMapping crm=clzz.getAnnotation(RequestMapping.class);
 					url_c=crm.value();
+					if(!"/".equals(url_c)) {
+						if(!url_c.startsWith("/"))
+							url_c="/"+url_c;
+						if(!url_c.endsWith("/"))
+							url_c+="/";
+					}
 				}else {
 					url_c="/";
 				}
@@ -600,8 +606,12 @@ public class HanderMapping {
 						if(mrm.value().contains("->")) {
 							int end=mrm.value().indexOf("->");
 							url_m=mrm.value().substring(0,end);
+							if(url_m.startsWith("/"))
+								url_m=url_m.substring(1,url_m.length());
 						}else {
 							url_m=mrm.value();
+							if(url_m.startsWith("/"))
+								url_m=url_m.substring(1,url_m.length());
 						}
 						come.setMethod(method);
 						urlMap.put(url_c+url_m, come);

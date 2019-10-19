@@ -1,9 +1,15 @@
 package com.lucky.join;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import com.lucky.sqldao.PojoManage;
 
@@ -113,11 +119,10 @@ public class ObjectToJoinSql {
 	public String getJoinSql() {
 		return "SELECT * FROM "+onFragment() + andFragment();
 	}
-	public static void main(String[] args) {
-		ObjectToJoinSql os=new ObjectToJoinSql("JOIN",new Stort(),new Author(),new Book());
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+		ObjectToJoinSql os=new ObjectToJoinSql("JOIN",new Book(),new Stort(),new Author());
 		System.out.println(os.getJoinSql());
 		System.out.println(Arrays.toString(os.getJoinObject()));
-		
 	}
 
 }

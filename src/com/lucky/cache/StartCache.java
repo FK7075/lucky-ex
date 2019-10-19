@@ -203,11 +203,12 @@ public class StartCache {
 	 * 包含添加信息的包装类的对象
 	 * @return
 	 */
-	public <T> boolean saveCache(T t) {
+	public <T> boolean saveCache(T t,boolean...addId) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), "insert");
 		sqlOperation.setSql(f.getSql(), f.getObj());
 		lucy.evenChange();
-		LuckyUtils.pojoSetId(t);
+		if(addId!=null&&addId.length!=0&&addId[0])
+			LuckyUtils.pojoSetId(t);
 		return true;
 	}
 	
@@ -384,10 +385,11 @@ public class StartCache {
 	 * 包含添加信息的包装类的对象
 	 * @return
 	 */
-	public <T> boolean save(T t) {
+	public <T> boolean save(T t,boolean...addId) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), "insert");
 		sqlOperation.setSql(f.getSql(), f.getObj());
-		LuckyUtils.pojoSetId(t);
+		if(addId!=null&&addId.length!=0&&addId[0])
+			LuckyUtils.pojoSetId(t);
 		return true;
 	}
 	
@@ -518,9 +520,9 @@ public class StartCache {
 	 * 封装着添加信息的对象数组
 	 * @return
 	 */
-	public boolean saveBatchByArrayCache(Object...obj) {
+	public boolean saveBatchByArrayCache(boolean addId,Object...obj) {
 		for(Object o:obj)
-			saveCache(o);
+			saveCache(o,addId);
 		return true;
 	}
 	/**
@@ -590,9 +592,9 @@ public class StartCache {
 	 * 封装着保存信息的对象数组
 	 * @return
 	 */
-	public boolean saveBatchByArray(Object... obj) {
+	public boolean saveBatchByArray(boolean addid,Object... obj) {
 		for(Object o:obj) {
-			save(o);
+			save(o,addid);
 		}
 		return true;
 	}
