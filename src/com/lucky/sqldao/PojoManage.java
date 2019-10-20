@@ -201,13 +201,13 @@ public class PojoManage {
 	 * @param pojoClass
 	 * @return
 	 */
-	public static Map<String,Class<?>> getKeyFieldMap(Class<?> pojoClass){
-		Map<String,Class<?>> keys=new HashMap<>();
+	public static Map<Field,Class<?>> getKeyFieldMap(Class<?> pojoClass){
+		Map<Field,Class<?>> keys=new HashMap<>();
 		Field[] pojoFields=pojoClass.getDeclaredFields();
 		for(Field field:pojoFields) {
 			if(field.isAnnotationPresent(Key.class)) {
 				Key key=field.getAnnotation(Key.class);
-				keys.put(key.value(), key.pojo());
+				keys.put(field, key.pojo());
 			}
 		}
 		return keys;
@@ -216,14 +216,14 @@ public class PojoManage {
 	/**
 	 * 得到该实体对应表的外键信息
 	 * @param pojoClass
-	 * @param iskey true(返回外键名集合)/false(返回外键对应的的实体Class)
+	 * @param iskey true(返回外键属性集合)/false(返回外键对应的的实体Class)
 	 * @return
 	 */
 	public static List<?> getKeyFields(Class<?> pojoClass,boolean iskey){
-		Map<String,Class<?>> keyAdnField=getKeyFieldMap(pojoClass);
-		List<String> keys=new ArrayList<>();
+		Map<Field,Class<?>> keyAdnField=getKeyFieldMap(pojoClass);
+		List<Field> keys=new ArrayList<>();
 		List<Class<?>> clzzs=new ArrayList<>();
-		for(Entry<String,Class<?>> entry:keyAdnField.entrySet()) {
+		for(Entry<Field,Class<?>> entry:keyAdnField.entrySet()) {
 			keys.add(entry.getKey());
 			clzzs.add(entry.getValue());
 		}

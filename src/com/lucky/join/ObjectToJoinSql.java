@@ -1,16 +1,16 @@
 package com.lucky.join;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import com.lucky.annotation.Id;
+import com.lucky.annotation.Key;
 import com.lucky.sqldao.PojoManage;
 
 public class ObjectToJoinSql {
@@ -119,28 +119,53 @@ public class ObjectToJoinSql {
 	public String getJoinSql() {
 		return "SELECT * FROM "+onFragment() + andFragment();
 	}
-	public static void main(String[] args) throws FileNotFoundException, IOException {
-		ObjectToJoinSql os=new ObjectToJoinSql("JOIN",new Book(),new Stort(),new Author());
-		System.out.println(os.getJoinSql());
-		System.out.println(Arrays.toString(os.getJoinObject()));
+	
+	private String objectonFragment(Class<?> pojoClass,List<Class<?>> inputs,String onsql) {
+		Map<Field, Class<?>> keyFieldMap = PojoManage.getKeyFieldMap(pojoClass);
+		if(keyFieldMap.isEmpty()) 
+			return "";
+		for(Entry<Field,Class<?>> entry:keyFieldMap.entrySet()) {
+			onsql+=" "+join;
+			String keyTable=PojoManage.getTable(entry.getValue());
+			String condition=PojoManage.getTable(pojoClass)+"."+PojoManage.getTableField(entry.getKey())+"="+keyTable+"."+PojoManage.getIdString(entry.getValue());
+			onsql+=" ON "+keyTable+" "+condition;
+			onsql+= objectonFragment(entry.getValue(),inputs,onsql);
+		}
+		return onsql;
+	}
+	
+	public static void main(String[] args) {
+		ObjectToJoinSql ojs=new ObjectToJoinSql("JOIN");
+		List<Class<?>> input=new ArrayList<>();
+		input.add(Book.class);
+		input.add(Author.class);
+		input.add(Stort.class);
+		System.out.println(ojs.objectonFragment(Book.class, input, ""));
 	}
 
 }
 
 class Book {
-	
+	@Id
 	private Integer bid;
 	
+	@Key(pojo=Author.class)
 	private Integer autid;
 	
+	@Key(pojo=Stort.class)
 	private Integer stid;
 	
 }
 
 class Author{
+	@Id
 	private Integer autid;
+	
+	@Key(pojo=Stort.class)
+	private Integer ppy;
 }
 
 class Stort{
+	@Id
 	private Integer stid;
 }
