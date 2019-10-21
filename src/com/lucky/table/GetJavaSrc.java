@@ -6,6 +6,7 @@ package com.lucky.table;
  *
  */
 public class GetJavaSrc {
+	
 	private String className;//类名
 	private String pack;//所在包
 	private String impor;//导入的包

@@ -39,8 +39,16 @@ public class JavaFieldGetSet {
 		System.out.println(setField);
 	}
 	
-	public JavaFieldGetSet(String field,String type) {
-		this.field="\tprivate "+type+" "+field+";\n";
+	public JavaFieldGetSet(String field,String type,String id,List<String> keys) {
+		String Id="";
+		String key="";
+		if(id.equals(field)) {
+			Id="\t@Id\n";
+		}
+		if(keys.contains(field)) {
+			key="\t@Key\n";
+		}
+		this.field=Id+key+"\tprivate "+type+" "+field+";\n\n";
 		this.getField="\tpublic "+type+" get"+LuckyUtils.TableToClass(field)+"(){\n\t\treturn this."+field+";\n\t}";
 		this.setField="\tpublic void set"+LuckyUtils.TableToClass(field)+"("+type+" "+field+"){\n\t\tthis."+field+"="+field+";\n\t}";
 	}
@@ -55,13 +63,13 @@ public class JavaFieldGetSet {
 		List<JavaFieldGetSet> list=new ArrayList<JavaFieldGetSet>();
 		javasrc.setClassName(ts.getTableName());
 		javasrc.setPack("package "+LuckyManager.getPropCfg().getPackages()+";");
-		javasrc.setImpor("import java.util.Date;\nimport java.sql.*;\nimport java.util.*;\nimport xfl.fk.annotation.Lucky;");
+		javasrc.setImpor("import java.util.Date;\nimport java.sql.*;\nimport java.util.*;\nimport com.lucky.annotation.Id;\nimport com.lucky.annotation.Key;");
 		javasrc.setToString(ts.getToString());
 		javasrc.setConstructor(ts.getConstructor());
 		javasrc.setParameterConstructor(ts.getParameterConstructor());
-		String src="@SuppressWarnings(\"all\")\n@Lucky(id=\""+ts.getKey()+"\")\npublic class "+ts.getTableName()+"{\n";
+		String src="@SuppressWarnings(\"all\")\npublic class "+ts.getTableName()+"{\n";
 		for(int i=0;i<ts.getFields().size();i++) {
-			JavaFieldGetSet jf=new JavaFieldGetSet(ts.getFields().get(i), ts.getTypes().get(i));
+			JavaFieldGetSet jf=new JavaFieldGetSet(ts.getFields().get(i), ts.getTypes().get(i),ts.getPri(),ts.getMuls());
 			list.add(jf);
 		}
 		for (JavaFieldGetSet jf : list) {

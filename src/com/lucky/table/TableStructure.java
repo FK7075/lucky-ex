@@ -16,36 +16,78 @@ public class TableStructure {
 	private String tableName;//表名
 	private List<String> fields=new ArrayList<String>();//字段名集
 	private List<String> types=new ArrayList<String>();//对应的类型集
-	private String key;//主键
+	private String pri;//主键
+	private List<String> muls=new ArrayList<String>();//外键
+	
+	
+	@Override
+	public String toString() {
+		return "TableStructure [tableName=" + tableName + ", fields=" + fields + ", types=" + types + ", pri=" + pri
+				+ ", muls=" + muls + "]";
+	}
+	
+	
+
 	public String getTableName() {
 		return tableName;
 	}
+
+
+
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
 	}
-	@Override
-	public String toString() {
-		return "TableStructure [tableName=" + tableName + ", fields=" + fields + ", types=" + types + ", key=" + key
-				+ "]";
-	}
+
+
+
 	public List<String> getFields() {
 		return fields;
 	}
+
+
+
 	public void setFields(List<String> fields) {
 		this.fields = fields;
 	}
+
+
+
 	public List<String> getTypes() {
 		return types;
 	}
+
+
+
 	public void setTypes(List<String> types) {
 		this.types = types;
 	}
-	public String getKey() {
-		return key;
+
+
+
+	public String getPri() {
+		return pri;
 	}
-	public void setKey(String key) {
-		this.key = key;
+
+
+
+	public void setPri(String pri) {
+		this.pri = pri;
 	}
+
+
+
+	public List<String> getMuls() {
+		return muls;
+	}
+
+
+
+	public void setMuls(String mul) {
+		this.muls.add(mul);
+	}
+
+
+
 	/**
 	 * 获得tableName表对应的表的结构
 	 * @param tableName 表名
@@ -57,7 +99,9 @@ public class TableStructure {
 			while(rs.next()) {
 				this.getFields().add(rs.getString("Field"));
 				if("PRI".equalsIgnoreCase(rs.getString("Key")))
-					this.setKey(rs.getString("Field"));
+					this.setPri(rs.getString("Field"));
+				if("MUL".equalsIgnoreCase(rs.getString("Key")))
+					this.setMuls(rs.getString("Field"));
 				this.getTypes().add(LuckyUtils.mysqlToJava(LuckyUtils.getMySqlType(rs.getString("Type"))));
 			}
 		} catch (SQLException e) {

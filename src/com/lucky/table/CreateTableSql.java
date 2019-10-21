@@ -69,14 +69,14 @@ public class CreateTableSql {
 	 */
 	public static List<String> getForeignKey(Class<?> clzz) {
 		List<String> stlist = new ArrayList<String>();
-		List<String> keys = (List<String>) PojoManage.getKeyFields(clzz, true);
+		List<Field> keys = (List<Field>) PojoManage.getKeyFields(clzz, true);
 		if (keys.isEmpty()) {
 			return null;
 		} else {
 			List<Class<?>> cs = (List<Class<?>>) PojoManage.getKeyFields(clzz, false);
 			for (int i = 0; i < cs.size(); i++) {
 				String sql = "ALTER TABLE " + PojoManage.getTable(clzz) + " ADD CONSTRAINT " + getRandomStr()
-						+ " FOREIGN KEY (" + keys.get(i) + ") REFERENCES " + PojoManage.getTable(cs.get(i)) + "("
+						+ " FOREIGN KEY (" + PojoManage.getTableField(keys.get(i)) + ") REFERENCES " + PojoManage.getTable(cs.get(i)) + "("
 						+ PojoManage.getIdString(cs.get(i)) + ")"+isCascadeDel(cs.get(i))+isCascadeUpd(cs.get(i));
 				stlist.add(sql);
 			}

@@ -168,8 +168,11 @@ public class PojoManage {
 	 * @return
 	 */
 	public static boolean cascadeDelete(Class<?> pojoClass) {
-		Table table=pojoClass.getAnnotation(Table.class);
-		return table.cascadeDelete();
+		if(pojoClass.isAnnotationPresent(Table.class)) {
+			Table table=pojoClass.getAnnotation(Table.class);
+			return table.cascadeDelete();
+		}
+		return false;
 	}
 	
 	/**
@@ -178,8 +181,11 @@ public class PojoManage {
 	 * @return
 	 */
 	public static boolean cascadeUpdate(Class<?> pojoClass) {
-		Table table=pojoClass.getAnnotation(Table.class);
-		return table.cascadeUpdate();
+		if(pojoClass.isAnnotationPresent(Table.class)) {
+			Table table=pojoClass.getAnnotation(Table.class);
+			return table.cascadeUpdate();
+		}
+		return false;
 	}
 	
 	/**
@@ -250,8 +256,12 @@ public class PojoManage {
 	 * @return
 	 */
 	public static String primary(Class<?> pojoClass) {
-		Table table=pojoClass.getAnnotation(Table.class);
-		return table.primary();
+		if(pojoClass.isAnnotationPresent(Table.class)) {
+			Table table=pojoClass.getAnnotation(Table.class);
+			return table.primary();
+		}else {
+			return "";
+		}
 	}
 	
 	/**
@@ -260,8 +270,12 @@ public class PojoManage {
 	 * @return
 	 */
 	public static String[] index(Class<?> pojoClass) {
-		Table table=pojoClass.getAnnotation(Table.class);
-		return table.index();
+		if(pojoClass.isAnnotationPresent(Table.class)) {
+			Table table=pojoClass.getAnnotation(Table.class);
+			return table.index();
+		}else {
+			return new String[0];
+		}
 	}
 	
 	/**
@@ -270,8 +284,12 @@ public class PojoManage {
 	 * @return
 	 */
 	public static String[] unique(Class<?> pojoClass) {
-		Table table=pojoClass.getAnnotation(Table.class);
-		return table.unique();
+		if(pojoClass.isAnnotationPresent(Table.class)) {
+			Table table=pojoClass.getAnnotation(Table.class);
+			return table.unique();
+		}else {
+			return new String[0];
+		}
 	}
 	
 	/**
@@ -280,7 +298,11 @@ public class PojoManage {
 	 * @return
 	 */
 	public static String[] fulltext(Class<?> pojoClass) {
-		Table table=pojoClass.getAnnotation(Table.class);
-		return table.fulltext();
+		if(pojoClass.isAnnotationPresent(Table.class)) {
+			Table table=pojoClass.getAnnotation(Table.class);
+			return table.fulltext();
+		}else {
+			return new String[0];
+		}
 	}
 }
