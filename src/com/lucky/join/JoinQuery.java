@@ -10,7 +10,7 @@ import com.lucky.sqldao.PojoManage;
 
 public class JoinQuery {
 	
-	private JoinWay join;
+	private JoinWay join=JoinWay.INNER_JOIN;
 	
 	private List<ObjectAlias> objAndAlias;
 	
