@@ -530,7 +530,7 @@ public class LuckyMapperProxy {
 	public String getAlias(Parameter param) {
 		if(param.isAnnotationPresent(Alias.class))
 			return param.getAnnotation(Alias.class).value();
-		return "";
+		return param.getName();
 	}
 
 }
