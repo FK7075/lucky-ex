@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -19,7 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.stream.Stream;
 
+import com.lucky.annotation.Alias;
 import com.lucky.annotation.AutoId;
 import com.lucky.annotation.Change;
 import com.lucky.annotation.Delete;
@@ -237,8 +240,10 @@ public class LuckyMapperProxy {
 						return sqlCore.getObject(args[0]);
 					}
 				} else {// 有指定列的标注
+					Parameter[] parameters = method.getParameters();
 					JoinQuery query=new JoinQuery();
-					query.addJoinObjectes(args);
+					for(int i=0;i<parameters.length;i++)
+						query.addObject(args[i], getAlias(parameters[i]));
 					query.setJoin(JoinWay.INNER_JOIN);
 					for(String coum:sel.columns())
 						query.resultAppend(coum);
@@ -376,8 +381,10 @@ public class LuckyMapperProxy {
 	 */
 	private Object join(Method method, Object[] args){
 		Join join = method.getAnnotation(Join.class);
+		Parameter[] parameters = method.getParameters();
 		JoinQuery query=new JoinQuery();
-		query.addJoinObjectes(args);
+		for(int i=0;i<parameters.length;i++)
+			query.addObject(args[i], getAlias(parameters[i]));
 		query.setJoin(join.join());
 		String[] columns = join.value();
 		for(String colum:columns)
@@ -498,6 +505,7 @@ public class LuckyMapperProxy {
 	 */
 	public <T> T getMapperProxyObject(Class<T> clazz) throws InstantiationException, IllegalAccessException {
 		initSqlMap(clazz);
+		
 		initSqlMapProperty(clazz);
 		InvocationHandler handler = (proxy, method, args) -> {
 			SqlFragProce sql_fp = SqlFragProce.getSqlFP();
@@ -517,6 +525,12 @@ public class LuckyMapperProxy {
 				return notHave(method,args,sql_fp);
 		};
 		return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[] { clazz }, handler);
+	}
+	
+	public String getAlias(Parameter param) {
+		if(param.isAnnotationPresent(Alias.class))
+			return param.getAnnotation(Alias.class).value();
+		return "";
 	}
 
 }

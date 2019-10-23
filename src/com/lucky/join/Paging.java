@@ -169,7 +169,8 @@ public class Paging <T>{
 			this.recordnum=list.size();
 		}else {
 			JoinQuery query=new JoinQuery();
-			query.addJoinObjectes(initializePojo.getPojos().toArray());
+			for(Object po:initializePojo.getPojos().toArray())
+				query.addObject(po);
 			query.setJoin(JoinWay.INNER_JOIN);
 			ObjectToJoinSql join=new ObjectToJoinSql(query);
 			String sql=join.getJoinSql();
@@ -198,7 +199,8 @@ public class Paging <T>{
 	public Paging(Class<T> packBokClass,Object... pojos) {
 		sqlCore=SqlCoreFactory.getSqlCore();
 		JoinQuery query=new JoinQuery();
-		query.addJoinObjectes(pojos);
+		for(Object po:pojos)
+			query.addObject(po);
 		query.setJoin(JoinWay.INNER_JOIN);
 		ObjectToJoinSql join=new ObjectToJoinSql(query);
 		String sql=join.getJoinSql();
