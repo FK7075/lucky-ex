@@ -2,6 +2,8 @@ package com.lucky.sqldao;
 
 import java.util.List;
 
+import com.lucky.join.JoinQuery;
+
 public interface SqlCore {
 	/**
 	 * 开启事务
@@ -248,57 +250,27 @@ public interface SqlCore {
 	 */
 	public <T> T getMapper(Class<T> clazz);
 	
-	/**
-	 * 内连接查询的对象操作方式
-	 * @param c 接收结果的包装类的Class
-	 * @param pojos 需要进行联合操作的表对应的实体类对象
-	 * @return List集合
-	 */
-	public <T> List<T> getListJoin(Class<T> c,Object...pojos);
-	
-	
-	/**
-	 * 左外连接查询的对象操作方式
-	 * @param c 接收结果的包装类的Class
-	 * @param pojos 需要进行联合操作的表对应的实体类对象
-	 * @return List集合
-	 */
-	public <T> List<T> getListJoinLeft(Class<T> c,Object...pojos);
-	
-	/**
-	 * 右外连接查询的对象操作方式
-	 * @param c 接收结果的包装类的Class
-	 * @param pojos 需要进行联合操作的表对应的实体类对象
-	 * @return List集合
-	 */
-	public <T> List<T> getListJoinRight(Class<T> c,Object...pojos);
 
 	/**
-	 * 内连接查询指定返回列的的对象操作方式（不建议使用此方法，使用不当会造成编译错误，推荐使用Mapper接口的开发方式）
-	 * @param c 接收结果的包装类的Class
-	 * @param result 代替查询语句中 "*"的合法SQL语法的SQl片段
-	 * @param pojos 需要进行联合操作的表对应的实体类对象
-	 * @return List集合
+	 * 对象方式的多表连接操作<br>
+	 * 	1.强链接  最前面的两个表之间必须使用强连接<br>
+	 * 		tab1-->tab2 [-->]   
+	 * 		<br>表示tab2表与左边相邻的tab1使用主外键作为连接条件进行连接<br>
+	 * 	2.弱连接<br>
+	 *      tab1-->tab2--tab3 [--] <br>
+	 *      表示tab2表跳过左边相邻的tab1与tab1表使用主外键作为连接条件进行连接<br>
+	 *  3.指定连接<br>
+	 *  	tab1-->tab2--tab3&lt2&gttab4 [&ltn&gt] <br>
+	 *  	表示tab4从左边相邻的位置起，向左跳过2张表与tab1使用主外键作为连接条件进行连接<br>
+	 *  	--><==>&lt0&gt  --<==>&lt1&gt<br>
+	 *  当expression缺省时，底层会以如下方式自动生成一个expression<br>(queryObjTab1-->queryObjTab2-->...-->queryObjTabn)
+	 * @param query 查询条件（需要进行连接操作的对象+连接方式+指定返回的列）
+	 * @param expression 连接表达式('-->'强连接,'--'弱连接,'&ltn&gt'指定连接)
+	 * @param resultClass 用于接受返回值的类的Class
+	 * @return
 	 */
-	public <T> List<T> getListJoinResult(Class<T> c, String result, Object[] pojos);
-
-	/**
-	 * 左外连接查询指定返回列的的对象操作方式（不建议使用此方法，使用不当会造成编译错误，推荐使用Mapper接口的开发方式）
-	 * @param c 接收结果的包装类的Class
-	 * @param result 代替查询语句中 "*"的合法SQL语法的SQl片段
-	 * @param pojos 需要进行联合操作的表对应的实体类对象
-	 * @return List集合
-	 */
-	public <T> List<T> getListJoinLeftResult(Class<T> c, String result, Object[] pojos);
-
-	/**
-	 * 右外连接查询指定返回列的的对象操作方式（不建议使用此方法，使用不当会造成编译错误，推荐使用Mapper接口的开发方式）
-	 * @param c 接收结果的包装类的Class
-	 * @param result 代替查询语句中 "*"的合法SQL语法的SQl片段
-	 * @param pojos 需要进行联合操作的表对应的实体类对象
-	 * @return List集合
-	 */
-	public <T> List<T> getListJoinRightResult(Class<T> c, String result, Object[] pojos);
+	public <T> List<T> getListJoin(JoinQuery query,Class<T> resultClass,String...expression);
+	
 	
 	/**
 	 * 清空缓存

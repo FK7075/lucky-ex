@@ -22,5 +22,5 @@ public @interface Key {
 	String value() default "";
 	int length() default 35;
 	boolean allownull() default true;
-	Class<?> pojo() default Void.class;
+	Class<?> pojo();
 }

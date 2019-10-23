@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.lucky.annotation.Table;
 import com.lucky.cache.StartCache;
+import com.lucky.join.JoinQuery;
 import com.lucky.join.ObjectToJoinSql;
 import com.lucky.mapper.LuckyMapperProxy;
 import com.lucky.table.CreateTable;
@@ -533,49 +534,11 @@ public class SqlControl implements SqlCore {
 		return (T) obj;
 	}
 
-	public <T> List<T> getListJoin(Class<T> c, Object... pojos) {
-		ObjectToJoinSql join = new ObjectToJoinSql("INNER JOIN", pojos);
-		String sql = join.getJoinSql();
+	public <T> List<T> getListJoin(JoinQuery query,Class<T> resultClass,String...expression) {
+		ObjectToJoinSql join = new ObjectToJoinSql(query);
+		String sql = join.getJoinSql(expression);
 		Object[] obj = join.getJoinObject();
-		return getList(c, sql, obj);
-	}
-
-	public <T> List<T> getListJoinLeft(Class<T> c, Object... pojos) {
-		ObjectToJoinSql join = new ObjectToJoinSql("LEFT OUTER JOIN", pojos);
-		String sql = join.getJoinSql();
-		Object[] obj = join.getJoinObject();
-		return getList(c, sql, obj);
-	}
-
-	public <T> List<T> getListJoinRight(Class<T> c, Object... pojos) {
-		ObjectToJoinSql join = new ObjectToJoinSql("RIGHT OUTER JOIN", pojos);
-		String sql = join.getJoinSql();
-		Object[] obj = join.getJoinObject();
-		return getList(c, sql, obj);
-	}
-	
-	public <T> List<T> getListJoinResult(Class<T> c,String result, Object... pojos) {
-		ObjectToJoinSql join = new ObjectToJoinSql("INNER JOIN", pojos);
-		String sql = join.getJoinSql();
-		sql=sql.replaceAll("\\*", result);
-		Object[] obj = join.getJoinObject();
-		return getList(c, sql, obj);
-	}
-
-	public <T> List<T> getListJoinLeftResult(Class<T> c, String result,Object... pojos) {
-		ObjectToJoinSql join = new ObjectToJoinSql("LEFT OUTER JOIN", pojos);
-		String sql = join.getJoinSql();
-		sql=sql.replaceAll("\\*", result);
-		Object[] obj = join.getJoinObject();
-		return getList(c, sql, obj);
-	}
-
-	public <T> List<T> getListJoinRightResult(Class<T> c,String result, Object... pojos) {
-		ObjectToJoinSql join = new ObjectToJoinSql("RIGHT OUTER JOIN", pojos);
-		String sql = join.getJoinSql();
-		sql=sql.replaceAll("\\*", result);
-		Object[] obj = join.getJoinObject();
-		return getList(c, sql, obj);
+		return getList(resultClass, sql, obj);
 	}
 
 	@Override

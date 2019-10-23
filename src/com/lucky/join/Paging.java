@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lucky.annotation.Page;
+import com.lucky.enums.JoinWay;
 import com.lucky.sqldao.SqlCore;
 import com.lucky.sqldao.SqlCoreFactory;
 import com.lucky.utils.LuckyUtils;
@@ -167,7 +168,10 @@ public class Paging <T>{
 			this.list=sqlCore.getList(initializePojo.getClzz(), initializePojo.getSql(), initializePojo.getSqlobj().toArray());
 			this.recordnum=list.size();
 		}else {
-			ObjectToJoinSql join=new ObjectToJoinSql("INNER JOIN",initializePojo.getPojos().toArray());
+			JoinQuery query=new JoinQuery();
+			query.addJoinObjectes(initializePojo.getPojos().toArray());
+			query.setJoin(JoinWay.INNER_JOIN);
+			ObjectToJoinSql join=new ObjectToJoinSql(query);
 			String sql=join.getJoinSql();
 			Object[] object=join.getJoinObject();
 			this.list=sqlCore.getList(initializePojo.getClzz(), sql,object);
@@ -193,7 +197,10 @@ public class Paging <T>{
 	 */
 	public Paging(Class<T> packBokClass,Object... pojos) {
 		sqlCore=SqlCoreFactory.getSqlCore();
-		ObjectToJoinSql join=new ObjectToJoinSql("INNER JOIN",pojos);
+		JoinQuery query=new JoinQuery();
+		query.addJoinObjectes(pojos);
+		query.setJoin(JoinWay.INNER_JOIN);
+		ObjectToJoinSql join=new ObjectToJoinSql(query);
 		String sql=join.getJoinSql();
 		Object[] object=join.getJoinObject();
 		this.list=sqlCore.getList(packBokClass, sql,object);

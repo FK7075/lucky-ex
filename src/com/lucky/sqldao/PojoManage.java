@@ -220,6 +220,23 @@ public class PojoManage {
 	}
 	
 	/**
+	 * 外键对应类反推外键属性
+	 * @param clap 主表类
+	 * @param clak 外键表类
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static Field classToField(Class<?> clap,Class<?> clak) {
+		List<Field> clapKeyFields = (List<Field>) getKeyFields(clap, true);
+		for(Field field: clapKeyFields) {
+			Key key=field.getAnnotation(Key.class);
+			if(key.pojo().equals(clak))
+				return field;
+		}
+		return null;
+	}
+	
+	/**
 	 * 得到该实体对应表的外键信息
 	 * @param pojoClass
 	 * @param iskey true(返回外键属性集合)/false(返回外键对应的的实体Class)

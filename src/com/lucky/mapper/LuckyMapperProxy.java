@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.UUID;
 
 import com.lucky.annotation.AutoId;
@@ -27,12 +26,12 @@ import com.lucky.annotation.Delete;
 import com.lucky.annotation.Id;
 import com.lucky.annotation.Insert;
 import com.lucky.annotation.Join;
-import com.lucky.annotation.LeftJoin;
 import com.lucky.annotation.Mapper;
 import com.lucky.annotation.Page;
-import com.lucky.annotation.RightJoin;
 import com.lucky.annotation.Select;
 import com.lucky.annotation.Update;
+import com.lucky.enums.JoinWay;
+import com.lucky.join.JoinQuery;
 import com.lucky.join.Paging;
 import com.lucky.join.SqlAndObject;
 import com.lucky.join.SqlFragProce;
@@ -104,8 +103,7 @@ public class LuckyMapperProxy {
 			for(Method method:methods) {
 				if(!method.isAnnotationPresent(Select.class)&&!method.isAnnotationPresent(Insert.class)
 				   &&!method.isAnnotationPresent(Update.class)&&!method.isAnnotationPresent(Delete.class)	
-				   &&!method.isAnnotationPresent(Join.class)&&!method.isAnnotationPresent(LeftJoin.class)
-				   &&!method.isAnnotationPresent(RightJoin.class)&&!method.isAnnotationPresent(Page.class)) {
+				   &&!method.isAnnotationPresent(Join.class)&&!method.isAnnotationPresent(Page.class)) {
 					String key=method.getName();
 					String value=p.getProperty(key);
 					if(value!=null)
@@ -229,6 +227,7 @@ public class LuckyMapperProxy {
 				return false;
 			}
 		}else {
+			
 			String sql = sel.value();
 			if ("".equals(sql)) {
 				if ("".equals(sel.columns())) {
@@ -238,10 +237,16 @@ public class LuckyMapperProxy {
 						return sqlCore.getObject(args[0]);
 					}
 				} else {// 有指定列的标注
+					JoinQuery query=new JoinQuery();
+					query.addJoinObjectes(args);
+					query.setJoin(JoinWay.INNER_JOIN);
+					for(String coum:sel.columns())
+						query.resultAppend(coum);
 					if (c.isAssignableFrom(List.class)) {
-						return sqlCore.getListJoinLeftResult(getListGeneric(method), sel.columns(), args);
+						Class<?> listGeneric = getListGeneric(method);
+						return sqlCore.getListJoin(query,listGeneric);
 					} else {
-						List<?> list = sqlCore.getListJoinLeftResult(c, sel.columns(), args);
+						List<?> list = sqlCore.getListJoin(query,c);
 						if (list == null || list.isEmpty()) {
 							return null;
 						} else {
@@ -253,11 +258,12 @@ public class LuckyMapperProxy {
 				if (sql.contains("#{")) {
 					SqlAndArray sqlArr = noSqlTo(args[0],sql);
 					if (c.isAssignableFrom(List.class)) {
+						Class<?> listGeneric = getListGeneric(method);
 						if(method.isAnnotationPresent(Change.class)) {
 							SqlAndObject so = sql_fp.filterSql(sqlArr.getSql(),sqlArr.getArray());
-							return (List<T>) sqlCore.getList(getListGeneric(method), so.getSqlStr(), so.getObjects());
+							return (List<T>) sqlCore.getList(listGeneric, so.getSqlStr(), so.getObjects());
 						}else {
-							return (List<T>) sqlCore.getList(getListGeneric(method), sqlArr.getSql(), sqlArr.getArray());
+							return (List<T>) sqlCore.getList(listGeneric, sqlArr.getSql(), sqlArr.getArray());
 						}
 					} else {
 						List<T> list=new ArrayList<>();
@@ -270,11 +276,12 @@ public class LuckyMapperProxy {
 					}
 				} else {
 					if (c.isAssignableFrom(List.class)) {
+						Class<?> listGeneric = getListGeneric(method);
 						if(method.isAnnotationPresent(Change.class)) {
 							SqlAndObject so = sql_fp.filterSql(sql, args);
-							return (List<T>) sqlCore.getList(getListGeneric(method), so.getSqlStr(), so.getObjects());
+							return (List<T>) sqlCore.getList(listGeneric, so.getSqlStr(), so.getObjects());
 						}else {
-							return (List<T>) sqlCore.getList(getListGeneric(method), sql, args);
+							return (List<T>) sqlCore.getList(listGeneric, sql, args);
 						}
 					} else {
 						List<T> list=new ArrayList<>();
@@ -362,56 +369,24 @@ public class LuckyMapperProxy {
 	}
 	
 	/**
-	 * 处理被@Joint注解标注的接口方法
+	 * 处理被@Join注解标注的接口方法
 	 * @param method 接口方法
 	 * @param args 参数列表
 	 * @return Object
 	 */
 	private Object join(Method method, Object[] args){
 		Join join = method.getAnnotation(Join.class);
+		JoinQuery query=new JoinQuery();
+		query.addJoinObjectes(args);
+		query.setJoin(join.join());
+		String[] columns = join.value();
+		for(String colum:columns)
+			query.resultAppend(colum);
 		ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
 		Type[] entry = type.getActualTypeArguments();
 		Class<?> cla = (Class<?>) entry[0];
-		if ("".equals(join.value()))
-			return sqlCore.getListJoin(cla, args);
-		else
-			return sqlCore.getListJoinResult(cla, join.value(), args);
+		return sqlCore.getListJoin(query, cla, join.expression());
 	}
-	
-	/**
-	 * 处理被@LeftJoint注解标注的接口方法
-	 * @param method 接口方法
-	 * @param args 参数列表
-	 * @return Object
-	 */
-	private Object leftJoin(Method method, Object[] args) {
-		LeftJoin join = method.getAnnotation(LeftJoin.class);
-		ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-		Type[] entry = type.getActualTypeArguments();
-		Class<?> cla = (Class<?>) entry[0];
-		if ("".equals(join.value()))
-			return sqlCore.getListJoinLeft(cla, args);
-		else
-			return sqlCore.getListJoinLeftResult(cla, join.value(), args);
-	}
-	
-	/**
-	 * 处理被@RightJoint注解标注的接口方法
-	 * @param method 接口方法
-	 * @param args 参数列表
-	 * @return Object
-	 */
-	private Object rightJoin(Method method, Object[] args) {
-		RightJoin join = method.getAnnotation(RightJoin.class);
-		ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-		Type[] entry = type.getActualTypeArguments();
-		Class<?> cla = (Class<?>) entry[0];
-		if ("".equals(join.value()))
-			return sqlCore.getListJoinRight(cla, args);
-		else
-			return sqlCore.getListJoinRightResult(cla, join.value(), args);
-	}
-	
 	/**
 	 * 处理被@Page注解标注的接口方法
 	 * @param method 接口方法
@@ -536,10 +511,6 @@ public class LuckyMapperProxy {
 				return insert(method,args,sql_fp);
 			else if (method.isAnnotationPresent(Join.class))
 				return join(method,args);
-			else if (method.isAnnotationPresent(LeftJoin.class))
-				return leftJoin(method,args);
-			else if (method.isAnnotationPresent(RightJoin.class))
-				return rightJoin(method,args);
 			else if (method.isAnnotationPresent(Page.class))
 				return page(method,args);
 			else 

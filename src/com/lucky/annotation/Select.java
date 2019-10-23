@@ -18,6 +18,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Select {
 	String value() default "";
-	String columns() default "";
+	String[] columns() default {};
 	boolean byid() default false;
 }
