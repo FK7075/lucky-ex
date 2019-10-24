@@ -1,4 +1,4 @@
-package com.lucky.join;
+package com.lucky.query;
 
 import java.util.ArrayList;
 import java.util.Arrays;

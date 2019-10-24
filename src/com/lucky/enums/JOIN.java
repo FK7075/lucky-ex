@@ -1,6 +1,6 @@
 package com.lucky.enums;
 
-public enum JoinWay {
+public enum JOIN {
 	
 	
 	INNER_JOIN("INNER JOIN"),
@@ -9,7 +9,7 @@ public enum JoinWay {
 	
 	private String join;
 	
-	private JoinWay(String join) {
+	private JOIN(String join) {
 		this.join=join;
 	}
 

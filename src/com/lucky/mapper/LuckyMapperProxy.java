@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import com.lucky.annotation.Alias;
 import com.lucky.annotation.AutoId;
@@ -28,17 +27,18 @@ import com.lucky.annotation.Change;
 import com.lucky.annotation.Delete;
 import com.lucky.annotation.Id;
 import com.lucky.annotation.Insert;
-import com.lucky.annotation.Join;
 import com.lucky.annotation.Mapper;
 import com.lucky.annotation.Page;
+import com.lucky.annotation.Query;
 import com.lucky.annotation.Select;
 import com.lucky.annotation.Update;
-import com.lucky.enums.JoinWay;
-import com.lucky.join.JoinQuery;
-import com.lucky.join.Paging;
-import com.lucky.join.SqlAndObject;
-import com.lucky.join.SqlFragProce;
+import com.lucky.enums.JOIN;
+import com.lucky.enums.Sort;
 import com.lucky.mapping.ApplicationBeans;
+import com.lucky.query.Paging;
+import com.lucky.query.QueryBuilder;
+import com.lucky.query.SqlAndObject;
+import com.lucky.query.SqlFragProce;
 import com.lucky.sqldao.PojoManage;
 import com.lucky.sqldao.SqlCore;
 import com.lucky.utils.LuckyUtils;
@@ -106,7 +106,7 @@ public class LuckyMapperProxy {
 			for(Method method:methods) {
 				if(!method.isAnnotationPresent(Select.class)&&!method.isAnnotationPresent(Insert.class)
 				   &&!method.isAnnotationPresent(Update.class)&&!method.isAnnotationPresent(Delete.class)	
-				   &&!method.isAnnotationPresent(Join.class)&&!method.isAnnotationPresent(Page.class)) {
+				   &&!method.isAnnotationPresent(Query.class)&&!method.isAnnotationPresent(Page.class)) {
 					String key=method.getName();
 					String value=p.getProperty(key);
 					if(value!=null)
@@ -241,17 +241,17 @@ public class LuckyMapperProxy {
 					}
 				} else {// 有指定列的标注
 					Parameter[] parameters = method.getParameters();
-					JoinQuery query=new JoinQuery();
+					QueryBuilder query=new QueryBuilder();
 					for(int i=0;i<parameters.length;i++)
 						query.addObject(args[i], getAlias(parameters[i]));
-					query.setJoin(JoinWay.INNER_JOIN);
+					query.setJoin(JOIN.INNER_JOIN);
 					for(String coum:sel.columns())
-						query.resultAppend(coum);
+						query.addResult(coum);
 					if (c.isAssignableFrom(List.class)) {
 						Class<?> listGeneric = getListGeneric(method);
-						return sqlCore.getListJoin(query,listGeneric);
+						return sqlCore.query(query,listGeneric);
 					} else {
-						List<?> list = sqlCore.getListJoin(query,c);
+						List<?> list = sqlCore.query(query,c);
 						if (list == null || list.isEmpty()) {
 							return null;
 						} else {
@@ -380,54 +380,32 @@ public class LuckyMapperProxy {
 	 * @return Object
 	 */
 	private Object join(Method method, Object[] args){
-		Join join = method.getAnnotation(Join.class);
+		Query query= method.getAnnotation(Query.class);
 		Parameter[] parameters = method.getParameters();
-		JoinQuery query=new JoinQuery();
-		for(int i=0;i<parameters.length;i++)
-			query.addObject(args[i], getAlias(parameters[i]));
-		query.setJoin(join.join());
-		String[] columns = join.value();
-		for(String colum:columns)
-			query.resultAppend(colum);
+		QueryBuilder queryBuilder=new QueryBuilder();
+		int end=parameters.length;
+		if(query.limit()) {
+			queryBuilder.limit((int)args[end-2], (int)args[end-1]);
+			end-=2;
+		}
+		for(String sort:query.sort()) {
+			String[] fs=sort.replaceAll(" ", "").split(":");
+			int parseInt = Integer.parseInt(fs[1]);
+			if(parseInt==1)
+				queryBuilder.addSort(fs[0],Sort.ASC);
+			if(parseInt==-1)
+				queryBuilder.addSort(fs[0],Sort.DESC);
+		}
+		for(int i=0;i<end;i++)
+			queryBuilder.addObject(args[i], getAlias(parameters[i]));
+		queryBuilder.setJoin(query.join());
+		String[] fields = query.value();
+		for(String field:fields)
+			queryBuilder.addResult(field);
 		ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
 		Type[] entry = type.getActualTypeArguments();
 		Class<?> cla = (Class<?>) entry[0];
-		return sqlCore.getListJoin(query, cla, join.expression());
-	}
-	/**
-	 * 处理被@Page注解标注的接口方法
-	 * @param method 接口方法
-	 * @param args 参数列表
-	 * @return Object
-	 * @throws ClassNotFoundException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 */
-	private Object page(Method method, Object[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		Page page = method.getAnnotation(Page.class);
-		if (!"".equals(page.value())) {
-			ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
-			Type[] entry = type.getActualTypeArguments();
-			Paging paging=new Paging(page.value());
-			Class<?> cla = (Class<?>) entry[0];
-			return paging.getLimitList(cla, args);
-		} else {
-			String strategy = page.strategy();
-			String strategymtthod = page.method();
-			Paging pageing = null;
-			Object strategyobj = null;
-			if (strategy.contains(".")) {
-				Class<?> clzz = Class.forName(strategy);
-				strategyobj = clzz.newInstance();
-			} else {
-				ApplicationBeans apps = ApplicationBeans.getApplicationBeans();
-				strategyobj = apps.getBean(strategy);
-			}
-			pageing = new Paging(strategyobj, strategymtthod);
-			int currentpagenum = (int) args[0];
-			int pagesize = (int) args[1];
-			return pageing.getPageList(currentpagenum, pagesize);
-		}
+		return sqlCore.query(queryBuilder, cla, query.expression());
 	}
 
 	/**
@@ -443,6 +421,13 @@ public class LuckyMapperProxy {
 	 */
 	private Object notHave(Method method, Object[] args, SqlFragProce sql_fp) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		if(sqlMap.containsKey(method.getName().toUpperCase())) {
+			Parameter[] parameters = method.getParameters();
+			for(int i=0;i<parameters.length;i++) {
+				if(parameters[i].isAnnotationPresent(Page.class)) {
+					args[i]=((int)args[i]-1)*(int)args[i+1];
+					break;
+				}
+			}
 			String methodName=method.getName().toUpperCase();
 			String sqlStr=sqlMap.get(methodName);
 			String sqlCopy=sqlStr.toUpperCase();
@@ -517,10 +502,8 @@ public class LuckyMapperProxy {
 				return delete(method,args,sql_fp);
 			else if (method.isAnnotationPresent(Insert.class))
 				return insert(method,args,sql_fp);
-			else if (method.isAnnotationPresent(Join.class))
+			else if (method.isAnnotationPresent(Query.class))
 				return join(method,args);
-			else if (method.isAnnotationPresent(Page.class))
-				return page(method,args);
 			else 
 				return notHave(method,args,sql_fp);
 		};
@@ -530,7 +513,7 @@ public class LuckyMapperProxy {
 	public String getAlias(Parameter param) {
 		if(param.isAnnotationPresent(Alias.class))
 			return param.getAnnotation(Alias.class).value();
-		return param.getName();
+		return "";
 	}
 
 }

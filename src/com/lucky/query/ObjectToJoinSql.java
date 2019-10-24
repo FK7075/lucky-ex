@@ -1,4 +1,4 @@
-package com.lucky.join;
+package com.lucky.query;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -14,11 +14,15 @@ public class ObjectToJoinSql {
 	private Object[] obj;
 	private Map<Class<?>,String> classAliasMap;
 	private String result="*";
+	private String sort;
+	private String limit;
 
-	public ObjectToJoinSql(JoinQuery query) {
+	public ObjectToJoinSql(QueryBuilder query) {
 		this.join = query.getJoin().getJoin();
 		this.obj = query.getObjectArray();
 		this.classAliasMap=query.getClassAliasMap();
+		this.sort=query.getSort();
+		this.limit=query.getLimit();
 		if(!"".equals(query.getResult()))
 			result=query.getResult();
 	}
@@ -94,7 +98,7 @@ public class ObjectToJoinSql {
 	 * @return
 	 */
 	public String getJoinSql(String...expression) {
-		return "SELECT "+result+" FROM " + getOnSql(expression) + andFragment();
+		return "SELECT "+result+" FROM " + getOnSql(expression) + andFragment()+sort+limit;
 	}
 
 

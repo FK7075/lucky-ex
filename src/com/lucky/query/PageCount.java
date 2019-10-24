@@ -1,4 +1,4 @@
-package com.lucky.join;
+package com.lucky.query;
 
 @FunctionalInterface
 public interface PageCount {

@@ -7,9 +7,9 @@ import java.util.List;
 
 import com.lucky.annotation.Table;
 import com.lucky.cache.StartCache;
-import com.lucky.join.JoinQuery;
-import com.lucky.join.ObjectToJoinSql;
 import com.lucky.mapper.LuckyMapperProxy;
+import com.lucky.query.ObjectToJoinSql;
+import com.lucky.query.QueryBuilder;
 import com.lucky.table.CreateTable;
 import com.lucky.table.TableToJava;
 import com.lucky.utils.LuckyManager;
@@ -534,7 +534,7 @@ public class SqlControl implements SqlCore {
 		return (T) obj;
 	}
 
-	public <T> List<T> getListJoin(JoinQuery query,Class<T> resultClass,String...expression) {
+	public <T> List<T> query(QueryBuilder query,Class<T> resultClass,String...expression) {
 		ObjectToJoinSql join = new ObjectToJoinSql(query);
 		String sql = join.getJoinSql(expression);
 		Object[] obj = join.getJoinObject();
