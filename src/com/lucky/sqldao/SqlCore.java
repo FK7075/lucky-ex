@@ -269,7 +269,7 @@ public interface SqlCore {
 	 * @param resultClass 用于接受返回值的类的Class
 	 * @return
 	 */
-	public <T> List<T> query(QueryBuilder query,Class<T> resultClass,String...expression);
+	public <T> List<T> query(QueryBuilder queryBuilder,Class<T> resultClass,String...expression);
 	
 	
 	/**
