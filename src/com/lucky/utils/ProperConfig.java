@@ -20,7 +20,7 @@ public class ProperConfig {
 	private Integer poolmin;//连接池最小链接数量
 	private Integer poolmax;//连接池最大链接数量
 	private String xmlpath;
-	private List<String> scans=new ArrayList<>();;//组件扫描
+	private List<String> scans=new ArrayList<>();//组件扫描
 	private List<String> scans_mapper=new ArrayList<>();//mapper接口扫描
 	private List<String> claurl=new ArrayList<>();//自动建表的配置
 	
