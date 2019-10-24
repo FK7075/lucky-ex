@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 
 import com.lucky.sqldao.PojoManage;
 
-public class ObjectToJoinSql {
-
+public class ObjectToJoinSql{
+	
 	private String join;
 	private Object[] obj;
 	private Map<Class<?>,String> classAliasMap;
