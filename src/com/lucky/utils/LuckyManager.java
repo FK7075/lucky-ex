@@ -1,7 +1,10 @@
 package com.lucky.utils;
 
+import java.net.URL;
+
 import com.lucky.sqldao.DBConnectionPool;
 import com.lucky.sqldao.SqlOperation;
+import com.lucky.xml.Configuration;
 import com.lucky.xml.LuckyXmlConfig;
 
 public class LuckyManager {
@@ -12,7 +15,22 @@ public class LuckyManager {
 	 * @return
 	 */
 	public static ProperConfig getPropCfg() {
-		return LuckyXmlConfig.loadLuckyXmlConfig().getProper();
+		try {
+			URL resource = LuckyManager.class.getClassLoader().getResource("lucky.xml");
+			if(resource!=null)
+				return LuckyXmlConfig.loadLuckyXmlConfig().getProper();
+			Class<?> cfgClass=Class.forName("appconfig.application");
+			Configuration cfg=(Configuration) cfgClass.newInstance();
+			return cfg.getProperConfig();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("在classpath下找不到lucky.xml配置文件,在appconfig包中也找不到标准配置类application.java...");
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException("无法创建标准配置类application...");
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException("无法创建标准配置类application...");
+		}
 	}
 	/**
 	 * 单例模式返回连接池对象

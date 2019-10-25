@@ -2,6 +2,7 @@ package com.lucky.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,32 +21,31 @@ import com.lucky.utils.LuckyUtils;
 import com.lucky.utils.ProperConfig;
 
 public class LuckyDomXml {
-	
-	private static Document doc;
-	
-	static {
+
+	private static Document getDoc() {
+		URL resource = LuckyDomXml.class.getClassLoader().getResource("lucky.xml");
+		if(resource==null)
+			return null;
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder;
 			documentBuilder = dbf.newDocumentBuilder();
 			InputStream is = LuckyDomXml.class.getClassLoader().getResourceAsStream("lucky.xml");
-			doc=documentBuilder.parse(is);
+			return documentBuilder.parse(is);
 		} catch (ParserConfigurationException e) {
-			System.err.println("xfl_fk :无法创建DocumentBuilder对象.....");
-			e.printStackTrace();
+			System.err.println("JackLabm:)-> 无法创建DocumentBuilder对象.....");
 		} catch (SAXException e) {
-			System.err.println("xfl_fk :无法加载xml文件......");
-			e.printStackTrace();
+			System.err.println("JackLabm:)-> 无法加载xml文件......");
 		} catch (IOException e) {
-			System.err.println("xfl_fk :在classpath下找不到lucky.xml......");
-			e.printStackTrace();
+			System.err.println("JackLabm:)-> 在classpath下找不到lucky.xml......");
 		}
-		
+		return null;
 	}
 
 	public static List<LuckyXml> getLuckyBeans() {
 		List<LuckyXml> list = new ArrayList<>();
-		try {
+		Document doc = getDoc();
+		if (doc != null) {
 			NodeList beans = doc.getElementsByTagName("bean");
 			for (int i = 0; i < beans.getLength(); i++) {
 				LuckyXml bean = new LuckyXml();
@@ -167,9 +167,6 @@ public class LuckyDomXml {
 				}
 				list.add(bean);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("找不到Lucky核心配置文件 lucky.xml,请检查classpath下是否创建了lucky.xml");
 		}
 		return list;
 	}
@@ -177,54 +174,58 @@ public class LuckyDomXml {
 	public static MvcXmlModel getLuckyMappings() {
 		MvcXmlModel mvcxml = new MvcXmlModel();
 		List<List<LuckyMapping>> list = new ArrayList<>();
-		NodeList ismvc = doc.getElementsByTagName("mvc");
-		if (ismvc != null && ismvc.getLength() != 0) {
-			Node mvc = doc.getElementsByTagName("mvc").item(0);
-			NodeList mvc_child = mvc.getChildNodes();
-			for (int i = 0; i < mvc_child.getLength(); i++) {
-				Node mappings = mvc_child.item(i);
-				if ("mapping".equals(mappings.getNodeName())) {
-					List<LuckyMapping> mpalist = new ArrayList<>();
-					String id = mappings.getAttributes().getNamedItem("controller-id").getNodeValue();
-					Node prefix = mappings.getAttributes().getNamedItem("prefix");
-					Node suffix = mappings.getAttributes().getNamedItem("suffix");
-					if (prefix != null && suffix != null) {
-						mvcxml.setControllerstyle(id, prefix.getNodeValue() + "," + suffix.getNodeValue());
-					}
-					NodeList methods = mappings.getChildNodes();
-					for (int j = 0; j < methods.getLength(); j++) {
-						LuckyMapping mapping = new LuckyMapping();
-						mapping.setId(id);
-						Node n1 = methods.item(j);
-						if ("method".equals(n1.getNodeName())) {
-							mapping.setMethodname(n1.getAttributes().getNamedItem("method-name").getNodeValue());
-							mapping.setMethodid(id + "/" + n1.getAttributes().getNamedItem("request-mapping").getNodeValue());
-							List<String> params = new ArrayList<>();
-							NodeList pars = n1.getChildNodes();
-							for (int p = 0; p < pars.getLength(); p++) {
-								Node p1 = pars.item(p);
-								if ("param".equals(p1.getNodeName())) {
-									params.add(p1.getFirstChild().getNodeValue());
-								}
-							}
-							mapping.setParamlist(params);
-							mpalist.add(mapping);
+		Document doc = getDoc();
+		if (doc != null) {
+			NodeList ismvc = doc.getElementsByTagName("mvc");
+			if (ismvc != null && ismvc.getLength() != 0) {
+				Node mvc = doc.getElementsByTagName("mvc").item(0);
+				NodeList mvc_child = mvc.getChildNodes();
+				for (int i = 0; i < mvc_child.getLength(); i++) {
+					Node mappings = mvc_child.item(i);
+					if ("mapping".equals(mappings.getNodeName())) {
+						List<LuckyMapping> mpalist = new ArrayList<>();
+						String id = mappings.getAttributes().getNamedItem("controller-id").getNodeValue();
+						Node prefix = mappings.getAttributes().getNamedItem("prefix");
+						Node suffix = mappings.getAttributes().getNamedItem("suffix");
+						if (prefix != null && suffix != null) {
+							mvcxml.setControllerstyle(id, prefix.getNodeValue() + "," + suffix.getNodeValue());
 						}
-					}
-					list.add(mpalist);
-					mvcxml.setMapping(list);
-				} else if ("setting".equals(mappings.getNodeName())) {
-					NodeList setter = mappings.getChildNodes();
-					for (int l = 0; l < setter.getLength(); l++) {
-						Node style = setter.item(l);
-						if ("style".equals(style.getNodeName())) {
-							mvcxml.setSetterStylePrefix(style.getAttributes().getNamedItem("prefix").getNodeValue());
-							mvcxml.setSetterStyleSuffix(style.getAttributes().getNamedItem("suffix").getNodeValue());
-						}else if("url-path".equals(style.getNodeName())) {
-							mvcxml.setUrl_paths(style.getAttributes().getNamedItem("url").getNodeValue(),
-												style.getAttributes().getNamedItem("path").getNodeValue());
-						}else if("uri-encoding".equals(style.getNodeName())) {
-							mvcxml.setEncoding(style.getFirstChild().getNodeValue());
+						NodeList methods = mappings.getChildNodes();
+						for (int j = 0; j < methods.getLength(); j++) {
+							LuckyMapping mapping = new LuckyMapping();
+							mapping.setId(id);
+							Node n1 = methods.item(j);
+							if ("method".equals(n1.getNodeName())) {
+								mapping.setMethodname(n1.getAttributes().getNamedItem("method-name").getNodeValue());
+								mapping.setMethodid(
+										id + "/" + n1.getAttributes().getNamedItem("request-mapping").getNodeValue());
+								List<String> params = new ArrayList<>();
+								NodeList pars = n1.getChildNodes();
+								for (int p = 0; p < pars.getLength(); p++) {
+									Node p1 = pars.item(p);
+									if ("param".equals(p1.getNodeName())) {
+										params.add(p1.getFirstChild().getNodeValue());
+									}
+								}
+								mapping.setParamlist(params);
+								mpalist.add(mapping);
+							}
+						}
+						list.add(mpalist);
+						mvcxml.setMapping(list);
+					} else if ("setting".equals(mappings.getNodeName())) {
+						NodeList setter = mappings.getChildNodes();
+						for (int l = 0; l < setter.getLength(); l++) {
+							Node style = setter.item(l);
+							if ("style".equals(style.getNodeName())) {
+								mvcxml.setSetterStylePrefix(style.getAttributes().getNamedItem("prefix").getNodeValue());
+								mvcxml.setSetterStyleSuffix(style.getAttributes().getNamedItem("suffix").getNodeValue());
+							} else if ("url-path".equals(style.getNodeName())) {
+								mvcxml.setUrl_paths(style.getAttributes().getNamedItem("url").getNodeValue(),
+										style.getAttributes().getNamedItem("path").getNodeValue());
+							} else if ("uri-encoding".equals(style.getNodeName())) {
+								mvcxml.setEncoding(style.getFirstChild().getNodeValue());
+							}
 						}
 					}
 				}
@@ -235,50 +236,51 @@ public class LuckyDomXml {
 
 	public static ProperConfig getProperties() {
 		ProperConfig proper = new ProperConfig();
-		proper.setPoolmax(100);
-		proper.setPoolmin(10);
-		NodeList orm = doc.getElementsByTagName("orm");
-		for (int i = 0; i < orm.getLength(); i++) {
-			NodeList n1 = orm.item(i).getChildNodes();
-			for (int j = 0; j < n1.getLength(); j++) {
-				Node n2 = n1.item(j);
-				String n2Name = n2.getNodeName();
-				if ("jdbc-driver".equals(n2Name)) {
-					proper.setDriver(n2.getFirstChild().getNodeValue());
-				} else if ("jdbc-url".equals(n2Name)) {
-					proper.setUrl(n2.getFirstChild().getNodeValue());
-				} else if ("jdbc-user".equals(n2Name)) {
-					proper.setUsername(n2.getFirstChild().getNodeValue());
-				} else if ("jdbc-pass".equals(n2Name)) {
-					proper.setPassword(n2.getFirstChild().getNodeValue());
-				} else if ("cache".equals(n2Name)) {
-					if ("true".equals(n2.getFirstChild().getNodeValue()))
-						proper.setCache(true);
-				} else if ("debug".equals(n2Name)) {
-					if ("true".equals(n2.getFirstChild().getNodeValue()))
-						proper.setLog(true);
-				} else if ("classpath".equals(n2Name)) {
-					proper.setSrcPath(n2.getFirstChild().getNodeValue());
-				} else if ("pool".equals(n2Name)) {
-					Node min = n2.getAttributes().getNamedItem("min");
-					Node max = n2.getAttributes().getNamedItem("max");
-					proper.setPoolmin(Integer.parseInt(min.getNodeValue()));
-					proper.setPoolmax(Integer.parseInt(max.getNodeValue()));
-				} else if ("reverse-package".equals(n2Name)) {
-					proper.setPackages(n2.getFirstChild().getNodeValue());
-				} else if ("scan".equals(n2Name)) {
-					proper.setScans(LuckyUtils.strToArray(n2.getFirstChild().getNodeValue()));
-				}else if("scan-mapper".equals(n2Name)) {
-					proper.setScans_mapper(LuckyUtils.strToArray(n2.getFirstChild().getNodeValue()));
-				} else if ("create-table".equals(n2Name)) {
-					List<String> c_url = new ArrayList<>();
-					NodeList ct = n2.getChildNodes();
-					for (int p = 0; p < ct.getLength(); p++) {
-						Node ct1 = ct.item(p);
-						 if ("c-url".equals(ct1.getNodeName()))
-							c_url.add(ct1.getFirstChild().getNodeValue());
+		Document doc = getDoc();
+		if(doc!=null) {
+			NodeList orm = doc.getElementsByTagName("orm");
+			for (int i = 0; i < orm.getLength(); i++) {
+				NodeList n1 = orm.item(i).getChildNodes();
+				for (int j = 0; j < n1.getLength(); j++) {
+					Node n2 = n1.item(j);
+					String n2Name = n2.getNodeName();
+					if ("jdbc-driver".equals(n2Name)) {
+						proper.setDriver(n2.getFirstChild().getNodeValue());
+					} else if ("jdbc-url".equals(n2Name)) {
+						proper.setUrl(n2.getFirstChild().getNodeValue());
+					} else if ("jdbc-user".equals(n2Name)) {
+						proper.setUsername(n2.getFirstChild().getNodeValue());
+					} else if ("jdbc-pass".equals(n2Name)) {
+						proper.setPassword(n2.getFirstChild().getNodeValue());
+					} else if ("cache".equals(n2Name)) {
+						if ("true".equals(n2.getFirstChild().getNodeValue()))
+							proper.setCache(true);
+					} else if ("debug".equals(n2Name)) {
+						if ("true".equals(n2.getFirstChild().getNodeValue()))
+							proper.setLog(true);
+					} else if ("classpath".equals(n2Name)) {
+						proper.setSrcPath(n2.getFirstChild().getNodeValue());
+					} else if ("pool".equals(n2Name)) {
+						Node min = n2.getAttributes().getNamedItem("min");
+						Node max = n2.getAttributes().getNamedItem("max");
+						proper.setPoolmin(Integer.parseInt(min.getNodeValue()));
+						proper.setPoolmax(Integer.parseInt(max.getNodeValue()));
+					} else if ("reverse-package".equals(n2Name)) {
+						proper.setPackages(n2.getFirstChild().getNodeValue());
+					} else if ("scan".equals(n2Name)) {
+						proper.setScans(LuckyUtils.strToArray(n2.getFirstChild().getNodeValue()));
+					} else if ("scan-mapper".equals(n2Name)) {
+						proper.setScans_mapper(LuckyUtils.strToArray(n2.getFirstChild().getNodeValue()));
+					} else if ("create-table".equals(n2Name)) {
+						List<String> c_url = new ArrayList<>();
+						NodeList ct = n2.getChildNodes();
+						for (int p = 0; p < ct.getLength(); p++) {
+							Node ct1 = ct.item(p);
+							if ("c-url".equals(ct1.getNodeName()))
+								c_url.add(ct1.getFirstChild().getNodeValue());
+						}
+						proper.setClaurl(c_url);
 					}
-					proper.setClaurl(c_url);
 				}
 			}
 		}

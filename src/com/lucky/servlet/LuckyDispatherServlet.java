@@ -21,6 +21,7 @@ import com.lucky.mapping.AnnotationOperation;
 import com.lucky.mapping.ApplicationBeans;
 import com.lucky.mapping.ControllerAndMethod;
 import com.lucky.mapping.UrlParsMap;
+import com.lucky.utils.LuckyUtils;
 
 @MultipartConfig
 public class LuckyDispatherServlet extends HttpServlet {
@@ -36,16 +37,17 @@ public class LuckyDispatherServlet extends HttpServlet {
 	private ResponseControl responseControl;
 
 	public void init(ServletConfig config) {
+		LuckyUtils.welcome();
 		urlParsMap=new UrlParsMap();
 		responseControl=new ResponseControl();
 		app=ApplicationBeans.getApplicationBeans();
 		beans=app.getBeans();
 		url_path=app.getUrlAdnPath();
 		this.handerMaps=app.getMapping();
-		System.out.println("xflfk_ Lucky×Ô¶¯´´½¨µÄ¶ÔÏó:"+app.getBeans());
-		System.out.println("xflfk_ Controller:"+app.getControllerMaps());
-		System.out.println("xflfk_ LuckyÒÑÖªµÄurlÓ³Éä¹ØÏµ"+app.getHanderMaps2());
-		System.out.println("xflfk_ Lucky¶ÔÏó×¢Èë³É¹¦¡£");
+		System.out.println("JackLabm:)-> Luckyè‡ªåŠ¨åˆ›å»ºçš„å¯¹è±¡:"+app.getBeans());
+		System.out.println("JackLabm:)-> Controller:"+app.getControllerMaps());
+		System.out.println("JackLabm:)-> Luckyå·²çŸ¥çš„urlæ˜ å°„å…³ç³»"+app.getHanderMaps2());
+		System.out.println("JackLabm:)-> Luckyå¯¹è±¡æ³¨å…¥æˆåŠŸã€‚");
 	}
 
 	
@@ -78,7 +80,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 			try {
 				app.findExpandMethod();
 				app.pourProxyObject();
-				app.setBeans(beans);//»¹Ô­
+				app.setBeans(beans);//è¿˜åŸ
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -93,7 +95,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 			}
 			ControllerAndMethod controllerAndMethod = urlParsMap.pars(beans,app.getPre_suf(),handerMaps, path);
 			if(controllerAndMethod==null) {
-				resp.getWriter().print("<h3>ÕÒ²»ÓëÇëÇóÏàÆ¥ÅäµÄÓ³Éä×ÊÔ´,Çë¼ì²éÄúµÄURLÊÇ·ñÕıÈ·[404:"+req.getRequestURL()+"]....</h3>");
+				resp.getWriter().print("<h3>æ‰¾ä¸ä¸è¯·æ±‚ç›¸åŒ¹é…çš„æ˜ å°„èµ„æº,è¯·æ£€æŸ¥æ‚¨çš„URLæ˜¯å¦æ­£ç¡®[404:"+req.getRequestURL()+"]....</h3>");
 				return;
 			}
 			model.setRestMap(controllerAndMethod.getRestKV());
@@ -111,11 +113,11 @@ public class LuckyDispatherServlet extends HttpServlet {
 			}else {
 				Method method = controllerAndMethod.getMethod();
 				if(method==null) {
-					resp.getWriter().print("<h3>ÕÒ²»ÓëÇëÇóÏàÆ¥ÅäµÄÓ³Éä×ÊÔ´,Çë¼ì²éÄúµÄURLÊÇ·ñÕıÈ·[404:"+req.getRequestURL()+"]....</h3>");
+					resp.getWriter().print("<h3>æ‰¾ä¸ä¸è¯·æ±‚ç›¸åŒ¹é…çš„æ˜ å°„èµ„æº,è¯·æ£€æŸ¥æ‚¨çš„URLæ˜¯å¦æ­£ç¡®[404:"+req.getRequestURL()+"]....</h3>");
 					return;
 				}
 				if(!urlParsMap.isExistRequestMethod(method,this.method)&&method.isAnnotationPresent(RequestMapping.class)) {
-					resp.getWriter().print("<h3>500:ÄúµÄÇëÇóÀàĞÍÎª"+this.method+",µ±Ç°·½·¨²¢²»Ö§£¡</h3>");
+					resp.getWriter().print("<h3>500:æ‚¨çš„è¯·æ±‚ç±»å‹ä¸º"+this.method+",å½“å‰æ–¹æ³•å¹¶ä¸æ”¯ï¼</h3>");
 				}else {
 					boolean isDownload = method.isAnnotationPresent(Download.class);
 					List<String> pre_suf;
@@ -130,7 +132,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 					Object obj1 = new Object();
 					args = (Object[]) anop.getControllerMethodParam(model,method);
 					obj1 = method.invoke(obj, args);
-					if (isDownload == true)//ÏÂÔØ²Ù×÷
+					if (isDownload == true)//ä¸‹è½½æ“ä½œ
 						anop.download(model, method);
 					responseControl.jump(model,pre_suf, method, obj1);
 				}
@@ -149,5 +151,4 @@ public class LuckyDispatherServlet extends HttpServlet {
 			urlParsMap.closeLuckyWebContext();
 		}
 	}
-
 }

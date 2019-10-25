@@ -9,22 +9,22 @@ import com.lucky.utils.LuckyManager;
 import com.lucky.utils.LuckyUtils;
 
 /**
- * ConnectionÁ¬½Ó³Ø¹ÜÀí
+ * Connectionè¿æ¥æ± ç®¡ç†
  * @author fk-7075
  *
  */
 public class DBConnectionPool {
-	private List<Connection> pool;//Á¬½Ó³Ø
-	private final int POOL_MIN=LuckyManager.getPropCfg().getPoolmin();//×îĞ¡Á´½ÓÊıÁ¿
-	private final int POOL_MAX=LuckyManager.getPropCfg().getPoolmax();//×î´óÁ´½ÓÊıÁ¿
+	private List<Connection> pool;//è¿æ¥æ± 
+	private final int POOL_MIN=LuckyManager.getPropCfg().getPoolmin();//æœ€å°é“¾æ¥æ•°é‡
+	private final int POOL_MAX=LuckyManager.getPropCfg().getPoolmax();//æœ€å¤§é“¾æ¥æ•°é‡
 	
 	public DBConnectionPool() {
 		initPool();
-		System.out.println("xflfk:³É¹¦Á¬½Óµ½Êı¾İ¿â #"+LuckyUtils.getDatabaseName()+"#,Á¬½Ó³Ø³õÊ¼»¯³É¹¦£¬µ±Ç°³ØÖĞ¹²ÓĞ"+POOL_MIN+"¸öConnection¶ÔÏó¡£");
+		System.out.println("JackLabm:)-> æˆåŠŸè¿æ¥åˆ°æ•°æ®åº“ #"+LuckyUtils.getDatabaseName()+"#,è¿æ¥æ± åˆå§‹åŒ–æˆåŠŸï¼Œå½“å‰æ± ä¸­å…±æœ‰"+POOL_MIN+"ä¸ªConnectionå¯¹è±¡ã€‚");
 	}
 	
 	/**
-	 * ³õÊ¼»¯Á¬½Ó³Ø£¬´´½¨×îĞ¡Á´½ÓÊıÁ¿µÄÁ´½Ó¶ÔÏó
+	 * åˆå§‹åŒ–è¿æ¥æ± ï¼Œåˆ›å»ºæœ€å°é“¾æ¥æ•°é‡çš„é“¾æ¥å¯¹è±¡
 	 */
 	public void initPool() {
 		if(pool==null)
@@ -34,8 +34,8 @@ public class DBConnectionPool {
 		}
 	}
 	/**
-	 * ·µ»ØÁ¬½Ó³ØÖĞµÄ×îºóÒ»¸ö¶ÔÏó£¬²¢´ÓÁ¬½Ó³ØÖĞÒÆ³ıÕâ¸ö¶ÔÏó
-	 * @return ·µ»ØÒ»¸öÁ¬½Ó¶ÔÏó
+	 * è¿”å›è¿æ¥æ± ä¸­çš„æœ€åä¸€ä¸ªå¯¹è±¡ï¼Œå¹¶ä»è¿æ¥æ± ä¸­ç§»é™¤è¿™ä¸ªå¯¹è±¡
+	 * @return è¿”å›ä¸€ä¸ªè¿æ¥å¯¹è±¡
 	 */
 	public synchronized Connection getConnection() {
 		if(pool.size()==0) {
@@ -48,8 +48,8 @@ public class DBConnectionPool {
 		}
 	}
 	/**
-	 * ¹Ø±ÕÁ´½Ó£¬µ±Á¬½Ó³ØÖĞµÄÁ´½Ó¶ÔÏó³¬¹ı×î´óÖµÊ±²ÅÕæÕıµÄ¹Ø±Õ
-	 * @param conn Á¬½Ó¶ÔÏó
+	 * å…³é—­é“¾æ¥ï¼Œå½“è¿æ¥æ± ä¸­çš„é“¾æ¥å¯¹è±¡è¶…è¿‡æœ€å¤§å€¼æ—¶æ‰çœŸæ­£çš„å…³é—­
+	 * @param conn è¿æ¥å¯¹è±¡
 	 */
 	public synchronized void closeConection(Connection conn) {
 		if(pool.size()>this.POOL_MAX) {

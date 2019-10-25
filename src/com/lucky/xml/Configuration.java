@@ -1,5 +1,9 @@
 package com.lucky.xml;
 
-public interface Configuration {
+import com.lucky.utils.ProperConfig;
+
+public abstract class Configuration {
+	
+	public abstract ProperConfig getProperConfig();
 
 }

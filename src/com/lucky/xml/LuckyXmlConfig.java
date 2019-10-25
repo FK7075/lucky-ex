@@ -16,7 +16,6 @@ public class LuckyXmlConfig {
 	
 	
 	private LuckyXmlConfig() {
-		
 		this.beans=LuckyDomXml.getLuckyBeans();
 		this.mvcxml=LuckyDomXml.getLuckyMappings();
 		this.proper=LuckyDomXml.getProperties();
