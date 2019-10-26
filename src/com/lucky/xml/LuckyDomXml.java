@@ -41,6 +41,21 @@ public class LuckyDomXml {
 		}
 		return null;
 	}
+	
+	private static Configuration getConfiguration() {
+		Class<?> cfgClass;
+		try {
+			cfgClass = Class.forName("appconfig.application");
+			Configuration cfg=(Configuration) cfgClass.newInstance();
+			return cfg;
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("在classpath下找不到lucky.xml配置文件,在appconfig包中也找不到标准配置类application.java...");
+		} catch (InstantiationException e) {
+			throw new RuntimeException("在classpath下找不到lucky.xml配置文件,在appconfig包中也找不到标准配置类application.java...");
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("在classpath下找不到lucky.xml配置文件,在appconfig包中也找不到标准配置类application.java...");
+		}
+	}
 
 	public static List<LuckyXml> getLuckyBeans() {
 		List<LuckyXml> list = new ArrayList<>();
@@ -167,6 +182,8 @@ public class LuckyDomXml {
 				}
 				list.add(bean);
 			}
+		}else {
+			getConfiguration().loadBeanSetting(list);
 		}
 		return list;
 	}
@@ -230,6 +247,9 @@ public class LuckyDomXml {
 					}
 				}
 			}
+		}else {
+			getConfiguration().loadMvcSetting(mvcxml, list);
+			mvcxml.setMapping(list);
 		}
 		return mvcxml;
 	}
@@ -283,6 +303,8 @@ public class LuckyDomXml {
 					}
 				}
 			}
+		}else {
+			getConfiguration().loadOrmSetting(proper);
 		}
 		return proper;
 	}
