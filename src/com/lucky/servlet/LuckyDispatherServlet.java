@@ -123,9 +123,8 @@ public class LuckyDispatherServlet extends HttpServlet {
 					List<String> pre_suf;
 					Object obj = controllerAndMethod.getController();
 					List<String> setterPreSuf=app.getSetter_pre_suf();
-					if(!setterPreSuf.isEmpty()) {
+					if(!setterPreSuf.isEmpty())
 						pre_suf=setterPreSuf;
-					}
 					pre_suf=controllerAndMethod.getPreAndSuf();
 					app.autowReqAdnResp(obj,model);
 					Object[] args;

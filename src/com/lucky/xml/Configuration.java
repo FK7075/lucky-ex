@@ -4,6 +4,10 @@ import com.lucky.utils.ProperConfig;
 
 public abstract class Configuration {
 	
-	public abstract ProperConfig getProperConfig();
+	public ProperConfig getProperConfig() {
+		ProperConfig property=new ProperConfig();
+		property.setLog(false);
+		return property;
+	}
 
 }
