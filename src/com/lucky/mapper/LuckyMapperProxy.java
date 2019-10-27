@@ -230,7 +230,6 @@ public class LuckyMapperProxy {
 				return false;
 			}
 		}else {
-			
 			String sql = sel.value();
 			if ("".equals(sql)) {
 				if ("".equals(sel.columns())) {
@@ -280,6 +279,7 @@ public class LuckyMapperProxy {
 						}
 					}
 				} else {
+					pageParam(method,args);
 					if (c.isAssignableFrom(List.class)) {
 						Class<?> listGeneric = getListGeneric(method);
 						if(method.isAnnotationPresent(Change.class)) {
@@ -421,13 +421,7 @@ public class LuckyMapperProxy {
 	 */
 	private Object notHave(Method method, Object[] args, SqlFragProce sql_fp) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		if(sqlMap.containsKey(method.getName().toUpperCase())) {
-			Parameter[] parameters = method.getParameters();
-			for(int i=0;i<parameters.length;i++) {
-				if(parameters[i].isAnnotationPresent(Page.class)) {
-					args[i]=((int)args[i]-1)*(int)args[i+1];
-					break;
-				}
-			}
+			pageParam(method,args);
 			String methodName=method.getName().toUpperCase();
 			String sqlStr=sqlMap.get(methodName);
 			String sqlCopy=sqlStr.toUpperCase();
@@ -515,6 +509,17 @@ public class LuckyMapperProxy {
 			return param.getAnnotation(Alias.class).value();
 		return "";
 	}
+	
+	private void pageParam(Method method,Object[] args) {
+		Parameter[] parameters = method.getParameters();
+		for(int i=0;i<parameters.length;i++) {
+			if(parameters[i].isAnnotationPresent(Page.class)) {
+				args[i]=((int)args[i]-1)*(int)args[i+1];
+				break;
+			}
+		}
+	}
+
 
 }
 

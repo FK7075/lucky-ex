@@ -17,9 +17,10 @@ import com.lucky.utils.ProperConfig;
  *
  */
 public class JdbcUtils {
-	private static ProperConfig propCfg=LuckyManager.getPropCfg();
+	private static ProperConfig propCfg;
 	static {
 		try {
+			propCfg=LuckyManager.getPropCfg();
 			Class.forName(propCfg.getDriver());
 		} catch (ClassNotFoundException e) {
 			System.out.println(LuckyUtils.showtime()+"JackLabm: È±Ê§mysqlµÄÇý¶¯°ü");

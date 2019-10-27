@@ -17,8 +17,8 @@ public class ProperConfig {
 	private boolean cache;//查询缓存
 	private String packages;//逆向工程创建的类的所在的包
 	private String srcPath;//逆向工程创建类时需要知道的src文件夹的绝对路径
-	private Integer poolmin;//连接池最小链接数量
-	private Integer poolmax;//连接池最大链接数量
+	private Integer poolmin=10;//连接池最小链接数量
+	private Integer poolmax=100;//连接池最大链接数量
 	private List<String> scans=new ArrayList<>();//组件扫描
 	private List<String> scans_mapper=new ArrayList<>();//mapper接口扫描
 	private List<String> claurl=new ArrayList<>();//自动建表的配置

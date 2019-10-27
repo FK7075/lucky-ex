@@ -1,8 +1,7 @@
 package com.lucky.xml;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.lucky.utils.ProperConfig;
 
 public abstract class Configuration {
 	
@@ -10,14 +9,19 @@ public abstract class Configuration {
 	 * 设置有关Orm的配置
 	 * @param orm
 	 */
-	public void loadOrmSetting(ProperConfig orm) {
-		orm.setLog(false);
-		orm.setPoolmin(10);
-		orm.setPoolmax(100);
-		orm.setCache(false);
-		orm.setDriver("com.mysql.jdbc.Drive");
-		orm.setUsername("root");
-		orm.setPassword("1234");
+	public void loadOrmSetting(DatabaseSetter dbcfg) {
+		dbcfg.setDatabaseType("MySql");
+		dbcfg.setIp("localhost");
+		dbcfg.setPort("3306");
+		dbcfg.setPassword("1234");
+		dbcfg.setUser("root");
+		dbcfg.setDebug(false);
+		dbcfg.setCache(false);
+		dbcfg.setPoolMin(10);
+		dbcfg.setPoolMax(100);
+		dbcfg.setMapperPackage(new ArrayList<>());
+		dbcfg.setEntityFullPath(new ArrayList<>());
+		dbcfg.setMapperPackage(new ArrayList<>());
 	}
 	
 	/**

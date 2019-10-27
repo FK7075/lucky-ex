@@ -304,7 +304,15 @@ public class LuckyDomXml {
 				}
 			}
 		}else {
-			getConfiguration().loadOrmSetting(proper);
+			DatabaseSetter db=new DatabaseSetter();
+			getConfiguration().loadOrmSetting(db);
+			proper.setUrl(db.getUrl());proper.setUsername(db.getUser());
+			proper.setPassword(db.getPassword());proper.setPoolmax(db.getPoolMax());
+			proper.setPoolmin(db.getPoolMin());proper.setCache(db.isCache());
+			proper.setLog(db.isDebug());proper.setPackages(db.getReversePackage());
+			proper.setSrcPath(db.getSrcPath());proper.setScans_mapper(db.getMapperPackage());
+			proper.setScans(db.getComponentPackage());proper.setClaurl(db.getEntityFullPath());
+			proper.setDriver(db.getDriver());
 		}
 		return proper;
 	}
