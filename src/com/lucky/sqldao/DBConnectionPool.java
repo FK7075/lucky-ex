@@ -20,7 +20,7 @@ public class DBConnectionPool {
 	
 	public DBConnectionPool() {
 		initPool();
-		System.out.println("JackLabm:)-> 成功连接到数据库 #"+LuckyUtils.getDatabaseName()+"#,连接池初始化成功，当前池中共有"+POOL_MIN+"个Connection对象。");
+		System.out.println(LuckyUtils.showtime()+"JackLabm:  成功连接到数据库 #"+LuckyUtils.getDatabaseName()+"#,连接池初始化成功，当前池中共有"+POOL_MIN+"个Connection对象。");
 	}
 	
 	/**

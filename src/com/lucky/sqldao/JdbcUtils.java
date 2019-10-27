@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.lucky.utils.LuckyManager;
+import com.lucky.utils.LuckyUtils;
 import com.lucky.utils.ProperConfig;
 
 /**
@@ -21,7 +22,7 @@ public class JdbcUtils {
 		try {
 			Class.forName(propCfg.getDriver());
 		} catch (ClassNotFoundException e) {
-			System.err.println("xflfk:缺失mysql的驱动包");
+			System.out.println(LuckyUtils.showtime()+"JackLabm: 缺失mysql的驱动包");
 			e.printStackTrace();
 		}
 	}
@@ -33,7 +34,7 @@ public class JdbcUtils {
 		try {
 			return DriverManager.getConnection(propCfg.getUrl(),propCfg.getUsername(),propCfg.getPassword());
 		} catch (SQLException e) {
-			System.err.println("xflfk：数据库路径错误或数据库用户名密码错误,请检查lucky.xml中的相关配置信息是否正确！");
+			System.out.println(LuckyUtils.showtime()+"JackLabm: 数据库路径错误或数据库用户名密码错误,请检查lucky.xml中的相关配置或application类的配置信息是否正确！");
 			e.printStackTrace();
 			return null;
 		}
@@ -50,7 +51,7 @@ public class JdbcUtils {
 				LuckyManager.getDBPool().closeConection(conn);
 			}
 		} catch (Exception e) {
-			System.out.println("xflfk:资源关闭错误！");
+			System.out.println(LuckyUtils.showtime()+"JackLabm:  资源关闭错误！");
 			e.printStackTrace();
 		}
 	}

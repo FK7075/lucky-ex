@@ -44,10 +44,10 @@ public class LuckyDispatherServlet extends HttpServlet {
 		beans=app.getBeans();
 		url_path=app.getUrlAdnPath();
 		this.handerMaps=app.getMapping();
-		System.out.println("JackLabm:)-> Lucky自动创建的对象:"+app.getBeans());
-		System.out.println("JackLabm:)-> Controller:"+app.getControllerMaps());
-		System.out.println("JackLabm:)-> Lucky已知的url映射关系"+app.getHanderMaps2());
-		System.out.println("JackLabm:)-> Lucky对象注入成功。");
+		System.out.println(LuckyUtils.showtime()+"JackLabm:  Lucky自动创建的对象:"+app.getBeans());
+		System.out.println(LuckyUtils.showtime()+"JackLabm:  Controller:"+app.getControllerMaps());
+		System.out.println(LuckyUtils.showtime()+"JackLabm:  Lucky已知的url映射关系"+app.getHanderMaps2());
+		System.out.println(LuckyUtils.showtime()+"JackLabm:  Lucky对象注入成功。");
 	}
 
 	
