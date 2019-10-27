@@ -32,9 +32,9 @@ public class LogInfo {
 	private void log(String sql, Object[] obj) {
 		System.out.println(LuckyUtils.showtime()+"SQL:   " + sql);
 		if (obj == null)
-			System.out.println("Object[]: { }");
+			System.out.println(LuckyUtils.showtime()+"Object[]: { }");
 		else {
-			System.out.print("Object[]: {");
+			System.out.print(LuckyUtils.showtime()+"Object[]: {");
 			for (Object o : obj) {
 				System.out.print(o + "   ");
 			}
