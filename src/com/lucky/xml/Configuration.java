@@ -22,6 +22,7 @@ public abstract class Configuration {
 		dbcfg.setMapperPackage(new ArrayList<>());
 		dbcfg.setEntityFullPath(new ArrayList<>());
 		dbcfg.setMapperPackage(new ArrayList<>());
+		dbcfg.setComponentPackage(new ArrayList<>());
 	}
 	
 	/**
