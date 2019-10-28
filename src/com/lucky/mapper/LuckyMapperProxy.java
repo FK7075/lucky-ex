@@ -264,21 +264,43 @@ public class LuckyMapperProxy {
 				}
 			} else {
 				if (sql.contains("#{")) {
+					if(method.getParameterCount()==3)
+						pageParam(method,args);
 					SqlAndArray sqlArr = noSqlTo(args[0],sql);
 					if (c.isAssignableFrom(List.class)) {
 						Class<?> listGeneric = getListGeneric(method);
 						if(method.isAnnotationPresent(Change.class)) {
 							SqlAndObject so = sql_fp.filterSql(sqlArr.getSql(),sqlArr.getArray());
-							return (List<T>) sqlCore.getList(listGeneric, so.getSqlStr(), so.getObjects());
+							if(method.getParameterCount()==3) {
+								List<Object> list=new ArrayList<>();
+								list.addAll(Arrays.asList(so.getObjects()));list.add(args[1]);list.add(args[2]);
+								return (List<T>) sqlCore.getList(listGeneric, so.getSqlStr(), list.toArray());
+							}
+								return (List<T>) sqlCore.getList(listGeneric, so.getSqlStr(), so.getObjects());
 						}else {
+							if(method.getParameterCount()==3) {
+								List<Object> list=new ArrayList<>();
+								list.addAll(Arrays.asList(sqlArr.getArray()));list.add(args[1]);list.add(args[2]);
+								return (List<T>) sqlCore.getList(listGeneric, sqlArr.getSql(), list.toArray());
+							}
 							return (List<T>) sqlCore.getList(listGeneric, sqlArr.getSql(), sqlArr.getArray());
 						}
 					} else {
 						List<T> list=new ArrayList<>();
 						if(method.isAnnotationPresent(Change.class)) {
 							SqlAndObject so = sql_fp.filterSql(sqlArr.getSql(), sqlArr.getArray());
+							if(method.getParameterCount()==3) {
+								List<Object> lists=new ArrayList<>();
+								lists.addAll(Arrays.asList(so.getObjects()));lists.add(args[1]);lists.add(args[2]);
+								return (List<T>) sqlCore.getList(c, so.getSqlStr(), lists.toArray());
+							}
 							return (T) sqlCore.getObject(c, so.getSqlStr(), so.getObjects());
 						}else {
+							if(method.getParameterCount()==3) {
+								List<Object> lists=new ArrayList<>();
+								lists.addAll(Arrays.asList(sqlArr.getArray()));lists.add(args[1]);lists.add(args[2]);
+								return (List<T>) sqlCore.getList(c, sqlArr.getSql(), list.toArray());
+							}
 							return (T) sqlCore.getObject(c, sqlArr.getSql(), sqlArr.getArray());
 						}
 					}
@@ -442,7 +464,12 @@ public class LuckyMapperProxy {
 				}
 				SqlAndArray sqlArr = noSqlTo(args[0],sqlStr);
 				sqlStr=sqlArr.getSql();
-				args=sqlArr.getArray();
+				if(method.getParameterCount()==3) {
+					List<Object> list=new ArrayList<>();
+					list.addAll(Arrays.asList(sqlArr.getArray()));list.add(args[1]);list.add(args[2]);
+					args=list.toArray();
+				}else
+					args=sqlArr.getArray();
 			}
 			if(sqlCopy.contains("SELECT")) {
 				if("C:".equalsIgnoreCase(sqlCopy.substring(0, 2))) {
