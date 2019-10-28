@@ -13,6 +13,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -85,7 +86,10 @@ public class LuckyMapperProxy {
 			String[] propertys=mapper.properties();
 			String coding=mapper.codedformat();
 			for(String path:propertys) {
-				String propertyPath=this.getClass().getClassLoader().getResource(path).getPath();
+				URL resource = this.getClass().getClassLoader().getResource(path);
+				if(resource==null)
+					throw new RuntimeException("找不到"+clzz.getName()+"的Sql配置文件"+path+"!请检查@Mapper注解上的properties配置信息！");
+				String propertyPath=resource.getPath();
 				loadProperty(clzz,propertyPath,coding);
 
 			}
