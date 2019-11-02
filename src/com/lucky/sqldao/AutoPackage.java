@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lucky.exception.AutoPackageException;
 import com.lucky.utils.LuckyManager;
 import com.lucky.utils.LuckyUtils;
 
@@ -27,8 +28,7 @@ public class AutoPackage {
 	 * @param obj 替换占位符的数组
 	 * @return 返回一个泛型集合
 	 */
-	@SuppressWarnings("all")
-	public List<?> getTable(Class c, String sql, Object... obj) {
+	public List<?> getTable(Class<?> c, String sql, Object... obj) {
 		List<Object> list = new ArrayList<Object>();
 		rs = sqloperation.getResultSet(sql, obj);
 		Object object = null;
@@ -62,8 +62,8 @@ public class AutoPackage {
 					list.add(object);
 				}
 			} catch (Exception e) {
-				System.err.println("xflfk:反射信息错误，请检查方法中有关Class的参数是正确！确认表与实体类的编写是否符合规范！");
 				e.printStackTrace();
+				throw new AutoPackageException("xflfk:反射信息错误，请检查方法中有关Class的参数是正确！确认表与实体类的编写是否符合规范！");
 			}finally {
 				sqloperation.close();
 			}

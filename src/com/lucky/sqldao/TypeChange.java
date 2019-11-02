@@ -44,7 +44,7 @@ public class TypeChange {
 			if(!("null".equals(old)))
 				xfl=Boolean.parseBoolean(old);
 		}
-		return xfl;
+		return xfl.toString();
 	}
 	/**
 	 * javaתmysql

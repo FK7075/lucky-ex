@@ -160,7 +160,7 @@ public class DatabaseSetter {
 			url+="jdbc:mysql://";
 		url+=ip+":"+port+"/"+databaseName;
 		if(encode!=null)
-			url+="?characterEncoding="+encode;
+			url+="?useUnicode=true&characterEncoding="+encode;
 		return url;
 	}
 
