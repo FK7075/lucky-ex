@@ -3,7 +3,7 @@ package com.lucky.xml;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucky.mapping.PackageScan;
+import com.lucky.ioc.PackageScan;
 import com.lucky.utils.ProperConfig;
 
 public class LuckyXmlConfig {

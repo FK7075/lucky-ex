@@ -1,4 +1,4 @@
-package com.lucky.mapping;
+package com.lucky.ioc;
 
 import java.io.File;
 import java.util.ArrayList;
