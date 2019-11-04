@@ -23,10 +23,29 @@ public class PackageScan {
 	 * 找到所有Ioc组件所在文件夹的包路径，并存入到的集合中
 	 * @param components 普通Ioc组件
 	 */
+	/**
+	 * 找到所有Ioc组件所在文件夹的包路径，并存入到的集合中
+	 * @param components
+	 * @param suffix
+	 */
 	public void loadComponent(List<String> components,String...suffix) {
 		List<String> clist=new ArrayList<>();
 		findDafaultFolder(clist,projectPath,suffix);
 		addClassPath(components,clist);
+	}
+	
+
+	/**
+	 * 找到所有Ioc组件所在文件夹的包路径，并存入到的集合中
+	 * @param suffix
+	 * @return
+	 */
+	public List<String> loadComponent(String...suffix) {
+		List<String> components=new ArrayList<>();
+		List<String> clist=new ArrayList<>();
+		findDafaultFolder(clist,projectPath,suffix);
+		addClassPath(components,clist);
+		return components;
 	}
 	
 	/**
