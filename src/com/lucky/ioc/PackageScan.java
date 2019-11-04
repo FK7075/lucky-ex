@@ -14,9 +14,17 @@ public class PackageScan {
 
 	private String projectPath;
 	
-	public PackageScan() {
+	private static PackageScan packageScan;
+	
+	private PackageScan() {
 		projectPath=this.getClass().getClassLoader().getResource("").getPath();
 		projectPath=projectPath.replaceAll("\\\\", "/").substring(1,projectPath.length()-1);
+	}
+	
+	public static PackageScan getPackageScan() {
+		if(packageScan==null)
+			packageScan=new PackageScan();
+		return packageScan;
 	}
 	
 	/**
@@ -34,6 +42,10 @@ public class PackageScan {
 		addClassPath(components,clist);
 	}
 	
+	public static void main(String[] args) {
+		PackageScan ps=new PackageScan();
+		System.out.println(ps.loadComponent("aopp"));
+	}
 
 	/**
 	 * 找到所有Ioc组件所在文件夹的包路径，并存入到的集合中

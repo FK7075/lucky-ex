@@ -14,10 +14,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.lucky.annotation.Agent;
-import com.lucky.annotation.App;
+import com.lucky.annotation.Component;
 import com.lucky.annotation.Autowired;
 import com.lucky.annotation.Controller;
-import com.lucky.annotation.Dao;
+import com.lucky.annotation.Repository;
 import com.lucky.annotation.Expand;
 import com.lucky.annotation.Real;
 import com.lucky.annotation.RequestMapping;
@@ -103,7 +103,7 @@ public class HanderMapping {
 
 	// 初始化容器
 	public HanderMapping() {
-		ps=new PackageScan();
+		ps=PackageScan.getPackageScan();
 		pre_suf = new HashMap<>();
 		setter_pre_suf = new ArrayList<>();
 		controllerMaps = new HashSet<String>();
@@ -353,9 +353,9 @@ public class HanderMapping {
 					else
 						key2 = service.value();
 					beans.put(key2, instanse2);
-				} else if (clzz.isAnnotationPresent(Dao.class)) {
+				} else if (clzz.isAnnotationPresent(Repository.class)) {
 					Object instanse3 = clzz.newInstance();
-					Dao dao = clzz.getAnnotation(Dao.class);
+					Repository dao = clzz.getAnnotation(Repository.class);
 					String key3;
 					if ("".equals(dao.value()))
 						key3 = clzz.getSimpleName();
@@ -375,9 +375,9 @@ public class HanderMapping {
 					String key6 = clzz.getSimpleName();
 					beans.put(key6, instanse6);
 
-				} else if (clzz.isAnnotationPresent(App.class)) {
+				} else if (clzz.isAnnotationPresent(Component.class)) {
 					Object instanse7 = autowired(clzz);
-					App app = clzz.getAnnotation(App.class);
+					Component app = clzz.getAnnotation(Component.class);
 					String key7 = "";
 					if (!"".equals(app.id())) {
 						key7 = app.id();
@@ -752,7 +752,7 @@ public class HanderMapping {
 		/*
 		 * bug描述：只能进行普通值的注入，暂不支持引用值的注入
 		 */
-		App app = appClass.getAnnotation(App.class);
+		Component app = appClass.getAnnotation(Component.class);
 		String[] fields = app.fields();
 		String[] values = app.values();
 		Object objApp = appClass.newInstance();

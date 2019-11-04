@@ -21,7 +21,7 @@ public class LuckyXmlConfig {
 		this.proper=LuckyDomXml.getProperties();
 		if(proper.getClaurl().isEmpty()) {
 			List<String> classpaths=new ArrayList<>();	
-			new PackageScan().loadComponent(classpaths,"pojo","entity");
+			PackageScan.getPackageScan().loadComponent(classpaths,"pojo","entity");
 			classpaths.stream().forEach((entry)->{entry=entry.substring(0,entry.length()-6);proper.getClaurl().add(entry);});
 		}
 		

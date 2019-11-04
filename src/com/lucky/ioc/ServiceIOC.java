@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.lucky.annotation.Service;
+import com.lucky.utils.LuckyUtils;
+
 public class ServiceIOC {
 
 	
@@ -39,6 +42,33 @@ public class ServiceIOC {
 		if(serviceIDS==null)
 			serviceIDS=new ArrayList<>();
 		serviceIDS.add(id);
+	}
+	
+	/**
+	 * 加载Service组件到ServiceIOC容器
+	 * @param serviceClass
+	 * @return
+	 */
+	public ServiceIOC initServiceIOC(List<String> serviceClass) {
+		for(String clzz:serviceClass) {
+			try {
+				Class<?> service=Class.forName(clzz);
+				if(service.isAnnotationPresent(Service.class)) {
+					Service ser=service.getAnnotation(Service.class);
+					if(!"".equals(ser.value()))
+						addServiceMap(ser.value(), service.newInstance());
+					else
+						addServiceMap(LuckyUtils.TableToClass1(service.getSimpleName()), service.newInstance());
+				}
+			} catch (ClassNotFoundException e) {
+				continue;
+			} catch (InstantiationException e) {
+				continue;
+			} catch (IllegalAccessException e) {
+				continue;
+			}
+		}
+		return this;
 	}
 	
 	

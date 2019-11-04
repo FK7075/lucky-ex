@@ -1,8 +1,11 @@
 package com.lucky.ioc;
 
-public class IOCVessel {
-	
-	private ControllerAndMethod controllerAndMethod;
+/**
+ * 扫描所有配置包，将所有的IOC组件都加载到相应的IOC容器中
+ * @author DELL
+ *
+ */
+public class ComponentLoad {
 	
 	private AgentIOC agentIOC;
 	
@@ -13,15 +16,12 @@ public class IOCVessel {
 	private ComponentIOC appIOC;
 	
 	private ControllerIOC controllerIOC;
-
-	public ControllerAndMethod getControllerAndMethod() {
-		return controllerAndMethod;
-	}
-
-	public void setControllerAndMethod(ControllerAndMethod controllerAndMethod) {
-		this.controllerAndMethod = controllerAndMethod;
-	}
-
+	
+	private ScanConfig scanConfig;
+	
+	
+	
+	
 	public AgentIOC getAgentIOC() {
 		return agentIOC;
 	}
@@ -61,5 +61,16 @@ public class IOCVessel {
 	public void setControllerIOC(ControllerIOC controllerIOC) {
 		this.controllerIOC = controllerIOC;
 	}
+
+	/**
+	 * 得到有关包扫描的配置信息
+	 */
+	public void scanConfigToComponentIOC() {
+		scanConfig=ScanConfig.getScanConfig();
+	}
 	
+	public void initComponentIOC() {
+
+	}
+
 }

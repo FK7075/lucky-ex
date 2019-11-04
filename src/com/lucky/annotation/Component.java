@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface App {
+public @interface Component {
 	String value() default "";
 	String id() default "";
 	String[] fields() default {};

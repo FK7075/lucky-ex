@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 代理对象集合
+ * @author DELL
+ *
+ */
 public class AgentIOC {
 	
 	private Map<String,Object> agentMap;
