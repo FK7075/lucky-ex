@@ -5,7 +5,7 @@ package com.lucky.ioc;
  * @author DELL
  *
  */
-public class ComponentLoad {
+public class IOCContainers {
 	
 	private AgentIOC agentIOC;
 	
@@ -22,6 +22,14 @@ public class ComponentLoad {
 	
 	
 	
+	public IOCContainers() {
+		scanConfigToComponentIOC();
+		initControllerIOC();
+		initServiceIOC();
+		initRepositoryIOC();
+		initComponentIOC();
+	}
+
 	public AgentIOC getAgentIOC() {
 		return agentIOC;
 	}
@@ -70,7 +78,21 @@ public class ComponentLoad {
 	}
 	
 	public void initComponentIOC() {
-
+		appIOC=new ComponentIOC();
+		appIOC.initComponentIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getControllerPackSuffix()));
 	}
-
+	
+	public void initControllerIOC() {
+		controllerIOC=new ControllerIOC();
+		controllerIOC.initControllerIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getControllerPackSuffix()));
+	}
+	
+	public void initServiceIOC() {
+		serviceIOC=new ServiceIOC();
+		serviceIOC.initServiceIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getServicePackSuffix()));
+	}
+	public void initRepositoryIOC() {
+		repositoryIOC=new RepositoryIOC();
+		repositoryIOC.initRepositoryIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getRepositoryPackSuffix()));
+	}
 }

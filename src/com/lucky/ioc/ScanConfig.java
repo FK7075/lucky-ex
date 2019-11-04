@@ -3,7 +3,6 @@ package com.lucky.ioc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * IOC组件的默认位置后缀配置
@@ -221,7 +220,9 @@ public class ScanConfig {
 	public static ScanConfig getScanConfig() {
 		ScanConfig defaultScanConfig = defaultScanConfig();
 		PackageScan ps=PackageScan.getPackageScan();
-		List<String> cfgClass = ps.loadComponent("appconfig").stream().map(entry->entry.substring(0, entry.length()-6)).collect(Collectors.toList());
+		List<String> cfgsuffix=new ArrayList<>();
+		cfgsuffix.add("appconfig");
+		List<String> cfgClass = ps.loadComponent(cfgsuffix);
 		for(String clzz:cfgClass) {
 			try {
 				Class<?> cfg=Class.forName(clzz);

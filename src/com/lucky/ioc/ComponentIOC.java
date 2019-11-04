@@ -19,6 +19,13 @@ public class ComponentIOC {
 	private Map<String,Object> appMap;
 	
 	private List<String> appIDS;
+	
+	
+	public boolean containId(String id) {
+		if(appIDS==null)
+			return false;
+		return appIDS.contains(id);
+	}
 
 	public Map<String, Object> getAppMap() {
 		return appMap;

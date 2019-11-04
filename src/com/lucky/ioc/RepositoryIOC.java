@@ -5,6 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.lucky.annotation.Mapper;
+import com.lucky.annotation.Repository;
+import com.lucky.exception.CreateBeanException;
+import com.lucky.exception.NoDataSourceException;
+import com.lucky.utils.LuckyUtils;
+
 public class RepositoryIOC {
 	
 	private Map<String,Object> repositoryMap;
@@ -14,7 +20,22 @@ public class RepositoryIOC {
 	private Map<String,Object> mapperMap;
 	
 	private List<String> mapperIDS;
-
+	
+	public boolean containId(String id) {
+		return containIdByMapper(id)||containIdByRepository(id);
+	}
+	
+	public boolean containIdByMapper(String id) {
+		if(mapperIDS==null)
+			return false;
+		return mapperIDS.contains(id);
+	}
+	
+	public boolean containIdByRepository(String id) {
+		if(repositoryIDS==null)
+			return false;
+		return repositoryIDS.contains(id);
+	}
 	public Map<String, Object> getRepositoryMap() {
 		return repositoryMap;
 	}
@@ -72,5 +93,39 @@ public class RepositoryIOC {
 		mapperIDS.add(mapperID);
 	}
 	
+	/**
+	 * 加载Repository组件
+	 * @param repositoryClass
+	 * @return
+	 */
+	public RepositoryIOC initRepositoryIOC(List<String> repositoryClass) {
+		for(String clzz:repositoryClass) {
+			Class<?> repository = null;
+			try {
+				repository=Class.forName(clzz);
+				if(repository.isAnnotationPresent(Repository.class)) {
+					Repository rep=repository.getAnnotation(Repository.class);
+					if(!"".equals(rep.value())) 
+						addRepositoryMap(rep.value(), repository.newInstance());
+					else
+						addRepositoryMap(LuckyUtils.TableToClass1(repository.getSimpleName()), repository.newInstance());
+				}else if(repository.isAnnotationPresent(Mapper.class)) {
+					Mapper mapper=repository.getAnnotation(Mapper.class);
+					if(!"".equals(mapper.id()))
+						addMapperMap(mapper.id(), repository.newInstance());
+					else
+						addMapperMap(LuckyUtils.TableToClass1(repository.getSimpleName()), repository.newInstance());
+				}
+			} catch (ClassNotFoundException e) {
+				continue;	
+			} catch (InstantiationException e) {
+				throw new NoDataSourceException();
+			} catch (IllegalAccessException e) {
+				throw new CreateBeanException("没有发现"+repository.getName()+"的无参构造器，无法创建对象...");
+			}
+		}
+		
+		return this;
+	}
 
 }

@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Mapper {
+	String id() default "";
 	Class<?> value() default Void.class;
 	String[] properties() default {};
 	String  codedformat() default "gbk";

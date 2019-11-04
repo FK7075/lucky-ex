@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 不做配置时的默认包扫描
@@ -42,22 +43,19 @@ public class PackageScan {
 		addClassPath(components,clist);
 	}
 	
-	public static void main(String[] args) {
-		PackageScan ps=new PackageScan();
-		System.out.println(ps.loadComponent("aopp"));
-	}
-
 	/**
 	 * 找到所有Ioc组件所在文件夹的包路径，并存入到的集合中
 	 * @param suffix
 	 * @return
 	 */
-	public List<String> loadComponent(String...suffix) {
+	public List<String> loadComponent(List<String> suffixlist) {
+		String[] suffix=new String[suffixlist.size()];
+		suffixlist.toArray(suffix);
 		List<String> components=new ArrayList<>();
 		List<String> clist=new ArrayList<>();
 		findDafaultFolder(clist,projectPath,suffix);
 		addClassPath(components,clist);
-		return components;
+		return components.stream().map(entry->entry.substring(0, entry.length()-6)).collect(Collectors.toList());
 	}
 	
 	/**

@@ -14,6 +14,12 @@ public class ServiceIOC {
 	private Map<String,Object> serviceMap;
 	
 	private List<String> serviceIDS;
+	
+	public boolean containId(String id) {
+		if(serviceIDS==null)
+			return false;
+		return serviceIDS.contains(id);
+	}
 
 	public Map<String, Object> getServiceMap() {
 		return serviceMap;

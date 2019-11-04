@@ -1,15 +1,14 @@
 package com.lucky.exception;
 
-public class NotFindBean extends RuntimeException {
+public class CreateBeanException extends RuntimeException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	public NotFindBean(String message) {
+	
+	public CreateBeanException(String message){
 		super(message);
 	}
-	
 
 }
