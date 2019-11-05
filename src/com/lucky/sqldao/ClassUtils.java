@@ -3,6 +3,8 @@ package com.lucky.sqldao;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lucky.utils.TypeChange;
+
 /**
  * 泛型参数类类信息的抓取与sql语句拼接类
  * 

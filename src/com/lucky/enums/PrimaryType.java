@@ -1,6 +1,6 @@
 package com.lucky.enums;
 
-public enum Type {
+public enum PrimaryType {
 	/**
 	 * 自动增长的UUID主键
 	 */

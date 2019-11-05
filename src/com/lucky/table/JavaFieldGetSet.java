@@ -3,7 +3,7 @@ package com.lucky.table;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucky.utils.LuckyManager;
+import com.lucky.ioc.DataSource;
 import com.lucky.utils.LuckyUtils;
 
 /**
@@ -62,7 +62,7 @@ public class JavaFieldGetSet {
 		GetJavaSrc javasrc=new GetJavaSrc();
 		List<JavaFieldGetSet> list=new ArrayList<JavaFieldGetSet>();
 		javasrc.setClassName(ts.getTableName());
-		javasrc.setPack("package "+LuckyManager.getPropCfg().getPackages()+";");
+		javasrc.setPack("package "+DataSource.getDataSource().getReversePack()+";");
 		javasrc.setImpor("import java.util.Date;\nimport java.sql.*;\nimport java.util.*;\nimport com.lucky.annotation.Id;\nimport com.lucky.annotation.Key;");
 		javasrc.setToString(ts.getToString());
 		javasrc.setConstructor(ts.getConstructor());

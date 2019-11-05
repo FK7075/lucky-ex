@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.lucky.enums.Type;
+import com.lucky.enums.PrimaryType;
 import com.lucky.sqldao.PojoManage;
 
 public class BatchInsert {
@@ -34,7 +34,7 @@ public class BatchInsert {
 		Field[] fields=clzz.getDeclaredFields();
 		String prefix="INSERT INTO "+PojoManage.getTable(clzz);
 		String suffix=" VALUES ";
-		if(PojoManage.getIdType(clzz)==Type.AUTO_INT) {
+		if(PojoManage.getIdType(clzz)==PrimaryType.AUTO_INT) {
 			List<Field> list=new ArrayList<>();
 			String id=PojoManage.getIdString(clzz);
 			Stream.of(fields).filter(field->!id.equals(PojoManage.getTableField(field))
@@ -94,7 +94,7 @@ public class BatchInsert {
 			Class<?> clzz=t.getClass();
 			String id=PojoManage.getIdString(clzz);
 			Field[] fields=clzz.getDeclaredFields();
-			if(PojoManage.getIdType(clzz)==Type.AUTO_INT) {
+			if(PojoManage.getIdType(clzz)==PrimaryType.AUTO_INT) {
 				for(Field fie:fields) {
 					if(fie.getType().getClassLoader()==null
 							&&!(fie.getType()).isAssignableFrom(List.class)

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.lucky.annotation.Controller;
+import com.lucky.exception.CreateBeanException;
+import com.lucky.exception.NotFindBeanException;
 import com.lucky.utils.LuckyUtils;
 
 public class ControllerIOC {
@@ -18,6 +20,12 @@ public class ControllerIOC {
 		if(controllerIDS==null)
 			return false;
 		return controllerIDS.contains(id);
+	}
+	
+	public Object getControllerBean(String id) {
+		if(!containId(id))
+			throw new NotFindBeanException("在Controller(ioc)容器中找不到ID为--"+id+"--的Bean...");
+		return controllerMap.get(id);
 	}
 	
 	public Map<String, Object> getControllerMap() {
@@ -57,8 +65,9 @@ public class ControllerIOC {
 	 */
 	public ControllerIOC initControllerIOC(List<String> controllerClass) {
 		for(String clzz:controllerClass) {
+			Class<?> controller = null;
 			try {
-				Class<?> controller=Class.forName(clzz);
+				controller=Class.forName(clzz);
 				if(controller.isAnnotationPresent(Controller.class)) {
 					Controller cont=controller.getAnnotation(Controller.class);
 					if(!"".equals(cont.value()))
@@ -71,11 +80,12 @@ public class ControllerIOC {
 			} catch (InstantiationException e) {
 				continue;
 			} catch (IllegalAccessException e) {
-				continue;
+				throw new CreateBeanException("没有发现"+controller.getName()+"的无参构造器，无法创建对象...");
 			}
 			
 		}
 		return this;
 	}
+	
 
 }

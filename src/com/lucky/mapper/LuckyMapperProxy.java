@@ -455,9 +455,9 @@ public class LuckyMapperProxy {
 				if(method.isAnnotationPresent(AutoId.class)) {
 					Field idField = PojoManage.getIdField(args[0].getClass());
 					Id id=idField.getAnnotation(Id.class);
-					if(id.type()==com.lucky.enums.Type.AUTO_INT)
+					if(id.type()==com.lucky.enums.PrimaryType.AUTO_INT)
 						LuckyUtils.pojoSetId(args[0]);
-					else if(id.type()==com.lucky.enums.Type.AUTO_UUID){
+					else if(id.type()==com.lucky.enums.PrimaryType.AUTO_UUID){
 						idField.setAccessible(true);
 						idField.set(args[0], UUID.randomUUID().toString().replaceAll("-", ""));
 					}

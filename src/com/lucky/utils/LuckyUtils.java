@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.lucky.enums.Type;
+import com.lucky.enums.PrimaryType;
+import com.lucky.ioc.DataSource;
 import com.lucky.sqldao.PojoManage;
 import com.lucky.sqldao.SqlOperation;
 
@@ -165,7 +166,7 @@ public class LuckyUtils {
 	
 	//获得当前数据库的名称
 	public static String getDatabaseName() {
-		String url = LuckyManager.getPropCfg().getUrl();
+		String url = DataSource.getDataSource().getUrl();
 		String databasename=url.substring((url.lastIndexOf("/")+1),url.length());
 		if(databasename.contains("?")) {
 			databasename=databasename.substring(0, databasename.indexOf("?"));
@@ -177,7 +178,7 @@ public class LuckyUtils {
 	public static void pojoSetId(Object pojo) {
 		int next_id=0;
 		Class<?> clzz=pojo.getClass();
-		if(PojoManage.getIdType(clzz)==Type.AUTO_INT) {
+		if(PojoManage.getIdType(clzz)==PrimaryType.AUTO_INT) {
 			String sql="SELECT auto_increment as nextID FROM information_schema.`TABLES` WHERE table_name=? AND TABLE_SCHEMA=?";
 			ResultSet resultSet = getResultSet(sql,PojoManage.getTable(clzz),getDatabaseName());
 			try {

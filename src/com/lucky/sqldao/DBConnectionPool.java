@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucky.utils.LuckyManager;
+import com.lucky.ioc.DataSource;
 import com.lucky.utils.LuckyUtils;
 
 /**
@@ -15,8 +15,8 @@ import com.lucky.utils.LuckyUtils;
  */
 public class DBConnectionPool {
 	private List<Connection> pool;//连接池
-	private final int POOL_MIN=LuckyManager.getPropCfg().getPoolmin();//最小链接数量
-	private final int POOL_MAX=LuckyManager.getPropCfg().getPoolmax();//最大链接数量
+	private final int POOL_MIN=DataSource.getDataSource().getPoolmin();//最小链接数量
+	private final int POOL_MAX=DataSource.getDataSource().getPoolmax();//最大链接数量
 	
 	public DBConnectionPool() {
 		initPool();

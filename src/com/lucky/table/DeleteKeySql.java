@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lucky.ioc.DataSource;
 import com.lucky.sqldao.PojoManage;
 import com.lucky.sqldao.SqlOperation;
 import com.lucky.utils.LuckyManager;
@@ -13,7 +14,7 @@ public class DeleteKeySql {
 	private SqlOperation sqlop = LuckyManager.getSqlOperation();
 	private String databasename;
 	private List<String> delkeysql = new ArrayList<String>();
-	private List<String> classlist=LuckyManager.getPropCfg().getClaurl();
+	private List<String> classlist=DataSource.getDataSource().getCaeateTable();
 
 	public String getDatabasename() {
 		return databasename;

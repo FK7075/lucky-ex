@@ -8,9 +8,9 @@ import com.lucky.annotation.Column;
 import com.lucky.annotation.Id;
 import com.lucky.annotation.Key;
 import com.lucky.annotation.Table;
-import com.lucky.enums.Type;
+import com.lucky.enums.PrimaryType;
 import com.lucky.sqldao.PojoManage;
-import com.lucky.sqldao.TypeChange;
+import com.lucky.utils.TypeChange;
 
 /**
  * 生成建表语句的类
@@ -151,8 +151,8 @@ public class CreateTableSql {
 	 * @return
 	 */
 	private static String isAutoInt(Class<?> clzz) {
-		Type idType = PojoManage.getIdType(clzz);
-		if(idType==Type.AUTO_INT)
+		PrimaryType idType = PojoManage.getIdType(clzz);
+		if(idType==PrimaryType.AUTO_INT)
 			return "AUTO_INCREMENT";
 		return "";
 	}

@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.lucky.enums.Type;
+import com.lucky.enums.PrimaryType;
 
 /**
  * 用于建立表与实体类的映射关系
@@ -21,6 +21,6 @@ import com.lucky.enums.Type;
 @Documented
 public @interface Id {
 	String value() default "";
-	Type type() default Type.DEFAULT;
+	PrimaryType type() default PrimaryType.DEFAULT;
 	int length() default 35;
 }

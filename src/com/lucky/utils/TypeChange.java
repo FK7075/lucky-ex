@@ -1,4 +1,4 @@
-package com.lucky.sqldao;
+package com.lucky.utils;
 
 import java.util.Date;
 

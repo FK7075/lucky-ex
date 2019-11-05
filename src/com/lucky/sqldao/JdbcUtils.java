@@ -6,9 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.lucky.ioc.DataSource;
 import com.lucky.utils.LuckyManager;
 import com.lucky.utils.LuckyUtils;
-import com.lucky.utils.ProperConfig;
 
 /**
  * JDBC操作的工具类
@@ -17,11 +17,11 @@ import com.lucky.utils.ProperConfig;
  *
  */
 public class JdbcUtils {
-	private static ProperConfig propCfg;
+	private static DataSource dataSource;
 	static {
 		try {
-			propCfg=LuckyManager.getPropCfg();
-			Class.forName(propCfg.getDriver());
+			dataSource=DataSource.getDataSource();
+			Class.forName(dataSource.getDriver());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new RuntimeException(LuckyUtils.showtime()+"JackLabm: 缺失mysql的驱动包");
@@ -33,7 +33,7 @@ public class JdbcUtils {
 	}
 	public static Connection createConnection() {
 		try {
-			return DriverManager.getConnection(propCfg.getUrl(),propCfg.getUsername(),propCfg.getPassword());
+			return DriverManager.getConnection(dataSource.getUrl(),dataSource.getUsername(),dataSource.getPassword());
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException(LuckyUtils.showtime()+"JackLabm: 数据库路径错误或数据库用户名密码错误,请检查lucky.xml中的相关配置或application类的配置信息是否正确！");

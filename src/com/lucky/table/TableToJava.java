@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-import com.lucky.utils.LuckyManager;
+import com.lucky.ioc.DataSource;
 
 /**
  * 负责将数据库中的表转化为对应的JavaBean
@@ -15,46 +15,46 @@ import com.lucky.utils.LuckyManager;
  */
 public class TableToJava {
 	/**
-	 * 创建JavaBean(配置方式url,不可以解析中文)
+	 * 创建JavaBean(配置方式url)
 	 */
 	public static void generateJavaSrc() {
 		List<GetJavaSrc> src=JavaFieldGetSet.getMoreJavaSrc();
-		String srcpath=LuckyManager.getPropCfg().getSrcPath();
-		String packpath=LuckyManager.getPropCfg().getPackages().replaceAll("\\.", "/");
+		String srcpath=DataSource.getDataSource().getSrcPath();
+		String packpath=DataSource.getDataSource().getReversePack().replaceAll("\\.", "/");
 		String url=srcpath+"/"+packpath;
 		writerToJava(src,url,false,true);
 	}
 	
 	/**
-	 * 创建JavaBean(配置方式url,手动输入表名,不可以解析中文)
+	 * 创建JavaBean(配置方式url,手动输入表名)
 	 * @param tables 表名
 	 */
 	public static void b_generateJavaSrc(String...tables) {
 		List<GetJavaSrc> src=JavaFieldGetSet.getAssignJavaSrc(tables);
-		String srcpath=LuckyManager.getPropCfg().getSrcPath();
-		String packpath=LuckyManager.getPropCfg().getPackages().replaceAll("\\.", "/");
+		String srcpath=DataSource.getDataSource().getSrcPath();
+		String packpath=DataSource.getDataSource().getReversePack().replaceAll("\\.", "/");
 		String url=srcpath+"/"+packpath;
 		writerToJava(src,url,false,false);
 	}
 	
 	/**
-	 * 创建JavaBean(手动输入url,手动输入表名,可以解析中文)
+	 * 创建JavaBean(手动输入url,手动输入表名)
 	 * @param srcPath src文件绝对路径
 	 * @param tables 需要逆向工程生成javabean的表
 	 */
 	public static void a_generateJavaSrc(String srcPath,String...tables) {
 		List<GetJavaSrc> src=JavaFieldGetSet.getAssignJavaSrc(tables);
-		String packpath=LuckyManager.getPropCfg().getPackages().replaceAll("\\.", "/");
+		String packpath=DataSource.getDataSource().getReversePack().replaceAll("\\.", "/");
 		String url=srcPath+"/"+packpath;
 		writerToJava(src,url,true,false);
 	}
 	/**
-	 * 创建JavaBean(手动输入url,可以解析中文)
+	 * 创建JavaBean(手动输入url)
 	 * @param srcPath src文件夹的绝对路径
 	 */
 	public static void generateJavaSrc(String srcPath) {
 		List<GetJavaSrc> src=JavaFieldGetSet.getMoreJavaSrc();
-		String packpath=LuckyManager.getPropCfg().getPackages().replaceAll("\\.", "/");
+		String packpath=DataSource.getDataSource().getReversePack().replaceAll("\\.", "/");
 		String url=srcPath+"/"+packpath;
 		writerToJava(src,url,true,true);
 	}

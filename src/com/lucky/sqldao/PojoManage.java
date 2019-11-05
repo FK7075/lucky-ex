@@ -12,7 +12,7 @@ import com.lucky.annotation.Column;
 import com.lucky.annotation.Id;
 import com.lucky.annotation.Key;
 import com.lucky.annotation.Table;
-import com.lucky.enums.Type;
+import com.lucky.enums.PrimaryType;
 
 /**
  * 实体类管理工具
@@ -35,7 +35,7 @@ public class PojoManage {
 		List<String> fieldname = new ArrayList<>();
 		List<Object> fieldvalue = new ArrayList<>();
 		Field idField=getIdField(clzz);
-		if(getIdType(clzz)==Type.AUTO_UUID) {
+		if(getIdType(clzz)==PrimaryType.AUTO_UUID) {
 			idField.setAccessible(true);
 			String uuid=UUID.randomUUID().toString().replaceAll("-", "");
 			fieldname.add(getTableField(idField));
@@ -261,7 +261,7 @@ public class PojoManage {
 	 * @param pojoClass
 	 * @return
 	 */
-	public static Type getIdType(Class<?> pojoClass) {
+	public static PrimaryType getIdType(Class<?> pojoClass) {
 		Field idF=getIdField(pojoClass);
 		Id id=idF.getAnnotation(Id.class);
 		return id.type();

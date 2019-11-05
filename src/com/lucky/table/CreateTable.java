@@ -2,12 +2,13 @@ package com.lucky.table;
 
 import java.util.List;
 
+import com.lucky.ioc.DataSource;
 import com.lucky.sqldao.SqlOperation;
 import com.lucky.utils.LuckyManager;
 
 public class CreateTable {
 	private SqlOperation sqlop = LuckyManager.getSqlOperation();
-	private List<String> classlist = LuckyManager.getPropCfg().getClaurl();
+	private List<String> classlist = DataSource.getDataSource().getCaeateTable();
 
 	public void creatTable() {
 		DeleteKeySql dtlkeysql = new DeleteKeySql();

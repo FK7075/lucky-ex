@@ -2,7 +2,7 @@ package com.lucky.table;
 
 import java.util.List;
 
-import com.lucky.utils.LuckyManager;
+import com.lucky.ioc.DataSource;
 import com.lucky.utils.LuckyUtils;
 
 /**
@@ -72,7 +72,7 @@ public class PackBoxSrc {
 	public static PackBoxSrc getPackBoxSrc(String... classnames) {
 		PackBoxSrc pack = new PackBoxSrc();
 		pack.setClassName("PackBox");
-		pack.setPack("package " + LuckyManager.getPropCfg().getPackages() + ";\n\n/**\n * 万能打包器，任何数据库的操作都可以由此类来包装\n * @author FK7075\n */");
+		pack.setPack("package " + DataSource.getDataSource().getReversePack() + ";\n\n/**\n * 万能打包器，任何数据库的操作都可以由此类来包装\n * @author FK7075\n */");
 		pack.setImpor("\npublic class PackBox {\n\n");
 		pack.setField("");
 		pack.setGetset("");

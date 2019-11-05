@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.lucky.annotation.Table;
 import com.lucky.cache.StartCache;
+import com.lucky.ioc.DataSource;
 import com.lucky.mapper.LuckyMapperProxy;
 import com.lucky.query.ObjectToJoinSql;
 import com.lucky.query.QueryBuilder;
@@ -25,7 +26,7 @@ public class SqlControl implements SqlCore {
 	
 	private SqlOperation sqlOperation = LuckyManager.getSqlOperation();
 	private StartCache start = new StartCache();
-	private boolean cache = LuckyManager.getPropCfg().isCache();
+	private boolean cache = DataSource.getDataSource().isCache();
 
 	
 	public static SqlControl getSqlControl() {

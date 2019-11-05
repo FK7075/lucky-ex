@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.lucky.annotation.Service;
+import com.lucky.exception.CreateBeanException;
+import com.lucky.exception.NotFindBeanException;
 import com.lucky.utils.LuckyUtils;
 
 public class ServiceIOC {
@@ -19,6 +21,12 @@ public class ServiceIOC {
 		if(serviceIDS==null)
 			return false;
 		return serviceIDS.contains(id);
+	}
+	
+	public Object getServiceBean(String id) {
+		if(!containId(id))
+			throw new NotFindBeanException("在Service(ioc)容器中找不到ID为--"+id+"--的Bean...");
+		return serviceMap.get(id);
 	}
 
 	public Map<String, Object> getServiceMap() {
@@ -57,8 +65,9 @@ public class ServiceIOC {
 	 */
 	public ServiceIOC initServiceIOC(List<String> serviceClass) {
 		for(String clzz:serviceClass) {
+			Class<?> service = null;
 			try {
-				Class<?> service=Class.forName(clzz);
+				service=Class.forName(clzz);
 				if(service.isAnnotationPresent(Service.class)) {
 					Service ser=service.getAnnotation(Service.class);
 					if(!"".equals(ser.value()))
@@ -71,12 +80,9 @@ public class ServiceIOC {
 			} catch (InstantiationException e) {
 				continue;
 			} catch (IllegalAccessException e) {
-				continue;
+				throw new CreateBeanException("没有发现"+service.getName()+"的无参构造器，无法创建对象...");
 			}
 		}
 		return this;
 	}
-	
-	
-	
 }

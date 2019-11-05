@@ -6,50 +6,51 @@ import java.util.List;
 
 /**
  * IOC组件的默认位置后缀配置
+ * 
  * @author DELL
  *
  */
 public class ScanConfig {
 	
+	private static ScanConfig scanfig;
+
 	/**
 	 * Controller组件所在包的后缀
 	 */
 	private List<String> controllerPackSuffix;
-	
+
 	/**
 	 * Service组件所在包的后缀
 	 */
 	private List<String> servicePackSuffix;
-	
+
 	/**
 	 * Repository组件所在包的后缀
 	 */
 	private List<String> repositoryPackSuffix;
-	
+
 	/**
 	 * Agent组件所在包的后缀
 	 */
 	private List<String> agentPackSuffix;
-	
+
 	/**
 	 * 普通组件所在包的后缀
 	 */
 	private List<String> componentPackSuffix;
-	
+
 	/**
 	 * 实体类所在包的后缀
 	 */
 	private List<String> pojoPackSuffix;
-	
-	
 
-	public ScanConfig() {
-		controllerPackSuffix=new ArrayList<>();
-		servicePackSuffix=new ArrayList<>();
-		repositoryPackSuffix=new ArrayList<>();
-		agentPackSuffix=new ArrayList<>();
-		componentPackSuffix=new ArrayList<>();
-		pojoPackSuffix=new ArrayList<>();
+	private ScanConfig() {
+		controllerPackSuffix = new ArrayList<>();
+		servicePackSuffix = new ArrayList<>();
+		repositoryPackSuffix = new ArrayList<>();
+		agentPackSuffix = new ArrayList<>();
+		componentPackSuffix = new ArrayList<>();
+		pojoPackSuffix = new ArrayList<>();
 	}
 
 	public List<String> getControllerPackSuffix() {
@@ -58,20 +59,23 @@ public class ScanConfig {
 
 	/**
 	 * 添加一个装载Controller组件的包后缀
+	 * 
 	 * @param suffix
 	 */
-	public void addControllerPackSuffix(String...suffix) {
+	public void addControllerPackSuffix(String... suffix) {
 		controllerPackSuffix.addAll(Arrays.asList(suffix));
 	}
+
 	/**
 	 * 清空原有的配置后，添加一个装载Controller组件的包后缀
+	 * 
 	 * @param suffix
 	 */
-	public void emptyAddControllerPackSuffix(String...suffix) {
+	public void emptyAddControllerPackSuffix(String... suffix) {
 		controllerPackSuffix.clear();
 		controllerPackSuffix.addAll(Arrays.asList(suffix));
 	}
-	
+
 	public void setControllerPackSuffix(List<String> controllerPackSuffix) {
 		this.controllerPackSuffix = controllerPackSuffix;
 	}
@@ -82,47 +86,50 @@ public class ScanConfig {
 
 	/**
 	 * 添加一个装载Controller组件的包后缀
+	 * 
 	 * @param suffix
 	 */
-	public void addServicePackSuffix(String...suffix) {
+	public void addServicePackSuffix(String... suffix) {
 		servicePackSuffix.addAll(Arrays.asList(suffix));
 	}
-	
+
 	/**
 	 * 清空原有的配置后，添加一个装载Service组件的包后缀
+	 * 
 	 * @param suffix
 	 */
-	public void emptyAddServicePackSuffix(String...suffix) {
+	public void emptyAddServicePackSuffix(String... suffix) {
 		servicePackSuffix.clear();
 		servicePackSuffix.addAll(Arrays.asList(suffix));
 	}
-	
+
 	public void setServicePackSuffix(List<String> servicePackSuffix) {
 		this.servicePackSuffix = servicePackSuffix;
 	}
 
-
 	public List<String> getRepositoryPackSuffix() {
 		return repositoryPackSuffix;
 	}
-	
+
 	/**
 	 * 添加一个装载Repository组件的包后缀
+	 * 
 	 * @return
 	 */
-	public void addRepositoryPackSuffix(String...suffix) {
+	public void addRepositoryPackSuffix(String... suffix) {
 		repositoryPackSuffix.addAll(Arrays.asList(suffix));
 	}
-	
+
 	/**
 	 * 清空原有的配置后，添加一个装载Repository组件的包后缀
+	 * 
 	 * @param suffix
 	 */
-	public void emptyAddRepositoryPackSuffix(String...suffix) {
+	public void emptyAddRepositoryPackSuffix(String... suffix) {
 		repositoryPackSuffix.clear();
 		repositoryPackSuffix.addAll(Arrays.asList(suffix));
 	}
-	
+
 	public void setRepositoryPackSuffix(List<String> repositoryPackSuffix) {
 		this.repositoryPackSuffix = repositoryPackSuffix;
 	}
@@ -133,21 +140,23 @@ public class ScanConfig {
 
 	/**
 	 * 添加一个装载Agent组件的包后缀
+	 * 
 	 * @param suffix
 	 */
-	public void addAgentPackSuffix(String...suffix) {
+	public void addAgentPackSuffix(String... suffix) {
 		agentPackSuffix.addAll(Arrays.asList(suffix));
 	}
-	
+
 	/**
 	 * 清空原有的配置后，添加一个装载Agent组件的包后缀
+	 * 
 	 * @param suffix
 	 */
-	public void emptyAddAgentPackSuffix(String...suffix) {
+	public void emptyAddAgentPackSuffix(String... suffix) {
 		agentPackSuffix.clear();
 		agentPackSuffix.addAll(Arrays.asList(suffix));
 	}
-	
+
 	public void setAgentPackSuffix(List<String> agentPackSuffix) {
 		this.agentPackSuffix = agentPackSuffix;
 	}
@@ -158,25 +167,27 @@ public class ScanConfig {
 
 	/**
 	 * 添加一个装载普通组件的包后缀
+	 * 
 	 * @param suffix
 	 */
-	public void addComponentPackSuffix(String...suffix) {
+	public void addComponentPackSuffix(String... suffix) {
 		componentPackSuffix.addAll(Arrays.asList(suffix));
 	}
-	
+
 	/**
 	 * 清空原有的配置后，添加一个装载普通组件的包后缀
+	 * 
 	 * @param suffix
 	 */
-	public void emptyAddComponentPackSuffix(String...suffix) {
+	public void emptyAddComponentPackSuffix(String... suffix) {
 		componentPackSuffix.clear();
 		componentPackSuffix.addAll(Arrays.asList(suffix));
 	}
-	
+
 	public void setComponentPackSuffix(List<String> componentPackSuffix) {
 		this.componentPackSuffix = componentPackSuffix;
 	}
-	
+
 	public List<String> getPojoPackSuffix() {
 		return pojoPackSuffix;
 	}
@@ -184,53 +195,57 @@ public class ScanConfig {
 	public void setPojoPackSuffix(List<String> pojoPackSuffix) {
 		this.pojoPackSuffix = pojoPackSuffix;
 	}
-	
+
 	/**
 	 * 添加一个装载pojo实体组件的包后缀
+	 * 
 	 * @param suffix
 	 */
-	public void addPojoPackSuffix(String...suffix) {
+	public void addPojoPackSuffix(String... suffix) {
 		pojoPackSuffix.addAll(Arrays.asList(suffix));
 	}
-	
+
 	/**
 	 * 清空原有的配置后，添加一个装载pojo实体组件的包后缀
+	 * 
 	 * @param suffix
 	 */
-	public void emptyAddPojoPackSuffix(String...suffix) {
+	public void emptyAddPojoPackSuffix(String... suffix) {
 		pojoPackSuffix.clear();
 		pojoPackSuffix.addAll(Arrays.asList(suffix));
 	}
 
 	private static ScanConfig defaultScanConfig() {
-		ScanConfig scanfig=new ScanConfig();
+		if(scanfig==null)
+			scanfig = new ScanConfig();
 		scanfig.addControllerPackSuffix("controller");
 		scanfig.addServicePackSuffix("service");
-		scanfig.addRepositoryPackSuffix("dao","repository");
+		scanfig.addRepositoryPackSuffix("dao", "repository","mapper");
 		scanfig.addComponentPackSuffix("component");
 		scanfig.addAgentPackSuffix("agent");
-		scanfig.addPojoPackSuffix("pojo","entity");
+		scanfig.addPojoPackSuffix("pojo", "entity");
 		return scanfig;
 	}
-	
+
 	/**
 	 * 得到有关包扫描的配置信息
+	 * 
 	 * @return
 	 */
 	public static ScanConfig getScanConfig() {
 		ScanConfig defaultScanConfig = defaultScanConfig();
-		PackageScan ps=PackageScan.getPackageScan();
-		List<String> cfgsuffix=new ArrayList<>();
+		PackageScan ps = PackageScan.getPackageScan();
+		List<String> cfgsuffix = new ArrayList<>();
 		cfgsuffix.add("appconfig");
 		List<String> cfgClass = ps.loadComponent(cfgsuffix);
-		for(String clzz:cfgClass) {
+		for (String clzz : cfgClass) {
 			try {
-				Class<?> cfg=Class.forName(clzz);
-				if(ScanPackConfig.class.isAssignableFrom(cfg)) {
-					ScanPackConfig cfConfig=(ScanPackConfig) cfg.newInstance();
+				Class<?> cfg = Class.forName(clzz);
+				if (ApplicationConfig.class.isAssignableFrom(cfg)) {
+					ApplicationConfig cfConfig = (ApplicationConfig) cfg.newInstance();
 					cfConfig.scanPackConfig(defaultScanConfig);
 					break;
-				}else {
+				} else {
 					continue;
 				}
 			} catch (ClassNotFoundException e) {
@@ -243,6 +258,5 @@ public class ScanConfig {
 		}
 		return defaultScanConfig;
 	}
-	
 
 }

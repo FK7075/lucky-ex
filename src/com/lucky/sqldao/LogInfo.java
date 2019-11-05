@@ -1,8 +1,7 @@
 package com.lucky.sqldao;
 
-import com.lucky.utils.LuckyManager;
+import com.lucky.ioc.DataSource;
 import com.lucky.utils.LuckyUtils;
-import com.lucky.utils.ProperConfig;
 
 /**
  * 日志管理类
@@ -11,20 +10,20 @@ import com.lucky.utils.ProperConfig;
  *
  */
 public class LogInfo {
-	private ProperConfig proper=LuckyManager.getPropCfg();
+	private DataSource dataSource=DataSource.getDataSource();
 	
 	public void isShowLog(String sql, Object[] obj) {
-		if(proper.isLog())
+		if(dataSource.isLog())
 			log(sql,obj);
 	}
 	
 	public void isShowLog(String sql,Object obj[][]) {
-		if(proper.isLog())
+		if(dataSource.isLog())
 			logBatch(sql,obj);
 	}
 	@Deprecated
 	public void isShowLog(String object) {
-		if(proper.isLog())
+		if(dataSource.isLog())
 			System.out.println("T-Obj: "+object);
 	}
 	
