@@ -1,11 +1,19 @@
 package com.lucky.ioc;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.lucky.annotation.Autowired;
+import com.lucky.annotation.Value;
 import com.lucky.exception.InjectionPropertiesException;
+import com.lucky.utils.ArrayCast;
+import com.lucky.utils.LuckyUtils;
 
 /**
  * 扫描所有配置包，将所有的IOC组件都加载到相应的IOC容器中
@@ -140,16 +148,50 @@ public class IOCContainers {
 			Class<?> componentClass=component.getClass();
 			Field[] fields=componentClass.getDeclaredFields();
 			for(Field field:fields) {
+				Class<?> fieldClass=field.getType();
 				if(field.isAnnotationPresent(Autowired.class)) {
 					Autowired auto=field.getAnnotation(Autowired.class);
 					field.setAccessible(true);
 					if("".equals(auto.value())) {
-						field.set(component, beans.getBean(field.getType()));
+						field.set(component, beans.getBean(fieldClass));
 					}else {
 						field.set(component, beans.getBean(auto.value()));
 					}
+				}else if(field.isAnnotationPresent(Value.class)) {
+					Value value=field.getAnnotation(Value.class);
+					String[] val = value.value();
+					if(fieldClass.isArray()) {
+						field.set(component,ArrayCast.strArrayChange(val, fieldClass));
+					}else if(List.class.isAssignableFrom(fieldClass)) {
+						List<Object> list=new ArrayList<>();
+						String fx=ArrayCast.getFieldGenericType(field)[0];
+						for(String z:val) {
+							list.add(LuckyUtils.typeCast(z, fx));
+						}
+						field.set(component, list);
+					}else if(Set.class.isAssignableFrom(fieldClass)) {
+						Set<Object> set=new HashSet<>();
+						String fx=ArrayCast.getFieldGenericType(field)[0];
+						for(String z:val) {
+							set.add(LuckyUtils.typeCast(z, fx));
+						}
+						field.set(component, set);
+					}else if(Map.class.isAssignableFrom(fieldClass)) {
+						Map<Object,Object> map=new HashMap<>();
+						String[] fx=ArrayCast.getFieldGenericType(field);
+						for(String z:val) {
+							String[] kv=z.split(":");
+//							map.put(LuckyUtils.typeCast(kv[0], type), value)
+						}
+					}else {
+						
+						field.set(component, LuckyUtils.typeCast(val[0], fieldClass.getSimpleName()));
+					}
+					
 				}
 			}
 		}
 	}
 }
+
+
