@@ -14,10 +14,13 @@ public class ServiceIOC {
 	private Map<String, Object> serviceMap;
 
 	private List<String> serviceIDS;
+	
+	public ServiceIOC() {
+		serviceMap=new HashMap<>();
+		serviceIDS=new ArrayList<>();
+	}
 
 	public boolean containId(String id) {
-		if (serviceIDS == null)
-			return false;
 		return serviceIDS.contains(id);
 	}
 
@@ -36,8 +39,6 @@ public class ServiceIOC {
 	}
 
 	public void addServiceMap(String id, Object object) {
-		if (serviceMap == null)
-			serviceMap = new HashMap<>();
 		serviceMap.put(id, object);
 		addServiceIDS(id);
 	}
@@ -51,8 +52,6 @@ public class ServiceIOC {
 	}
 
 	public void addServiceIDS(String id) {
-		if (serviceIDS == null)
-			serviceIDS = new ArrayList<>();
 		serviceIDS.add(id);
 	}
 

@@ -18,9 +18,12 @@ public class AgentIOC {
 	
 	private List<String> agentIDS;
 	
+	public AgentIOC() {
+		agentMap=new HashMap<>();
+		agentIDS=new ArrayList<>();
+	}
+
 	public boolean containId(String id) {
-		if(agentMap==null)
-			return false;
 		return agentIDS.contains(id);
 	}
 	
@@ -39,8 +42,6 @@ public class AgentIOC {
 	}
 	
 	public void addAgentMap(String id,Object object) {
-		if(agentMap==null)
-			agentMap=new HashMap<>();
 		agentMap.put(id, object);
 		addAgentID(id);
 	}
@@ -54,8 +55,6 @@ public class AgentIOC {
 	}
 	
 	public void addAgentID(String id) {
-		if(agentIDS==null)
-			agentIDS=new ArrayList<>();
 		agentIDS.add(id);
 	}
 	

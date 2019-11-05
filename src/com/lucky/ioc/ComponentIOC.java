@@ -24,10 +24,13 @@ public class ComponentIOC {
 	private Map<String, Object> appMap;
 
 	private List<String> appIDS;
+	
+	public ComponentIOC() {
+		appMap=new HashMap<>();
+		appIDS=new ArrayList<>();
+	}
 
 	public boolean containId(String id) {
-		if (appIDS == null)
-			return false;
 		return appIDS.contains(id);
 	}
 
@@ -47,8 +50,6 @@ public class ComponentIOC {
 	}
 
 	public void addAppMap(String id, Object object) {
-		if (appMap == null)
-			appMap = new HashMap<>();
 		appMap.put(id, object);
 		addAppIDS(id);
 	}
@@ -62,8 +63,6 @@ public class ComponentIOC {
 	}
 
 	public void addAppIDS(String id) {
-		if (appIDS == null)
-			appIDS = new ArrayList<>();
 		appIDS.add(id);
 	}
 
@@ -98,7 +97,7 @@ public class ComponentIOC {
 					if(met.isAnnotationPresent(Bean.class)) {
 						Object invoke = met.invoke(obj);
 						Bean bean=met.getAnnotation(Bean.class);
-						if(!"".equals(bean.value())) {
+						if("".equals(bean.value())) {
 							addAppMap(LuckyUtils.TableToClass1(met.getReturnType().getSimpleName()), invoke);
 						}else {
 							addAppMap(bean.value(),invoke);

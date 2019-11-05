@@ -15,10 +15,10 @@ public class ArrayCast {
 		Type genericType = field.getGenericType();
 		if (genericType instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) genericType;
-			Class<?>[] actualTypeArguments = (Class<?>[]) pt.getActualTypeArguments();
+			Type[] actualTypeArguments = pt.getActualTypeArguments();
 			String[] gener = new String[actualTypeArguments.length];
 			for (int i = 0; i < gener.length; i++) {
-				gener[i]=actualTypeArguments[i].getSimpleName();
+				gener[i]=actualTypeArguments[i].getTypeName();
 			}
 			return gener;
 		}

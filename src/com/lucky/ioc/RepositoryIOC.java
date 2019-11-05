@@ -21,6 +21,14 @@ public class RepositoryIOC {
 	private Map<String, Object> mapperMap;
 
 	private List<String> mapperIDS;
+	
+	
+	public RepositoryIOC() {
+		repositoryMap=new HashMap<>();
+		repositoryIDS=new ArrayList<>();
+		mapperMap=new HashMap<>();
+		mapperIDS=new ArrayList<>();
+	}
 
 	public Object getMaRepBean(String id) {
 		if (containIdByMapper(id))
@@ -36,14 +44,10 @@ public class RepositoryIOC {
 	}
 
 	public boolean containIdByMapper(String id) {
-		if (mapperIDS == null)
-			return false;
 		return mapperIDS.contains(id);
 	}
 
 	public boolean containIdByRepository(String id) {
-		if (repositoryIDS == null)
-			return false;
 		return repositoryIDS.contains(id);
 	}
 
@@ -56,8 +60,6 @@ public class RepositoryIOC {
 	}
 
 	public void addRepositoryMap(String daoId, Object daoObj) {
-		if (repositoryMap == null)
-			repositoryMap = new HashMap<>();
 		repositoryMap.put(daoId, daoObj);
 		addRepositoryIDS(daoId);
 	}
@@ -71,8 +73,6 @@ public class RepositoryIOC {
 	}
 
 	public void addRepositoryIDS(String repositoryID) {
-		if (repositoryIDS == null)
-			repositoryIDS = new ArrayList<>();
 		repositoryIDS.add(repositoryID);
 	}
 
@@ -85,8 +85,6 @@ public class RepositoryIOC {
 	}
 
 	public void addMapperMap(String mapperID, Object mapperObj) {
-		if (mapperMap == null)
-			mapperMap = new HashMap<>();
 		mapperMap.put(mapperID, mapperObj);
 		addMapperIDS(mapperID);
 	}
@@ -100,8 +98,6 @@ public class RepositoryIOC {
 	}
 
 	public void addMapperIDS(String mapperID) {
-		if (mapperIDS == null)
-			mapperIDS = new ArrayList<>();
 		mapperIDS.add(mapperID);
 	}
 

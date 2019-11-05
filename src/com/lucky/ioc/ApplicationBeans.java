@@ -8,18 +8,23 @@ import com.lucky.utils.LuckyUtils;
 
 public class ApplicationBeans {
 	
-	private IOCContainers iocContainers;
+	public static IOCContainers iocContainers;
 	
 	private static ApplicationBeans applicationBean;
 	
+	static {
+		iocContainers=new IOCContainers();
+		iocContainers.init();
+	}
+	
 	private ApplicationBeans() {
 		LuckyUtils.welcome();
-		iocContainers=new IOCContainers();
 	}
 	
 	public static ApplicationBeans createApplicationBeans() {
-		if(applicationBean==null)
+		if(applicationBean==null) {
 			applicationBean=new ApplicationBeans();
+		}
 		return applicationBean;
 	}
 	

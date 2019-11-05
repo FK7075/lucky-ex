@@ -14,10 +14,13 @@ public class ControllerIOC {
 	private Map<String, Object> controllerMap;
 
 	private List<String> controllerIDS;
+	
+	public ControllerIOC() {
+		controllerMap=new HashMap<>();
+		controllerIDS=new ArrayList<>();
+	}
 
 	public boolean containId(String id) {
-		if (controllerIDS == null)
-			return false;
 		return controllerIDS.contains(id);
 	}
 
@@ -36,8 +39,6 @@ public class ControllerIOC {
 	}
 
 	public void addControllerMap(String id, Object object) {
-		if (controllerMap == null)
-			controllerMap = new HashMap<>();
 		controllerMap.put(id, object);
 		addControllerIDS(id);
 	}
@@ -51,8 +52,6 @@ public class ControllerIOC {
 	}
 
 	public void addControllerIDS(String id) {
-		if (controllerIDS == null)
-			controllerIDS = new ArrayList<>();
 		controllerIDS.add(id);
 	}
 

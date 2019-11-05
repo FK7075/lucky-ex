@@ -35,13 +35,12 @@ public class IOCContainers {
 	
 	private ScanConfig scanConfig;
 	
-	
-	
-	public IOCContainers() {
+	public void init() {
+		agentIOC=new AgentIOC();
 		scanConfigToComponentIOC();
 		inversionOfControl();
+		dependencyInjection();
 	}
-	
 	
 	/**
 	 * ¿ØÖÆ·´×ª
@@ -136,7 +135,7 @@ public class IOCContainers {
 	
 	public void initComponentIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		appIOC=new ComponentIOC();
-		appIOC.initComponentIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getControllerPackSuffix()));
+		appIOC.initComponentIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getComponentPackSuffix()));
 	}
 	
 	public void initControllerIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
@@ -166,10 +165,10 @@ public class IOCContainers {
 			Class<?> componentClass=component.getClass();
 			Field[] fields=componentClass.getDeclaredFields();
 			for(Field field:fields) {
+				field.setAccessible(true);
 				Class<?> fieldClass=field.getType();
 				if(field.isAnnotationPresent(Autowired.class)) {
 					Autowired auto=field.getAnnotation(Autowired.class);
-					field.setAccessible(true);
 					if("".equals(auto.value())) {
 						field.set(component, beans.getBean(fieldClass));
 					}else {
