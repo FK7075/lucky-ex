@@ -1,6 +1,7 @@
 package com.lucky.ioc;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,10 +47,27 @@ public class IOCContainers {
 	 * ¿ØÖÆ·´×ª
 	 */
 	public void inversionOfControl() {
-		initComponentIOC();
-		initControllerIOC();
-		initServiceIOC();
-		initRepositoryIOC();
+		try {
+			initComponentIOC();
+			initControllerIOC();
+			initServiceIOC();
+			initRepositoryIOC();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -116,21 +134,21 @@ public class IOCContainers {
 		scanConfig=ScanConfig.getScanConfig();
 	}
 	
-	public void initComponentIOC() {
+	public void initComponentIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		appIOC=new ComponentIOC();
 		appIOC.initComponentIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getControllerPackSuffix()));
 	}
 	
-	public void initControllerIOC() {
+	public void initControllerIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		controllerIOC=new ControllerIOC();
 		controllerIOC.initControllerIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getControllerPackSuffix()));
 	}
 	
-	public void initServiceIOC() {
+	public void initServiceIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		serviceIOC=new ServiceIOC();
 		serviceIOC.initServiceIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getServicePackSuffix()));
 	}
-	public void initRepositoryIOC() {
+	public void initRepositoryIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		repositoryIOC=new RepositoryIOC();
 		repositoryIOC.initRepositoryIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getRepositoryPackSuffix()));
 	}
@@ -181,8 +199,9 @@ public class IOCContainers {
 						String[] fx=ArrayCast.getFieldGenericType(field);
 						for(String z:val) {
 							String[] kv=z.split(":");
-//							map.put(LuckyUtils.typeCast(kv[0], type), value)
+							map.put(LuckyUtils.typeCast(kv[0], fx[0]), LuckyUtils.typeCast(kv[1], fx[1]));
 						}
+						field.set(component, map);
 					}else {
 						
 						field.set(component, LuckyUtils.typeCast(val[0], fieldClass.getSimpleName()));
