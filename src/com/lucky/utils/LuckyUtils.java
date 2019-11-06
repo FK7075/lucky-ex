@@ -160,7 +160,7 @@ public class LuckyUtils {
 	     Date date=new Date();
 	     SimpleDateFormat sf=
 	    	 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	     id="["+sf.format(date)+"]->";
+	     id="["+sf.format(date)+"]  ";
 	     return id;
 	}
 	

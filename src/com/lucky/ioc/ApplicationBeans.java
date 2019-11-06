@@ -295,13 +295,13 @@ public class ApplicationBeans {
 		return getKey(url);
 	}
 	public void printBeans() {
-		System.out.println(LuckyUtils.showtime()+"Controller组件:"+getControllerBeans());
-		System.out.println(LuckyUtils.showtime()+"Service组件:"+getServiceBeans());
-		System.out.println(LuckyUtils.showtime()+"Repository组件:"+getRepositoryBeans());
-		System.out.println(LuckyUtils.showtime()+"Mapper组件:"+getMapperBeans());
-		System.out.println(LuckyUtils.showtime()+"Component组件:"+getComponentBeans());
-		System.out.println(LuckyUtils.showtime()+"Agent组件:"+getAgentBeans());
-		System.out.println(LuckyUtils.showtime()+"URL-ControllerMethod映射关系:"+allMapping());
+		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Controller组件:"+getControllerBeans());
+		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Service组件:"+getServiceBeans());
+		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Repository组件:"+getRepositoryBeans());
+		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Mapper组件:"+getMapperBeans());
+		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Component组件:"+getComponentBeans());
+		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Agent组件:"+getAgentBeans());
+		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->URL-ControllerMethod映射关系:"+allMapping());
 	}
 	
 
