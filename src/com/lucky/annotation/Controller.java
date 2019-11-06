@@ -25,6 +25,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Controller {
 	String value() default "";
-	String prefix() default " ";
-	String suffix() default " ";
+	String prefix() default "";
+	String suffix() default "";
 }

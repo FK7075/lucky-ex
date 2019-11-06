@@ -149,8 +149,8 @@ public class ControllerIOC {
 					come.setController(entry.getValue());
 					RequestMapping mrm = method.getAnnotation(RequestMapping.class);
 					String url_m;
-					if (mrm.value().contains("->")) {
-						int end = mrm.value().indexOf("->");
+					if (mrm.value().contains("//")) {
+						int end = mrm.value().indexOf("//");
 						url_m = mrm.value().substring(0, end);
 						if (url_m.startsWith("/"))
 							url_m = url_m.substring(1, url_m.length());

@@ -224,10 +224,10 @@ public class ApplicationBeans {
 		Method method = come.getMethod();
 		RequestMapping rm = method.getAnnotation(RequestMapping.class);
 		String rmvalue = rm.value();
-		if (rmvalue.contains("->")) {
+		if (rmvalue.contains("//")) {
 			String restParamStr = resturl.replaceAll(mapping + "/", "");
 			String[] restVs = restParamStr.split("/");
-			int start = rmvalue.indexOf("->");
+			int start = rmvalue.indexOf("//");
 			rmvalue = rmvalue.substring(start + 2, rmvalue.length());
 			String[] restKs = rmvalue.split("/");
 			if(restVs.length!=restKs.length)
@@ -264,7 +264,7 @@ public class ApplicationBeans {
 		if(!"".equals(cont.prefix()))
 			come.setPrefix(cont.prefix());
 		if(!"".equals(cont.suffix()))
-			come.setSuffix(cont.prefix());
+			come.setSuffix(cont.suffix());
 		return come;
 	}
 	
