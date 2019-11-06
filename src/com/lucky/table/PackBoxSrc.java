@@ -2,7 +2,7 @@ package com.lucky.table;
 
 import java.util.List;
 
-import com.lucky.ioc.DataSource;
+import com.lucky.ioc.config.DataSource;
 import com.lucky.utils.LuckyUtils;
 
 /**

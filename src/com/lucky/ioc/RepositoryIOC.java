@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.lucky.annotation.Mapper;
 import com.lucky.annotation.Repository;
+import com.lucky.exception.NotAddIOCComponent;
 import com.lucky.exception.NotFindBeanException;
 import com.lucky.sqldao.SqlCore;
 import com.lucky.sqldao.SqlCoreFactory;
@@ -60,6 +61,8 @@ public class RepositoryIOC {
 	}
 
 	public void addRepositoryMap(String daoId, Object daoObj) {
+		if(containId(daoId))
+			throw new NotAddIOCComponent("Repository(ioc)容器中已存在ID为--"+daoId+"--的组件，无法重复添加......");
 		repositoryMap.put(daoId, daoObj);
 		addRepositoryIDS(daoId);
 	}
@@ -85,6 +88,8 @@ public class RepositoryIOC {
 	}
 
 	public void addMapperMap(String mapperID, Object mapperObj) {
+		if(containId(mapperID))
+			throw new NotAddIOCComponent("Mapper(ioc)容器中已存在ID为--"+mapperID+"--的组件，无法重复添加......");
 		mapperMap.put(mapperID, mapperObj);
 		addMapperIDS(mapperID);
 	}

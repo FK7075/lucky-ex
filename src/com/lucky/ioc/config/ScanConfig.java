@@ -1,8 +1,10 @@
-package com.lucky.ioc;
+package com.lucky.ioc.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.lucky.ioc.PackageScan;
 
 /**
  * IOC组件的默认位置后缀配置

@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.lucky.annotation.Table;
 import com.lucky.cache.StartCache;
-import com.lucky.ioc.DataSource;
+import com.lucky.ioc.config.DataSource;
 import com.lucky.mapper.LuckyMapperProxy;
 import com.lucky.query.ObjectToJoinSql;
 import com.lucky.query.QueryBuilder;

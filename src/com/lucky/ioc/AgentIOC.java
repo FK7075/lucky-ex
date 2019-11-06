@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.lucky.exception.NotAddIOCComponent;
 import com.lucky.exception.NotFindBeanException;
 
 /**
@@ -42,6 +43,8 @@ public class AgentIOC {
 	}
 	
 	public void addAgentMap(String id,Object object) {
+		if(containId(id))
+			throw new NotAddIOCComponent("Agent(ioc)容器中已存在ID为--"+id+"--的组件，无法重复添加......");
 		agentMap.put(id, object);
 		addAgentID(id);
 	}

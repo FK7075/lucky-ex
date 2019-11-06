@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucky.ioc.DataSource;
+import com.lucky.ioc.config.DataSource;
 import com.lucky.sqldao.PojoManage;
 import com.lucky.sqldao.SqlOperation;
 import com.lucky.utils.LuckyManager;

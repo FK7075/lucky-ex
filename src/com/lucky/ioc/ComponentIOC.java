@@ -10,6 +10,7 @@ import java.util.Map;
 import com.lucky.annotation.Bean;
 import com.lucky.annotation.BeanFactory;
 import com.lucky.annotation.Component;
+import com.lucky.exception.NotAddIOCComponent;
 import com.lucky.exception.NotFindBeanException;
 import com.lucky.utils.LuckyUtils;
 
@@ -50,6 +51,8 @@ public class ComponentIOC {
 	}
 
 	public void addAppMap(String id, Object object) {
+		if(containId(id))
+			throw new NotAddIOCComponent("Component(ioc)容器中已存在ID为--"+id+"--的组件，无法重复添加......");
 		appMap.put(id, object);
 		addAppIDS(id);
 	}
@@ -98,7 +101,8 @@ public class ComponentIOC {
 						Object invoke = met.invoke(obj);
 						Bean bean=met.getAnnotation(Bean.class);
 						if("".equals(bean.value())) {
-							addAppMap(LuckyUtils.TableToClass1(met.getReturnType().getSimpleName()), invoke);
+							String Id=component.getSimpleName()+"."+met.getName();
+							addAppMap(Id, invoke);
 						}else {
 							addAppMap(bean.value(),invoke);
 						}

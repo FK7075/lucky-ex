@@ -1,4 +1,4 @@
-package com.lucky.ioc;
+package com.lucky.ioc.config;
 
 public abstract class ApplicationConfig {
 	
@@ -7,6 +7,10 @@ public abstract class ApplicationConfig {
 	}
 	
 	public void setDataSource(DataSource data) {
+		
+	}
+	
+	public void webConfig(WebConfig web) {
 		
 	}
 

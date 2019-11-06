@@ -5,12 +5,27 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 public class ArrayCast {
-
+	
+	/**
+	 * 将String[]转为其它类型的数组
+	 * @param strArr
+	 * @param changTypeClass
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T[] strArrayChange(String[] strArr, Class<T> changTypeClass) {
 		return (T[]) ArrayCast.strToList(strArr, changTypeClass.getSimpleName());
 	}
 
+	/**
+	 * 返回集合属性的泛型,如果不是java自带的类型，会在泛型类型后加上$ref<br>
+	 * List[String]  ->String<br>
+	 * Map[String,Ingeger]  ->[String,Integer]<br>
+	 * Map[String,MyPojo]   ->[String,MyPojo$ref]<br>
+	 *
+	 * @param field
+	 * @return
+	 */
 	public static String[] getFieldGenericType(Field field) {
 		Type genericType = field.getGenericType();
 		if (genericType instanceof ParameterizedType) {
@@ -18,13 +33,17 @@ public class ArrayCast {
 			Type[] actualTypeArguments = pt.getActualTypeArguments();
 			String[] gener = new String[actualTypeArguments.length];
 			for (int i = 0; i < gener.length; i++) {
-				gener[i]=actualTypeArguments[i].getTypeName();
+				Class<?> gc=(Class<?>)actualTypeArguments[i];
+				if(gc.getClassLoader()!=null)
+					gener[i]=gc.getSimpleName()+"$ref";
+				else
+					gener[i]=gc.getSimpleName();
 			}
 			return gener;
 		}
 		return null;
 	}
-
+	
 	public static Object[] strToList(String[] arr, String type) {
 		if (arr == null)
 			return null;

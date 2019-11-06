@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-import com.lucky.ioc.DataSource;
+import com.lucky.ioc.config.DataSource;
 
 /**
  * 负责将数据库中的表转化为对应的JavaBean

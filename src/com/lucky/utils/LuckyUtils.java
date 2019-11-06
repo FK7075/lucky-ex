@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.lucky.enums.PrimaryType;
-import com.lucky.ioc.DataSource;
+import com.lucky.ioc.config.DataSource;
 import com.lucky.sqldao.PojoManage;
 import com.lucky.sqldao.SqlOperation;
 

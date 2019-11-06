@@ -10,9 +10,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpSession;
+
 import com.lucky.annotation.Autowired;
 import com.lucky.annotation.Value;
 import com.lucky.exception.InjectionPropertiesException;
+import com.lucky.ioc.config.ScanConfig;
+import com.lucky.servlet.Model;
 import com.lucky.utils.ArrayCast;
 import com.lucky.utils.LuckyUtils;
 
@@ -140,7 +146,7 @@ public class IOCContainers {
 	
 	public void initControllerIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		controllerIOC=new ControllerIOC();
-		controllerIOC.initControllerIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getControllerPackSuffix()));
+		controllerIOC.initControllerIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getControllerPackSuffix())).methodHanderSetting();
 	}
 	
 	public void initServiceIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
@@ -150,6 +156,31 @@ public class IOCContainers {
 	public void initRepositoryIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		repositoryIOC=new RepositoryIOC();
 		repositoryIOC.initRepositoryIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getRepositoryPackSuffix()));
+	}
+	
+	/**
+	 * 每次处理请求时为Controller注入Model、Request、Response和Session对象属性
+	 * @param object
+	 * @param model
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
+	public void autowReqAdnResp(Object object,Model model) throws IllegalArgumentException, IllegalAccessException {
+		Field[] fields=object.getClass().getDeclaredFields();
+		for(Field field:fields) {
+			field.setAccessible(true);
+			if(Model.class.isAssignableFrom(field.getType())) {
+				field.set(object, model);
+			}else if(HttpSession.class.isAssignableFrom(field.getType())) {
+				field.set(object, model.getSession());
+			}else if(ServletRequest.class.isAssignableFrom(field.getType())) {
+				field.set(object, model.getRequest());
+			}else if(ServletResponse.class.isAssignableFrom(field.getType())) {
+				field.set(object, model.getResponse());
+			}else {
+				continue;
+			}
+		}
 	}
 	
 	/**
@@ -182,27 +213,57 @@ public class IOCContainers {
 					}else if(List.class.isAssignableFrom(fieldClass)) {
 						List<Object> list=new ArrayList<>();
 						String fx=ArrayCast.getFieldGenericType(field)[0];
-						for(String z:val) {
-							list.add(LuckyUtils.typeCast(z, fx));
+						if(fx.endsWith("$ref")) {
+							for(String z:val) {
+								list.add(beans.getBean(z));
+							}
+						}else {
+							for(String z:val) {
+								list.add(LuckyUtils.typeCast(z, fx));
+							}
 						}
 						field.set(component, list);
 					}else if(Set.class.isAssignableFrom(fieldClass)) {
 						Set<Object> set=new HashSet<>();
 						String fx=ArrayCast.getFieldGenericType(field)[0];
-						for(String z:val) {
-							set.add(LuckyUtils.typeCast(z, fx));
+						if(fx.endsWith("$ref")) {
+							for(String z:val) {
+								set.add(beans.getBean(z));
+							}
+						}else {
+							for(String z:val) {
+								set.add(LuckyUtils.typeCast(z, fx));
+							}
 						}
 						field.set(component, set);
 					}else if(Map.class.isAssignableFrom(fieldClass)) {
 						Map<Object,Object> map=new HashMap<>();
 						String[] fx=ArrayCast.getFieldGenericType(field);
-						for(String z:val) {
-							String[] kv=z.split(":");
-							map.put(LuckyUtils.typeCast(kv[0], fx[0]), LuckyUtils.typeCast(kv[1], fx[1]));
+						boolean one=fx[0].endsWith("$ref");
+						boolean two=fx[1].endsWith("$ref");
+						if(one&&two) {//K-V都不是基本类型
+							for(String z:val) {
+								String[] kv=z.split(":");
+								map.put(beans.getBean(kv[0]), beans.getBean(kv[1]));
+							}
+						}else if(one&&!two) {//V是基本类型
+							for(String z:val) {
+								String[] kv=z.split(":");
+								map.put(beans.getBean(kv[0]), LuckyUtils.typeCast(kv[1], fx[1]));
+							}
+						}else if(!one&&two) {//K是基本类型
+							for(String z:val) {
+								String[] kv=z.split(":");
+								map.put(LuckyUtils.typeCast(kv[0], fx[0]),beans.getBean(kv[1]));
+							}
+						}else {//K-V都是基本类型
+							for(String z:val) {
+								String[] kv=z.split(":");
+								map.put(LuckyUtils.typeCast(kv[0], fx[0]), LuckyUtils.typeCast(kv[1], fx[1]));
+							}
 						}
 						field.set(component, map);
 					}else {
-						
 						field.set(component, LuckyUtils.typeCast(val[0], fieldClass.getSimpleName()));
 					}
 					

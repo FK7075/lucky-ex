@@ -35,8 +35,6 @@ import com.lucky.annotation.Select;
 import com.lucky.annotation.Update;
 import com.lucky.enums.JOIN;
 import com.lucky.enums.Sort;
-import com.lucky.mapping.ApplicationBeans;
-import com.lucky.query.Paging;
 import com.lucky.query.QueryBuilder;
 import com.lucky.query.SqlAndObject;
 import com.lucky.query.SqlFragProce;

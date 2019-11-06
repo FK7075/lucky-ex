@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.lucky.annotation.Service;
+import com.lucky.exception.NotAddIOCComponent;
 import com.lucky.exception.NotFindBeanException;
 import com.lucky.utils.LuckyUtils;
 
@@ -39,6 +40,8 @@ public class ServiceIOC {
 	}
 
 	public void addServiceMap(String id, Object object) {
+		if(containId(id))
+			throw new NotAddIOCComponent("Service(ioc)容器中已存在ID为--"+id+"--的组件，无法重复添加......");
 		serviceMap.put(id, object);
 		addServiceIDS(id);
 	}
