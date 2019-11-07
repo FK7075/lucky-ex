@@ -196,6 +196,24 @@ public class ApplicationBeans {
 	}
 	
 	/**
+	 * 向Component容器中加入一个组件
+	 * @param Id
+	 * @param component
+	 */
+	public void addComponentBean(String Id,Object component) {
+		iocContainers.getAppIOC().getAppMap().put(Id, component);
+	}
+	
+	/**
+	 * 判断Component容器中是否存在该Id的组件
+	 * @param componentId
+	 * @return
+	 */
+	public boolean containsComponent(String componentId) {
+		return iocContainers.getAppIOC().containId(componentId);
+	}
+	
+	/**
 	 * 根据ID得到一个IOC组件
 	 * @param beanId
 	 * @return
