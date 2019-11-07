@@ -36,7 +36,7 @@ public class CacheExpand {
 		MethodInterceptor interceptor=(object,method,params,methodProxy)->{
 			if(cacheMap.isEmpty())
 				return methodProxy.invokeSuper(object, params);
-			return methodProxy.invokeSuper(object, cacheMap.get(mapKey));
+			return cacheMap.get(mapKey);
 		};
 		return interceptor;
 	}

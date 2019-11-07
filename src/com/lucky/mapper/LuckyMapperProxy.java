@@ -42,6 +42,9 @@ import com.lucky.sqldao.PojoManage;
 import com.lucky.sqldao.SqlCore;
 import com.lucky.utils.LuckyUtils;
 
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+
 @SuppressWarnings("all")
 public class LuckyMapperProxy {
 
@@ -513,24 +516,26 @@ public class LuckyMapperProxy {
 	 */
 	public <T> T getMapperProxyObject(Class<T> clazz) throws InstantiationException, IllegalAccessException {
 		initSqlMap(clazz);
-		
 		initSqlMapProperty(clazz);
-		InvocationHandler handler = (proxy, method, args) -> {
+		Enhancer enhancer=new Enhancer();
+		enhancer.setSuperclass(clazz);
+		MethodInterceptor interceptor=(object,method,params,methodProxy)->{
 			SqlFragProce sql_fp = SqlFragProce.getSqlFP();
 			if (method.isAnnotationPresent(Select.class))
-				return select(method,args,sql_fp);
+				return select(method,params,sql_fp);
 			else if (method.isAnnotationPresent(Update.class))
-				return update(method,args,sql_fp);
+				return update(method,params,sql_fp);
 			else if (method.isAnnotationPresent(Delete.class))
-				return delete(method,args,sql_fp);
+				return delete(method,params,sql_fp);
 			else if (method.isAnnotationPresent(Insert.class))
-				return insert(method,args,sql_fp);
+				return insert(method,params,sql_fp);
 			else if (method.isAnnotationPresent(Query.class))
-				return join(method,args);
+				return join(method,params);
 			else 
-				return notHave(method,args,sql_fp);
+				return notHave(method,params,sql_fp);
 		};
-		return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[] { clazz }, handler);
+		enhancer.setCallback(interceptor);
+		return (T) enhancer.create();
 	}
 	
 	public String getAlias(Parameter param) {
