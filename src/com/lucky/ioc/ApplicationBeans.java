@@ -201,7 +201,7 @@ public class ApplicationBeans {
 	 * @param component
 	 */
 	public void addComponentBean(String Id,Object component) {
-		iocContainers.getAppIOC().getAppMap().put(Id, component);
+		iocContainers.addComponent(Id, component);
 	}
 	
 	/**

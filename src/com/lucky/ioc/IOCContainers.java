@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 
 import com.lucky.annotation.Autowired;
 import com.lucky.annotation.Value;
+import com.lucky.aop.defaultexpand.CacheExpand;
 import com.lucky.exception.InjectionPropertiesException;
 import com.lucky.ioc.config.ScanConfig;
 import com.lucky.servlet.Model;
@@ -46,6 +47,8 @@ public class IOCContainers {
 		scanConfigToComponentIOC();
 		inversionOfControl();
 		dependencyInjection();
+		CacheExpand cacheAgent=new CacheExpand();
+		cacheAgent.cacheAgent();
 	}
 	
 	/**
@@ -122,6 +125,10 @@ public class IOCContainers {
 
 	public void setAppIOC(ComponentIOC appIOC) {
 		this.appIOC = appIOC;
+	}
+	
+	public void addComponent(String key,Object value) {
+		this.appIOC.addAppMap(key, value);
 	}
 
 	public ControllerIOC getControllerIOC() {
