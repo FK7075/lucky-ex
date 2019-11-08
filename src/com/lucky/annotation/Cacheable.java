@@ -16,5 +16,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Cacheable {
 	String value();
-	String key() default "";
+	String[] key() default "";
+	String condition() default "";
 }

@@ -39,7 +39,8 @@ public class CacheExpand {
 			if(method.isAnnotationPresent(Cacheable.class)) {
 				Cacheable cache=method.getAnnotation(Cacheable.class);
 				String mapId=cache.value();
-				int keyExpression=Integer.parseInt(cache.key());
+//				=Integer.parseInt(cache.key());
+				int keyExpression=0;
 				Map<String,Object> cacheMap;
 				Map<String,Object> componentMap=beans.getComponentBeans();
 				String paramKey = params[keyExpression].toString();
