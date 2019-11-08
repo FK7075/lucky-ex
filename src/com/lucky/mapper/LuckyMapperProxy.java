@@ -35,6 +35,7 @@ import com.lucky.annotation.Select;
 import com.lucky.annotation.Update;
 import com.lucky.enums.JOIN;
 import com.lucky.enums.Sort;
+import com.lucky.exception.NotFindFlieException;
 import com.lucky.query.QueryBuilder;
 import com.lucky.query.SqlAndObject;
 import com.lucky.query.SqlFragProce;
@@ -111,7 +112,7 @@ public class LuckyMapperProxy {
 			for(Method method:methods) {
 				if(!method.isAnnotationPresent(Select.class)&&!method.isAnnotationPresent(Insert.class)
 				   &&!method.isAnnotationPresent(Update.class)&&!method.isAnnotationPresent(Delete.class)	
-				   &&!method.isAnnotationPresent(Query.class)&&!method.isAnnotationPresent(Page.class)) {
+				   &&!method.isAnnotationPresent(Query.class)) {
 					String key=method.getName();
 					String value=p.getProperty(key);
 					if(value!=null)
@@ -119,14 +120,11 @@ public class LuckyMapperProxy {
 				}
 			}
 		} catch (UnsupportedEncodingException e) {
-			System.err.println("找不到文件->"+propertyPath);
-			e.printStackTrace();
+			throw new NotFindFlieException("找不到文件:"+propertyPath+"，无法加载SQL....");
 		} catch (FileNotFoundException e) {
-			System.err.println("找不到文件->"+propertyPath);
-			e.printStackTrace();
+			throw new NotFindFlieException("找不到文件:"+propertyPath+"，无法加载SQL....");
 		} catch (IOException e) {
-			System.err.println("找不到文件->"+propertyPath);
-			e.printStackTrace();
+			throw new NotFindFlieException("找不到文件:"+propertyPath+"，无法加载SQL....");
 		}
 
 		
@@ -548,8 +546,13 @@ public class LuckyMapperProxy {
 		Parameter[] parameters = method.getParameters();
 		for(int i=0;i<parameters.length;i++) {
 			if(parameters[i].isAnnotationPresent(Page.class)) {
-				args[i]=((int)args[i]-1)*(int)args[i+1];
-				break;
+				if(i==parameters.length-1) {
+					args[i]=((int)args[i]-1)*(int)args[i-1];
+					break;
+				}else {
+					args[i]=((int)args[i]-1)*(int)args[i+1];
+					break;
+				}
 			}
 		}
 	}
