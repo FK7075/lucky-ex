@@ -1,5 +1,7 @@
 package com.lucky.sqldao;
 
+import com.lucky.utils.Jacklabm;
+
 public class SqlCoreFactory {
 	
 	/**
@@ -7,6 +9,7 @@ public class SqlCoreFactory {
 	 * @return
 	 */
 	public static SqlCore getSqlCore() {
+		Jacklabm.welcome();
 		return SqlControl.getSqlControl();
 	}
 	
@@ -15,6 +18,7 @@ public class SqlCoreFactory {
 	 * @return
 	 */
 	public static SqlCore getSqlCoreAddCreateBean() {
+		Jacklabm.welcome();
 		return SqlControl.getSqlControlAddCJavaBean();
 	}
 	
@@ -24,6 +28,7 @@ public class SqlCoreFactory {
 	 * @return
 	 */
 	public static SqlCore getSqlCoreAddCreateBean(String srcPath) {
+		Jacklabm.welcome();
 		return SqlControl.getSqlControlAddCJavaBean(srcPath);
 	}
 	
@@ -34,6 +39,7 @@ public class SqlCoreFactory {
 	 * @return
 	 */
 	public static SqlCore getSqlCoreAddCreateBeanA(String srcPath,String...tables) {
+		Jacklabm.welcome();
 		return SqlControl.getSqlControlAddCJavaBean(srcPath,tables);
 	}
 	
@@ -43,6 +49,7 @@ public class SqlCoreFactory {
 	 * @return
 	 */
 	public static SqlCore getSqlCoreAddCreateBeanB(String...tables) {
+		Jacklabm.welcome();
 		return SqlControl.getSqlControlAddCJavaBean(tables);
 	}
 	
@@ -52,6 +59,7 @@ public class SqlCoreFactory {
 	 * @return
 	 */
 	public static SqlCore getSqlCore(boolean isCreateTable) {
+		Jacklabm.welcome();
 		return SqlControl.getSqlControl(isCreateTable);
 	}
 

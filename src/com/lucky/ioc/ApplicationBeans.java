@@ -10,6 +10,7 @@ import com.lucky.annotation.RequestMapping;
 import com.lucky.exception.NotFindBeanException;
 import com.lucky.ioc.config.WebConfig;
 import com.lucky.servlet.Model;
+import com.lucky.utils.Jacklabm;
 import com.lucky.utils.LuckyUtils;
 
 public class ApplicationBeans {
@@ -19,7 +20,7 @@ public class ApplicationBeans {
 	private static ApplicationBeans applicationBean;
 	
 	static {
-		LuckyUtils.welcome();
+		Jacklabm.welcome();
 		iocContainers=new IOCContainers();
 		iocContainers.init();
 	}
