@@ -31,9 +31,9 @@ public class LogInfo {
 	private void log(String sql, Object[] obj) {
 		System.out.println(LuckyUtils.showtime()+"SQL:   " + sql);
 		if (obj == null)
-			System.out.println(LuckyUtils.showtime()+"Object[]: { }");
+			System.out.println(LuckyUtils.showtime()+"Parameters: { }");
 		else {
-			System.out.print(LuckyUtils.showtime()+"Object[]: {");
+			System.out.print(LuckyUtils.showtime()+"Parameters: {");
 			for (Object o : obj) {
 				System.out.print(o + "   ");
 			}
@@ -48,10 +48,10 @@ public class LogInfo {
 	private void logBatch(String sql,Object obj[][]) {
 		System.out.println(LuckyUtils.showtime()+"SQL:   " + sql);
 		if(obj==null||obj.length==0)
-			System.out.println("Object[]: { }");
+			System.out.println("Parameters: { }");
 		else {
 			for(int i=0;i<obj.length;i++) {
-				System.out.print("Object[]: {");
+				System.out.print("Parameters: {");
 				for(Object o:obj[i])
 					System.out.print(o + "   ");
 				System.out.println("}");
