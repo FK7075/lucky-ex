@@ -11,8 +11,7 @@ public class TargetPerform {
 	
 	private Perform targetPerform;
 	
-	private List<ExpandPrefixSuffix> eps;
-	
+	private List<Perform> expandList;
 	
 
 	public TargetPerform(Perform targetPerform) {
@@ -27,13 +26,16 @@ public class TargetPerform {
 		this.targetPerform = targetPerform;
 	}
 
-	public List<ExpandPrefixSuffix> getEps() {
-		return eps;
+	public List<Perform> getExpandList() {
+		return expandList;
 	}
 
-	public void setEps(List<ExpandPrefixSuffix> eps) {
-		this.eps = eps;
+	public void setExpandList(List<Perform> expandList) {
+		this.expandList = expandList;
 	}
+	
+	
+
 	
 
 }

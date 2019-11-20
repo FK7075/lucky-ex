@@ -12,11 +12,11 @@ public class LuckyPoint {
 	/**
 	 * 前后增强的执行项
 	 */
-	private ExpandPrefixSuffix epf;
+	private Perform perform;
 	
 	
-	public LuckyPoint(ExpandPrefixSuffix epf) {
-		this.epf = epf;
+	public LuckyPoint(Perform perform) {
+		this.perform = perform;
 	}
 
 	/**
@@ -29,13 +29,11 @@ public class LuckyPoint {
 	 */
 	public Object proceed(LuckyChain chain) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Object result;
-		Perform prefixExpand = epf.getPrefixExpand();
-		Perform suffixExpand = epf.getSuffixExpand();
-		if(prefixExpand!=null)//执行前置增强项
-			prefixExpand.getMethod().invoke(prefixExpand.getExpand(), prefixExpand.getParams());
+		if("before".equalsIgnoreCase(perform.getEnhance()))//执行前置增强项
+			perform.getMethod().invoke(perform.getExpand(), perform.getParams());
 		result=chain.proceed();
-		if(suffixExpand!=null)//执行后置增强项
-			suffixExpand.getMethod().invoke(suffixExpand.getExpand(), suffixExpand.getParams());
+		if("after".equalsIgnoreCase(perform.getEnhance()))//执行后置增强项
+			perform.getMethod().invoke(perform.getExpand(), perform.getParams());
 		return result;
 	}
 	
