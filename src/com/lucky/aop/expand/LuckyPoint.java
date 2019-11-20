@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
  * @author DELL
  *
  */
-public class LuckyPoint {
+public class LuckyPoint implements Point {
 	
 	/**
 	 * 前后增强的执行项
