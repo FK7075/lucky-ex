@@ -174,7 +174,8 @@ public class AnnotationOperation {
 					&&!ServletRequest.class.isAssignableFrom(param.getType())
 					&&!ServletResponse.class.isAssignableFrom(param.getType())
 					&&!HttpSession.class.isAssignableFrom(param.getType())
-					&&!Model.class.isAssignableFrom(param.getType())) {
+					&&!Model.class.isAssignableFrom(param.getType())
+					&&getRequeatParamDefValue(param)==null) {
 				Class<?> pojoclzz=param.getType();
 				Object pojo=pojoclzz.newInstance();
 				Field[] fields=pojoclzz.getDeclaredFields();
@@ -258,13 +259,13 @@ public class AnnotationOperation {
 			}else {
 				String reqParaName=getParamName(parameters[i]);
 				String defparam=getRequeatParamDefValue(parameters[i]);
-				if(parameters[i].getType().isArray()) {
+				if(parameters[i].getType().isArray()&&parameters[i].getType().getClassLoader()==null) {
 					if(model.parameterMapContainsKey(reqParaName)) {
 						args[i]=model.getArray(reqParaName, parameters[i].getType());
 					}else {
 						if(defparam==null)
 							throw new NotFindRequestException("缺少请求参数："+reqParaName);
-						args[i]=model.strArrayChange((String[])ApplicationBeans.createApplicationBeans().getBean(defparam), parameters[i].getType());
+						args[i]=ApplicationBeans.createApplicationBeans().getBean(defparam);
 					}
 				}else {
 					if(model.parameterMapContainsKey(reqParaName)) {
