@@ -1,5 +1,5 @@
 eclipse.preferences.version=1
-encoding//src/com/lucky/db/db.properties=UTF-8
-encoding//src/com/lucky/servlet/LuckyDispatherServlet.java=UTF-8
-encoding//src/com/lucky/sqldao/DBConnectionPool.java=UTF-8
-encoding//src/com/lucky/utils/Jacklabm.java=UTF-8
+encoding//src/com/lucky/jacklamb/db/db.properties=UTF-8
+encoding//src/com/lucky/jacklamb/servlet/LuckyDispatherServlet.java=UTF-8
+encoding//src/com/lucky/jacklamb/sqldao/DBConnectionPool.java=UTF-8
+encoding//src/com/lucky/jacklamb/utils/Jacklabm.java=UTF-8
