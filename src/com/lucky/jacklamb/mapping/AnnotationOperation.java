@@ -23,7 +23,9 @@ import com.lucky.jacklamb.annotation.Download;
 import com.lucky.jacklamb.annotation.RequestParam;
 import com.lucky.jacklamb.annotation.RestParam;
 import com.lucky.jacklamb.annotation.Upload;
+import com.lucky.jacklamb.exception.NotFindRequestException;
 import com.lucky.jacklamb.file.MultipartFile;
+import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.servlet.Model;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
@@ -84,7 +86,7 @@ public class AnnotationOperation {
 			String suffix = disposition.substring(disposition.lastIndexOf("."), disposition.length() - 1);
 			if(!"".equals(type)) {
 				if(!type.toLowerCase().contains(suffix.toLowerCase())) {
-					throw new RuntimeException("xfl_fk__:上传的文件格式"+suffix+"不合法！合法的文件格式为："+type);
+					throw new RuntimeException("上传的文件格式"+suffix+"不合法！合法的文件格式为："+type);
 				}
 			}
 			// 随机的生成文件名（时间+随机数）
@@ -98,7 +100,7 @@ public class AnnotationOperation {
 				int size=fis.available();
 				int filesize=size/1024;
 				if(filesize>maxSize) {
-					throw new RuntimeException("xfl_fk__:上传文件的大小("+filesize+"kb)超出设置的最大值"+maxSize+"kb");
+					throw new RuntimeException("上传文件的大小("+filesize+"kb)超出设置的最大值"+maxSize+"kb");
 				}
 			}
 			// 动态获取服务器的路径
@@ -254,13 +256,30 @@ public class AnnotationOperation {
 				String restKey=rp.value();
 				args[i]=LuckyUtils.typeCast(model.getRestMap().get(restKey),parameters[i].getType().getSimpleName());
 			}else {
+				String reqParaName=getParamName(parameters[i]);
+				String defparam=getRequeatParamDefValue(parameters[i]);
 				if(parameters[i].getType().isArray()) {
-					args[i]=model.getArray(getParamName(parameters[i]), parameters[i].getType());
+					if(model.parameterMapContainsKey(reqParaName)) {
+						args[i]=model.getArray(reqParaName, parameters[i].getType());
+					}else {
+						if(defparam==null)
+							throw new NotFindRequestException("缺少请求参数："+reqParaName);
+						args[i]=model.strArrayChange((String[])ApplicationBeans.createApplicationBeans().getBean(defparam), parameters[i].getType());
+					}
 				}else {
-					if(model.getArray(getParamName(parameters[i]), parameters[i].getType())!=null) {
-						args[i]=model.getArray(getParamName(parameters[i]), parameters[i].getType())[0];
-					}else if(!model.getRestMap().isEmpty()){
+					if(model.parameterMapContainsKey(reqParaName)) {
+						args[i]=model.getArray(reqParaName, parameters[i].getType())[0];
+					}else if(model.restMapContainsKey(reqParaName)){
 						args[i]=model.getRestParam(getParamName(parameters[i]), parameters[i].getType());
+					}else {
+						if(defparam==null)
+							throw new NotFindRequestException("缺少请求参数："+reqParaName);
+						if(parameters[i].getType().getClassLoader()==null){
+							args[i]=LuckyUtils.typeCast(defparam, parameters[i].getType().getSimpleName());
+						}else {
+							args[i]=ApplicationBeans.createApplicationBeans().getBean(defparam);
+						}
+
 					}
 				}
 			}
@@ -313,6 +332,18 @@ public class AnnotationOperation {
 			return rp.value();
 		}else {
 			return param.getName();
+		}
+	}
+	
+	private String getRequeatParamDefValue(Parameter param) {
+		if(param.isAnnotationPresent(RequestParam.class)) {
+			RequestParam rp=param.getAnnotation(RequestParam.class);
+			String defValue=rp.def();
+			if("".equals(defValue))
+				return null;
+			return defValue;
+		}else {
+			return null;
 		}
 	}
 }

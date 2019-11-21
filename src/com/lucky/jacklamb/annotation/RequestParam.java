@@ -15,5 +15,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RequestParam {
+	String def() default "";
 	String value() default "";
 }

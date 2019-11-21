@@ -316,6 +316,19 @@ public class Model {
 	}
 	
 	/**
+	 * 判断parameterMap中是否存在值为paramName的Key
+	 * @param paramName
+	 * @return
+	 */
+	public boolean parameterMapContainsKey(String paramName) {
+		return parameterMap.containsKey(paramName);
+	}
+	
+	public boolean restMapContainsKey(String paramName) {
+		return restMap.containsKey(paramName);
+	}
+	
+	/**
 	 * 将String类型的数组转为其他类型的数组String[]->{Integer[],Double[]....}
 	 * @param strArr
 	 * @param changTypeClass
@@ -341,13 +354,12 @@ public class Model {
 	 * @param clzz 目标类型T的Class
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public <T> T[] getArray(String key,Class<T> clzz){
-		return (T[]) ArrayCast.strToList(parameterMap.get(key), clzz.getSimpleName());
+		return (T[]) ArrayCast.strArrayChange(parameterMap.get(key), clzz);
 	}
 	
 	/**
-	 * 得到parameterMap中key对应String[]
+	 * 得到RestParamMap中key对应Value
 	 * @param key
 	 * @return
 	 */
