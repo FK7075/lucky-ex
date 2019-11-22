@@ -8,12 +8,11 @@ public class Jacklabm {
 		if(!first)
 			return;
 		first=false;
-		String d=getD();
-		System.out.println("注：上述图案均引用于如下网址,转载请附上原文出处链接和本声明->https://blog.csdn.net/vbirdbest/article/details/78995793");
+		String d=str3();
 		System.out.println(d);
 	}
 	
-	private static String getD() {
+	public static String getD() {
 		int i=(int) (Math.random() * (8 - 1) + 1);
 		switch (i) {
 		case 1:
@@ -96,7 +95,8 @@ public class Jacklabm {
 	}
 	
 	public static String str3() {
-		String d="  .--,       .--,\r\n" + 
+		String d="———————————————————————————————————————————————————————\n"+
+				"  .--,       .--,\r\n" + 
 				" ( (  \\.---./  ) )\r\n" + 
 				"  '.__/o   o\\__.'\r\n" + 
 				"     {=  ^  =}\r\n" + 
@@ -107,8 +107,8 @@ public class Jacklabm {
 				"   \"'\\       /'\"_.-~^`'-.\r\n" + 
 				"      \\  _  /--'         `\r\n" + 
 				"    ___)( )(___\r\n" + 
-				"   (((__) (__)))    Hello I'm Lucky :)\r\n" + 
-				"————————————————\r\n\n\n--------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n--------------------------------------------------\n\n";
+				"   (((__) (__)))    Hello I'm Lucky ：)\r\n\n" + 
+				"———————————————————GitHub：FK7075———————————————————————\r\n\n--------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n--------------------------------------------------\n\n";
 		return d;
 	}
 	
@@ -263,5 +263,4 @@ public class Jacklabm {
 	public static void main(String[] args) {
 		welcome();
 	}
-	
 }
