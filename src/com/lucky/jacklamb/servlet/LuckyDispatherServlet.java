@@ -79,7 +79,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 			}else {
 				ControllerAndMethod controllerAndMethod = beans.getCurrControllerAndMethod(path);
 				if(controllerAndMethod==null) {
-					resp.getWriter().print(Jacklabm.exception("HTTP Status 404 – Not Found", "不正确的url："+req.getRequestURL(), "找不与请求相匹配的映射资源,请检查您的URL是否正确."));
+					resp.getWriter().print(Jacklabm.exception("HTTP Status 404 – Not Found", "不正确的url："+req.getRequestURI(), "找不与请求相匹配的映射资源,请检查您的URL是否正确."));
 					return;
 				}
 				if(!controllerAndMethod.requestMethodISCorrect(this.method)) {
