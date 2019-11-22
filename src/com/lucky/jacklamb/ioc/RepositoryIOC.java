@@ -9,8 +9,8 @@ import com.lucky.jacklamb.annotation.Mapper;
 import com.lucky.jacklamb.annotation.Repository;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
+import com.lucky.jacklamb.sqldao.SqlCore;
 import com.lucky.jacklamb.sqldao.SqlCoreFactory;
-import com.lucky.jacklamb.sqldao.interfaces.SqlCore;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class RepositoryIOC {

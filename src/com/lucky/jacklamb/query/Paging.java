@@ -7,8 +7,8 @@ import java.util.List;
 
 import com.lucky.jacklamb.annotation.Page;
 import com.lucky.jacklamb.enums.JOIN;
+import com.lucky.jacklamb.sqldao.SqlCore;
 import com.lucky.jacklamb.sqldao.SqlCoreFactory;
-import com.lucky.jacklamb.sqldao.interfaces.SqlCore;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class Paging <T>{
