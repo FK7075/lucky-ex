@@ -10,6 +10,12 @@ public class Jacklabm {
 		first=false;
 		String d=str3();
 		System.out.println(d);
+		try {
+			Thread.sleep(1500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public static String getD() {
@@ -51,7 +57,7 @@ public class Jacklabm {
 		return exception;
 	}
 	
-	private static String str1() {
+	public static String str1() {
 		String d="     ,---------------------------------,      ,---------,\r\n" + 
 				"         ,-----------------------,          ,\"        ,\"|\r\n" + 
 				"      ,\"                      ,\" |        ,\"        ,\"  |\r\n" + 
@@ -73,7 +79,7 @@ public class Jacklabm {
 		return d;
 	}
 	
-	private static String str2() {
+	public static String str2() {
 		String d="/**\r\n" + 
 				" * ┌───┐   ┌───┬───┬───┬───┐ ┌───┬───┬───┬───┐ ┌───┬───┬───┬───┐ ┌───┬───┬───┐\r\n" + 
 				" * │Esc│   │ F1│ F2│ F3│ F4│ │ F5│ F6│ F7│ F8│ │ F9│F10│F11│F12│ │P/S│S L│P/B│  ┌┐    ┌┐    ┌┐\r\n" + 
@@ -95,7 +101,7 @@ public class Jacklabm {
 	}
 	
 	public static String str3() {
-		String d="———————————————————————————————————————————————————————\n"+
+		String d="———————————————————————GitHub：FK7075—————————————————————————\n"+
 				"  .--,       .--,\r\n" + 
 				" ( (  \\.---./  ) )\r\n" + 
 				"  '.__/o   o\\__.'\r\n" + 
@@ -107,8 +113,8 @@ public class Jacklabm {
 				"   \"'\\       /'\"_.-~^`'-.\r\n" + 
 				"      \\  _  /--'         `\r\n" + 
 				"    ___)( )(___\r\n" + 
-				"   (((__) (__)))    Hello I'm Lucky ：)\r\n\n" + 
-				"———————————————————GitHub：FK7075———————————————————————\r\n\n--------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n--------------------------------------------------\n\n";
+				"   (((__) (__)))    Hello I'm Jack,Lucky is my girlfriend.\r\n\n" + 
+				"———————————————————————GitHub：FK7075—————————————————————————\r\n\n--------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n--------------------------------------------------";
 		return d;
 	}
 	
@@ -258,9 +264,5 @@ public class Jacklabm {
 				"#               佛祖保佑         永无BUG\r\n" + 
 				"————————————————————————————————————————————————\r\n\n\n--------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n--------------------------------------------------\n\n";
 		return d;
-	}
-	
-	public static void main(String[] args) {
-		welcome();
 	}
 }
