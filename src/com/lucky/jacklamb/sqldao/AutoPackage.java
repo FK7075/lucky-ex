@@ -4,7 +4,10 @@ import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.lucky.jacklamb.exception.AutoPackageException;
 import com.lucky.jacklamb.utils.LuckyManager;
@@ -26,14 +29,40 @@ public class AutoPackage {
 	 * @param c 封装类的Class对象
 	 * @param sql 预编译的sql语句
 	 * @param obj 替换占位符的数组
-	 * @return 返回一个泛型集合
+	 * @return 返回一个泛型的List集合
 	 */
-	public List<?> getTable(Class<?> c, String sql, Object... obj) {
+	public List<?> autoPackageToList(Class<?> c, String sql, Object... obj) {
 		List<Object> list = new ArrayList<Object>();
+		return (List<?>) autoPackageToCollection(c,list,sql,obj);
+	}
+	
+	/**
+	 * 自动将结果集中的内容封装起来
+	 * 
+	 * @param c 封装类的Class对象
+	 * @param sql 预编译的sql语句
+	 * @param obj 替换占位符的数组
+	 * @return 返回一个泛型的Set集合
+	 */
+	public Set<?> autoPackageToSet(Class<?> c, String sql, Object... obj) {
+		Set<Object> list = new HashSet<Object>();
+		return (Set<?>) autoPackageToCollection(c,list,sql,obj);
+	}
+	
+	/**
+	 * 自动包装
+	 * @param c 封装类的Class对象
+	 * @param collection
+	 * @param sql 预编译的sql语句
+	 * @param obj 替换占位符的数组
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> Collection<T> autoPackageToCollection(Class<?> c,Collection<T> collection, String sql, Object... obj) {
 		rs = sqloperation.getResultSet(sql, obj);
-		Object object = null;
 		if(c.getClassLoader()!=null) {
 			Field[] fields = c.getDeclaredFields();
+			Object object = null;
 			try {
 				while (rs.next()) {
 					object = c.newInstance();
@@ -59,7 +88,7 @@ public class AutoPackage {
 							}
 						}
 					}
-					list.add(object);
+					collection.add((T) object);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -70,14 +99,15 @@ public class AutoPackage {
 		}else {
 			try {
 				while(rs.next()) {
-					list.add(LuckyUtils.typeCast(rs.getObject(1)+"", c.getSimpleName()));
+					collection.add((T) LuckyUtils.typeCast(rs.getObject(1).toString(), c.getSimpleName()));
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}finally {
+				sqloperation.close();
 			}
 		}
-		return list;
+		return collection;
 	}
 	
 	public boolean update(String sql,Object...obj) {

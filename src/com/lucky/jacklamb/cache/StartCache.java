@@ -10,15 +10,15 @@ import com.lucky.jacklamb.sqldao.SqlOperation;
 import com.lucky.jacklamb.utils.LuckyManager;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
-@SuppressWarnings("all")
+//@SuppressWarnings("all")
 public class StartCache {
-	private List<?> list = null;
-	private SqlOperation sqlOperation =LuckyManager.getSqlOperation();
-	private boolean isOk = false;
-	private LuckyCache lucy = LuckyCache.getLuckyCache();
-	private AutoPackage autopackage = new AutoPackage();
-	private CreateSql createSql = new CreateSql();
-	private ClassUtils classUtils = new ClassUtils();
+	protected List<?> list = null;
+	protected SqlOperation sqlOperation =LuckyManager.getSqlOperation();
+	protected boolean isOk = false;
+	protected LuckyCache lucy = LuckyCache.getLuckyCache();
+	protected AutoPackage autopackage = new AutoPackage();
+	protected CreateSql createSql = new CreateSql();
+	protected ClassUtils classUtils = new ClassUtils();
 
 	/**
 	 * 启用缓存机制的ID查询
@@ -27,17 +27,17 @@ public class StartCache {
 	 * @param id
 	 * @return
 	 */
-	public Object getOneCache(Class c, Object id) {
+	public Object getOneCache(Class<?> c, Object id) {
 		Object object = null;
 		String id_ = PojoManage.getIdString(c);
 		String sql = "SELECT * FROM " + PojoManage.getTable(c) + " WHERE " + id_ + "=?";
-		if (lucy.get(createSql.getSqlString(sql, id)) == null) {
-			list = autopackage.getTable(c, sql, id);
+		if (!lucy.contains(createSql.getSqlString(sql, id))) {
+			list = autopackage.autoPackageToList(c, sql, id);
 			lucy.add(createSql.getSqlString(sql, id), list);
 		} else {
 			list = lucy.get(createSql.getSqlString(sql, id));
 		}
-		if (!(list == null || list.size() == 0))
+		if (!(list == null || list.isEmpty()))
 			object = list.get(0);
 		return object;
 	}
@@ -53,9 +53,9 @@ public class StartCache {
 	 * @param obj
 	 * @return
 	 */
-	public List<?> getListCache(Class c, String sql, Object... obj) {
+	public List<?> getListCache(Class<?> c, String sql, Object... obj) {
 		if (lucy.get(createSql.getSqlString(sql, obj)) == null) {
-			list = autopackage.getTable(c, sql, obj);
+			list = autopackage.autoPackageToList(c, sql, obj);
 			lucy.add(createSql.getSqlString(sql, obj), list);
 		} else {
 			list = lucy.get(createSql.getSqlString(sql, obj));
@@ -72,7 +72,7 @@ public class StartCache {
 	public <T> List<?> getListCache(T t) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), "select");
 		if (lucy.get(createSql.getSqlString(f)) == null) {
-			list = autopackage.getTable(t.getClass(), f.getSql(), f.getObj());
+			list = autopackage.autoPackageToList(t.getClass(), f.getSql(), f.getObj());
 			lucy.add(createSql.getSqlString(f), list);
 		} else {
 			list = lucy.get(createSql.getSqlString(f));
@@ -93,7 +93,7 @@ public class StartCache {
 	public <T> List<?> getPagListCache(T t, int index, int size) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), index, size);
 		if (lucy.get(createSql.getSqlString(f)) == null) {
-			list = autopackage.getTable(t.getClass(), f.getSql(), f.getObj());
+			list = autopackage.autoPackageToList(t.getClass(), f.getSql(), f.getObj());
 			lucy.add(createSql.getSqlString(f), list);
 		} else {
 			list = lucy.get(createSql.getSqlString(f));
@@ -114,7 +114,7 @@ public class StartCache {
 	public <T> List<?> getSortListCache(T t, String property, int r) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), property, r);
 		if (lucy.get(createSql.getSqlString(f)) == null) {
-			list = autopackage.getTable(t.getClass(), f.getSql(), f.getObj());
+			list = autopackage.autoPackageToList(t.getClass(), f.getSql(), f.getObj());
 			lucy.add(createSql.getSqlString(f), list);
 		} else {
 			list = lucy.get(createSql.getSqlString(f));
@@ -132,11 +132,11 @@ public class StartCache {
 	 * 查询关键字
 	 * @return
 	 */
-	public <T> List<?> getFuzzyListCache(Class c, String property, String info) {
+	public <T> List<?> getFuzzyListCache(Class<?> c, String property, String info) {
 		info = "%" + info + "%";
 		SqlInfo f = classUtils.getSqlInfo(c, property, info);
 		if (lucy.get(createSql.getSqlString(f)) == null) {
-			list = autopackage.getTable(c, f.getSql(), f.getObj());
+			list = autopackage.autoPackageToList(c, f.getSql(), f.getObj());
 			lucy.add(createSql.getSqlString(f), list);
 		} else {
 			list = lucy.get(createSql.getSqlString(f));
@@ -153,7 +153,7 @@ public class StartCache {
 	 * id值
 	 * @return
 	 */
-	public boolean deleteCache(Class c, Object id) {
+	public boolean deleteCache(Class<?> c, Object id) {
 		String id_ = PojoManage.getIdString(c);
 		String sql = "DELETE FROM " +  PojoManage.getTable(c) + " WHERE " + id_ + "=?";
 		isOk = sqlOperation.setSql(sql, id);
@@ -246,11 +246,11 @@ public class StartCache {
 	 * @param id
 	 * @return
 	 */
-	public Object getOne(Class c, Object id) {
+	public Object getOne(Class<?> c, Object id) {
 		Object object = null;
 		String id_ =PojoManage.getIdString(c);
 		String sql = "SELECT * FROM " + PojoManage.getTable(c)+ " WHERE " + id_ + "=?";
-			list = autopackage.getTable(c, sql, id);
+			list = autopackage.autoPackageToList(c, sql, id);
 		if (!(list == null || list.size() == 0))
 			object = list.get(0);
 		return object;
@@ -265,8 +265,8 @@ public class StartCache {
 	 * @param obj
 	 * @return
 	 */
-	public List<?> getList(Class c, String sql, Object... obj) {
-		list = autopackage.getTable(c, sql, obj);
+	public List<?> getList(Class<?> c, String sql, Object... obj) {
+		list = autopackage.autoPackageToList(c, sql, obj);
 		return list;
 	}
 
@@ -278,7 +278,7 @@ public class StartCache {
 	 */
 	public <T> List<?> getList(T t) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), "select");
-		list = autopackage.getTable(t.getClass(), f.getSql(), f.getObj());
+		list = autopackage.autoPackageToList(t.getClass(), f.getSql(), f.getObj());
 		return list;
 	}
 
@@ -294,7 +294,7 @@ public class StartCache {
 	 */
 	public <T> List<?> getPagList(T t, int index, int size) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), index, size);
-		list = autopackage.getTable(t.getClass(), f.getSql(), f.getObj());
+		list = autopackage.autoPackageToList(t.getClass(), f.getSql(), f.getObj());
 		return list;
 	}
 
@@ -310,7 +310,7 @@ public class StartCache {
 	 */
 	public <T> List<?> getSortList(T t, String property, int r) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), property, r);
-		list = autopackage.getTable(t.getClass(), f.getSql(), f.getObj());
+		list = autopackage.autoPackageToList(t.getClass(), f.getSql(), f.getObj());
 		return list;
 	}
 
@@ -324,10 +324,10 @@ public class StartCache {
 	 * 查询关键字
 	 * @return
 	 */
-	public <T> List<?> getFuzzyList(Class c, String property, String info) {
+	public <T> List<?> getFuzzyList(Class<?> c, String property, String info) {
 		info = "%" + info + "%";
 		SqlInfo f = classUtils.getSqlInfo(c, property, info);
-		list = autopackage.getTable(c, f.getSql(), f.getObj());
+		list = autopackage.autoPackageToList(c, f.getSql(), f.getObj());
 		return list;
 	}
 	
@@ -339,7 +339,7 @@ public class StartCache {
 	 * id值
 	 * @return
 	 */
-	public boolean delete(Class c, Object id) {
+	public boolean delete(Class<?> c, Object id) {
 		String id_ = PojoManage.getIdString(c);
 		String sql = "DELETE FROM " + PojoManage.getTable(c) + " WHERE " + id_ + "=?";
 		isOk = sqlOperation.setSql(sql, id);
@@ -437,7 +437,7 @@ public class StartCache {
 	 * @param obj
 	 * @return
 	 */
-	public Object getObject(Class c, String sql, Object... obj) {
+	public Object getObject(Class<?> c, String sql, Object... obj) {
 		List<?> list=getList(c,sql,obj);
 		if(!list.isEmpty())
 			return list.get(0);
@@ -465,7 +465,7 @@ public class StartCache {
 	 * @param obj
 	 * @return
 	 */
-	public Object getObjectCache(Class c, String sql, Object... obj) {
+	public Object getObjectCache(Class<?> c, String sql, Object... obj) {
 		List<?> lis=getListCache(c,sql,obj);
 		if(!lis.isEmpty())
 			return lis.get(0);
@@ -629,7 +629,7 @@ public class StartCache {
 	 * 要删除的id所组成的集合
 	 * @return
 	 */
-	public boolean deleteBatchById(Class clzz,Object...ids) {
+	public boolean deleteBatchById(Class<?> clzz,Object...ids) {
 		for(Object i:ids)
 			delete(clzz, i);
 		return true;
@@ -642,7 +642,7 @@ public class StartCache {
 	 * 要删除的id所组成的集合
 	 * @return
 	 */
-	public boolean deleteBatchByIdCache(Class clzz,Object...ids) {
+	public boolean deleteBatchByIdCache(Class<?> clzz,Object...ids) {
 		for(Object i:ids)
 			deleteCache(clzz, i);
 		return true;

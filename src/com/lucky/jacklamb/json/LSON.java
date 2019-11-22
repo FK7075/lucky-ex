@@ -25,30 +25,34 @@ public class LSON {
 	 * @param jsonObject
 	 */
 	public LSON(Object jsonObject) {
-		Class<?> clzz = jsonObject.getClass();
-		if (Collection.class.isAssignableFrom(clzz)) {
-			try {
-				jsonStr = collectionToJsonStr((Collection<?>) jsonObject);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		} else if (clzz.isArray()) {
-			try {
-				jsonStr = arrayToJsonStr(jsonObject);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		} else if (clzz.getClassLoader() != null) {
-			try {
-				jsonStr = objectToJsonStr(jsonObject);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+		if(jsonObject==null)
+			jsonStr=null;
+		else {
+			Class<?> clzz = jsonObject.getClass();
+			if (Collection.class.isAssignableFrom(clzz)) {
+				try {
+					jsonStr = collectionToJsonStr((Collection<?>) jsonObject);
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			} else if (clzz.isArray()) {
+				try {
+					jsonStr = arrayToJsonStr(jsonObject);
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			} else if (clzz.getClassLoader() != null) {
+				try {
+					jsonStr = objectToJsonStr(jsonObject);
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 

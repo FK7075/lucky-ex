@@ -1,11 +1,8 @@
 package com.lucky.jacklamb.sqldao;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.lucky.jacklamb.annotation.Table;
 import com.lucky.jacklamb.cache.StartCache;
 import com.lucky.jacklamb.ioc.config.DataSource;
 import com.lucky.jacklamb.mapper.LuckyMapperProxy;
@@ -21,7 +18,7 @@ import com.lucky.jacklamb.utils.LuckyManager;
  * @author fk-7075
  *
  */
-@SuppressWarnings("all")
+@SuppressWarnings("unchecked")
 public class SqlControl implements SqlCore {
 	
 	private SqlOperation sqlOperation = LuckyManager.getSqlOperation();
@@ -57,8 +54,7 @@ public class SqlControl implements SqlCore {
 	/**
 	 * 无参构造(不负责建表)
 	 */
-	private SqlControl() {
-	};
+	private SqlControl() {}
 
 	/**
 	 * 是否建表
@@ -125,7 +121,7 @@ public class SqlControl implements SqlCore {
 	 *            id值
 	 * @return
 	 */
-	public boolean delete(Class c, Object id) {
+	public boolean delete(Class<?> c, Object id) {
 		if (!cache)
 			return start.delete(c, id);
 		else
@@ -198,7 +194,6 @@ public class SqlControl implements SqlCore {
 	 * @return
 	 */
 	public <T> boolean save(T t,boolean...addId) {
-		boolean isOk=false;
 		if (!cache) 
 			return start.save(t,addId);
 		else 
@@ -430,7 +425,7 @@ public class SqlControl implements SqlCore {
 	 *            要删除的id所组成的集合
 	 * @return
 	 */
-	public boolean deleteIDBatch(Class clzz, Object... ids) {
+	public boolean deleteIDBatch(Class<?> clzz, Object... ids) {
 		if (!cache)
 			return start.deleteBatchById(clzz, ids);
 		else
@@ -501,24 +496,6 @@ public class SqlControl implements SqlCore {
 	public void close() {
 		sqlOperation.close();
 	}
-
-	/**
-	 * 返回类中被@Lucky标记的属性集合
-	 * 
-	 * @param clzz
-	 * @return
-	 */
-	private List<Field> lucky_F(Class<?> clzz) {
-		List<Field> list = new ArrayList<>();
-		Field[] fields = clzz.getDeclaredFields();
-		for (Field field : fields) {
-			if (field.isAnnotationPresent(Table.class)) {
-				list.add(field);
-			}
-		}
-		return list;
-	}
-
 
 	public <T> T getMapper(Class<T> clazz) {
 		LuckyMapperProxy mapperProxy = new LuckyMapperProxy(this);

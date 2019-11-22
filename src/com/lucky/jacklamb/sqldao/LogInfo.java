@@ -29,15 +29,15 @@ public class LogInfo {
 	
 	
 	private void log(String sql, Object[] obj) {
-		System.out.println(LuckyUtils.showtime()+"SQL:   " + sql);
+		System.out.println(LuckyUtils.showtime()+"PrecompiledSql: " + sql);
 		if (obj == null)
-			System.out.println(LuckyUtils.showtime()+"Parameters: { }");
+			System.out.println(LuckyUtils.showtime()+"Parameters    : [ ]");
 		else {
-			System.out.print(LuckyUtils.showtime()+"Parameters: {");
+			System.out.print(LuckyUtils.showtime()+"Parameters    : [");
 			for (Object o : obj) {
-				System.out.print(o + "   ");
+				System.out.print("("+(o!=null?o.getClass().getSimpleName():"NULL")+")"+o+"   ");
 			}
-			System.out.println("}");
+			System.out.println("]");
 		}
 	}
 	/**
@@ -46,15 +46,15 @@ public class LogInfo {
 	 * @param obj
 	 */
 	private void logBatch(String sql,Object obj[][]) {
-		System.out.println(LuckyUtils.showtime()+"SQL:   " + sql);
+		System.out.println(LuckyUtils.showtime()+"PrecompiledSql: " + sql);
 		if(obj==null||obj.length==0)
-			System.out.println("Parameters: { }");
+			System.out.println("Parameters    : [ ]");
 		else {
 			for(int i=0;i<obj.length;i++) {
-				System.out.print("Parameters: {");
+				System.out.print("Parameters    : [");
 				for(Object o:obj[i])
-					System.out.print(o + "   ");
-				System.out.println("}");
+					System.out.print("("+(o!=null?o.getClass().getSimpleName():"NULL")+")"+o+"   ");
+				System.out.println("]");
 			}
 		}
 	}

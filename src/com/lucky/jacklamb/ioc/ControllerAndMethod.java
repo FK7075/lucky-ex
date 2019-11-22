@@ -2,13 +2,16 @@ package com.lucky.jacklamb.ioc;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.lucky.jacklamb.enums.RequestMethod;
+
 /**
  * Controller
- * @author DELL
+ * @author fk-7075
  *
  */
 public class ControllerAndMethod {
@@ -17,6 +20,11 @@ public class ControllerAndMethod {
 	 * Controller对象
 	 */
 	private Object controller;
+	
+	/**
+	 * 该方法支持的请求
+	 */
+	private RequestMethod[] requestMethods;
 	
 	/**
 	 * Rest风格参数名与值的Map
@@ -98,11 +106,26 @@ public class ControllerAndMethod {
 	public void setMethod(Method method) {
 		this.method = method;
 	}
-
+	
+	public RequestMethod[] getRequestMethods() {
+		return requestMethods;
+	}
+	public void setRequestMethods(RequestMethod[] requestMethods) {
+		this.requestMethods = requestMethods;
+	}
+	
+	public boolean requestMethodISCorrect(RequestMethod method) {
+		for(RequestMethod curr:requestMethods) {
+			if(method.equals(curr))
+				return true;
+		}
+		return false;
+	}
 	@Override
 	public String toString() {
-		return "ControllerAndMethod [controller=" + controller + ", restKV=" + restKV + ", method=" + method + ", url="
-				+ url + "]";
+		return "ControllerAndMethod [controller=" + controller + ", requestMethods=" + Arrays.toString(requestMethods)
+				+ ", restKV=" + restKV + ", preAndSuf=" + preAndSuf + ", method=" + method + ", url=" + url + "]";
 	}
+
 
 }

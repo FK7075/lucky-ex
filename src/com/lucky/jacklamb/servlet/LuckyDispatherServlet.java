@@ -12,13 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.lucky.jacklamb.annotation.Download;
-import com.lucky.jacklamb.annotation.RequestMapping;
 import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.ControllerAndMethod;
 import com.lucky.jacklamb.ioc.config.WebConfig;
 import com.lucky.jacklamb.mapping.AnnotationOperation;
 import com.lucky.jacklamb.mapping.UrlParsMap;
+import com.lucky.jacklamb.utils.Jacklabm;
 
 @MultipartConfig
 public class LuckyDispatherServlet extends HttpServlet {
@@ -79,15 +79,16 @@ public class LuckyDispatherServlet extends HttpServlet {
 			}else {
 				ControllerAndMethod controllerAndMethod = beans.getCurrControllerAndMethod(path);
 				if(controllerAndMethod==null) {
-					resp.getWriter().print("<h3>找不与请求相匹配的映射资源,请检查您的URL是否正确[404:"+req.getRequestURL()+"]....</h3>");
+					resp.getWriter().print(Jacklabm.exception("HTTP Status 404 – Not Found", "不正确的url："+req.getRequestURL(), "找不与请求相匹配的映射资源,请检查您的URL是否正确."));
 					return;
 				}
-				model.setRestMap(controllerAndMethod.getRestKV());
-				urlParsMap.setCross(req,resp, controllerAndMethod);
-				Method method = controllerAndMethod.getMethod();
-				if(!urlParsMap.isExistRequestMethod(method,this.method)&&method.isAnnotationPresent(RequestMapping.class)) {
-					resp.getWriter().print("<h3>500:您的请求类型为"+this.method+",当前方法并不支持！</h3>");
+				if(!controllerAndMethod.requestMethodISCorrect(this.method)) {
+					resp.getWriter().print(Jacklabm.exception("HTTP Status 500 – Internal Server Error","不正确的请求类型："+this.method,"您的请求类型为"+this.method+",当前方法并不支持！"));
+					return;
 				}else {
+					model.setRestMap(controllerAndMethod.getRestKV());
+					urlParsMap.setCross(req,resp, controllerAndMethod);
+					Method method = controllerAndMethod.getMethod();
 					boolean isDownload = method.isAnnotationPresent(Download.class);
 					Object obj = controllerAndMethod.getController();
 					beans.autowReqAdnResp(obj,model);
@@ -99,7 +100,6 @@ public class LuckyDispatherServlet extends HttpServlet {
 						anop.download(model, method);
 					responseControl.jump(model,controllerAndMethod.getPreAndSuf(), method, obj1);
 				}
-
 			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();

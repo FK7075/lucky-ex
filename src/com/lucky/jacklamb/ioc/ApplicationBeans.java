@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.lucky.jacklamb.annotation.Controller;
-import com.lucky.jacklamb.annotation.RequestMapping;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.ioc.config.WebConfig;
 import com.lucky.jacklamb.servlet.Model;
@@ -241,8 +240,7 @@ public class ApplicationBeans {
 		ControllerAndMethod come = getHanderMethod(mapping);
 		come.setUrl(mapping);
 		Method method = come.getMethod();
-		RequestMapping rm = method.getAnnotation(RequestMapping.class);
-		String rmvalue = rm.value();
+		String rmvalue = iocContainers.getControllerIOC().getMappingValue(method);
 		if (rmvalue.contains("//")) {
 			String restParamStr = resturl.replaceAll(mapping + "/", "");
 			String[] restVs = restParamStr.split("/");

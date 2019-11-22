@@ -28,6 +28,15 @@ public class LuckyCache {
 		}
 		return luckycache;
 	}
+	
+	/**
+	 * 判断缓存中是否存在该sql
+	 * @param sql
+	 * @return
+	 */
+	public boolean contains(String sql) {
+		return cacheMap.containsKey(sql);
+	}
 
 	/**
 	 * 添加到缓存

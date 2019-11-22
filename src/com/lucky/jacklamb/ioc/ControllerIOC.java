@@ -7,7 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.lucky.jacklamb.annotation.Controller;
+import com.lucky.jacklamb.annotation.DeleteMapping;
+import com.lucky.jacklamb.annotation.GetMapping;
+import com.lucky.jacklamb.annotation.PostMapping;
+import com.lucky.jacklamb.annotation.PutMapping;
 import com.lucky.jacklamb.annotation.RequestMapping;
+import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.utils.LuckyUtils;
@@ -144,22 +149,23 @@ public class ControllerIOC {
 			}
 			Method[] publicMethods = clzz.getDeclaredMethods();
 			for (Method method : publicMethods) {
-				if (method.isAnnotationPresent(RequestMapping.class)) {
+				if (haveMapping(method)) {
 					ControllerAndMethod come = new ControllerAndMethod();
 					come.setController(entry.getValue());
-					RequestMapping mrm = method.getAnnotation(RequestMapping.class);
 					String url_m;
-					if (mrm.value().contains("//")) {
-						int end = mrm.value().indexOf("//");
-						url_m = mrm.value().substring(0, end);
+					String mappingValue=getMappingValue(method);
+					if (mappingValue.contains("//")) {
+						int end = mappingValue.indexOf("//");
+						url_m = mappingValue.substring(0, end);
 						if (url_m.startsWith("/"))
 							url_m = url_m.substring(1, url_m.length());
 					} else {
-						url_m = mrm.value();
+						url_m = mappingValue;
 						if (url_m.startsWith("/"))
 							url_m = url_m.substring(1, url_m.length());
 					}
 					come.setMethod(method);
+					come.setRequestMethods(getMappingRequestMethod(method));
 					handerMap.put(url_c + url_m, come);
 					mapping.put(url_c + url_m, clzz.getName()+"."+method.getName()+"(x,x,x)");
 				} else {
@@ -167,6 +173,43 @@ public class ControllerIOC {
 				}
 			}
 		}
+	}
+	
+	private boolean haveMapping(Method method) {
+		if(method.isAnnotationPresent(RequestMapping.class)||method.isAnnotationPresent(GetMapping.class)
+				||method.isAnnotationPresent(PostMapping.class)||method.isAnnotationPresent(PutMapping.class)
+				||method.isAnnotationPresent(DeleteMapping.class))
+			return true;
+		return false;
+	}
+	
+	public String getMappingValue(Method method) {
+		if(method.isAnnotationPresent(RequestMapping.class))
+			return method.getAnnotation(RequestMapping.class).value();
+		if(method.isAnnotationPresent(GetMapping.class))
+			return method.getAnnotation(GetMapping.class).value();
+		if(method.isAnnotationPresent(PostMapping.class))
+			return method.getAnnotation(PostMapping.class).value();
+		if(method.isAnnotationPresent(PutMapping.class))
+			return method.getAnnotation(PutMapping.class).value();
+		if(method.isAnnotationPresent(DeleteMapping.class))
+			return method.getAnnotation(DeleteMapping.class).value();
+		return null;
+	}
+	
+	private RequestMethod[] getMappingRequestMethod(Method method) {
+		RequestMethod[] m=new RequestMethod[1];
+		if(method.isAnnotationPresent(RequestMapping.class))
+			return method.getAnnotation(RequestMapping.class).method();
+		if(method.isAnnotationPresent(GetMapping.class)) 
+			m[0]=RequestMethod.GET;
+		if(method.isAnnotationPresent(PostMapping.class))
+			m[0]=RequestMethod.POST;
+		if(method.isAnnotationPresent(PutMapping.class))
+			m[0]=RequestMethod.PUT;
+		if(method.isAnnotationPresent(DeleteMapping.class))
+			m[0]=RequestMethod.DELETE;
+		return m;
 	}
 
 }
