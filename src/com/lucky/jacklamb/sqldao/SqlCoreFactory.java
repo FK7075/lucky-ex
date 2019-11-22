@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.sqldao;
 
+import com.lucky.jacklamb.sqldao.interfaces.SqlCore;
 import com.lucky.jacklamb.utils.Jacklabm;
 
 public class SqlCoreFactory {

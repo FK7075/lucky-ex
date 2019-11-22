@@ -39,7 +39,7 @@ import com.lucky.jacklamb.query.QueryBuilder;
 import com.lucky.jacklamb.query.SqlAndObject;
 import com.lucky.jacklamb.query.SqlFragProce;
 import com.lucky.jacklamb.sqldao.PojoManage;
-import com.lucky.jacklamb.sqldao.SqlCore;
+import com.lucky.jacklamb.sqldao.interfaces.SqlCore;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 import net.sf.cglib.proxy.Enhancer;

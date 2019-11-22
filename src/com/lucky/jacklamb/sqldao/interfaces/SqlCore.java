@@ -1,8 +1,9 @@
-package com.lucky.jacklamb.sqldao;
+package com.lucky.jacklamb.sqldao.interfaces;
 
 import java.util.List;
 
 import com.lucky.jacklamb.query.QueryBuilder;
+import com.lucky.jacklamb.sqldao.Transaction;
 
 public interface SqlCore {
 	/**

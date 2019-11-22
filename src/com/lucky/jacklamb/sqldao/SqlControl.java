@@ -8,6 +8,7 @@ import com.lucky.jacklamb.ioc.config.DataSource;
 import com.lucky.jacklamb.mapper.LuckyMapperProxy;
 import com.lucky.jacklamb.query.ObjectToJoinSql;
 import com.lucky.jacklamb.query.QueryBuilder;
+import com.lucky.jacklamb.sqldao.interfaces.SqlCore;
 import com.lucky.jacklamb.table.CreateTable;
 import com.lucky.jacklamb.table.TableToJava;
 import com.lucky.jacklamb.utils.LuckyManager;
