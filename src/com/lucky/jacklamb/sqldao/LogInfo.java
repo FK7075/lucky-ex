@@ -1,7 +1,7 @@
 package com.lucky.jacklamb.sqldao;
 
-import com.lucky.jacklamb.ioc.config.DataSource;
 import com.lucky.jacklamb.utils.LuckyUtils;
+import com.lucky.jacklamb.utils.ReadProperties;
 
 /**
  * 日志管理类
@@ -10,20 +10,20 @@ import com.lucky.jacklamb.utils.LuckyUtils;
  *
  */
 public class LogInfo {
-	private DataSource dataSource=DataSource.getDataSource();
+	private boolean log=ReadProperties.getDataSource("defaultDB").isLog();
 	
 	public void isShowLog(String sql, Object[] obj) {
-		if(dataSource.isLog())
+		if(log)
 			log(sql,obj);
 	}
 	
 	public void isShowLog(String sql,Object obj[][]) {
-		if(dataSource.isLog())
+		if(log)
 			logBatch(sql,obj);
 	}
 	@Deprecated
 	public void isShowLog(String object) {
-		if(dataSource.isLog())
+		if(log)
 			System.out.println("T-Obj: "+object);
 	}
 	

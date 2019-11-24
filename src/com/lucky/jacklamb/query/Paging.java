@@ -160,10 +160,11 @@ public class Paging <T>{
 
 	/**
 	 * 初始化分页对象
+	 * @param dbname 数据源名称
 	 * @param initializePojo 初始化信息对象
 	 */
-	public Paging(InitializePoJo initializePojo) {
-		sqlCore=SqlCoreFactory.getSqlCore();
+	public Paging(String dbname,InitializePoJo initializePojo) {
+		sqlCore=SqlCoreFactory.createSqlCore(dbname);
 		if(initializePojo.getPojos().isEmpty()) {
 			this.list=sqlCore.getList(initializePojo.getClzz(), initializePojo.getSql(), initializePojo.getSqlobj().toArray());
 			this.recordnum=list.size();
@@ -193,11 +194,12 @@ public class Paging <T>{
 	
 	/**
 	 * 初始化分页对象
+	 * @param dbname 数据源名称
 	 * @param packBokClass 接受分页结果的包装器
 	 * @param pojos 包含查询信息的pojo数组
 	 */
-	public Paging(Class<T> packBokClass,Object... pojos) {
-		sqlCore=SqlCoreFactory.getSqlCore();
+	public Paging(String dbname,Class<T> packBokClass,Object... pojos) {
+		sqlCore=SqlCoreFactory.createSqlCore(dbname);
 		QueryBuilder query=new QueryBuilder();
 		for(Object po:pojos)
 			query.addObject(po);
@@ -302,14 +304,15 @@ public class Paging <T>{
 	
 	/**
 	 * 得到当前页的所有内容的List<T>集合，使用SQL语句实现
+	 * @param dbname 数据源名称
 	 * @param clzz 包装结果集的对象的Class
 	 * @param params 执行分页语句的所需的所有参数，使用当前页码代替index，此方法需要配合
 	 * 构造器Paging(String sqlStr,boolean isCountSql)使用
 	 * @return
 	 */
-	public List<T> getLimitList(Class<T> clzz,Object...params){
+	public List<T> getLimitList(String dbname,Class<T> clzz,Object...params){
 		int len=params.length;
-		SqlCore sql=SqlCoreFactory.getSqlCore();
+		SqlCore sql=SqlCoreFactory.createSqlCore(dbname);
 		Object[] countParams=new Object[len-2];
 		for(int i=0;i<countParams.length;i++) {
 			countParams[i]=params[i];

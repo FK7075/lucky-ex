@@ -9,9 +9,11 @@ import com.lucky.jacklamb.annotation.Mapper;
 import com.lucky.jacklamb.annotation.Repository;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
+import com.lucky.jacklamb.ioc.config.DataSource;
 import com.lucky.jacklamb.sqldao.SqlCore;
 import com.lucky.jacklamb.sqldao.SqlCoreFactory;
 import com.lucky.jacklamb.utils.LuckyUtils;
+import com.lucky.jacklamb.utils.ReadProperties;
 
 public class RepositoryIOC {
 
@@ -116,7 +118,6 @@ public class RepositoryIOC {
 	 * @throws ClassNotFoundException
 	 */
 	public RepositoryIOC initRepositoryIOC(List<String> repositoryClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		SqlCore sqlCore = null;
 		boolean first = true;
 		for (String clzz : repositoryClass) {
 			Class<?> repository = Class.forName(clzz);
@@ -128,15 +129,20 @@ public class RepositoryIOC {
 					addRepositoryMap(LuckyUtils.TableToClass1(repository.getSimpleName()), repository.newInstance());
 			} else if (repository.isAnnotationPresent(Mapper.class)) {
 				if (first) {
-					sqlCore = SqlCoreFactory.getSqlCore();
-					addRepositoryMap("lucky#$jacklamb#$&58314@SqlCore", sqlCore);
+					List<DataSource> datalist=ReadProperties.getAllDataSource();
+					for(DataSource data:datalist) {
+						SqlCore sqlCore=SqlCoreFactory.createSqlCore(data.getName());
+						addRepositoryMap("lucky#$jacklamb#$&58314@SqlCore-"+data.getName(), sqlCore);
+					}
 					first = false;
 				}
 				Mapper mapper = repository.getAnnotation(Mapper.class);
+				String id="lucky#$jacklamb#$&58314@SqlCore-"+mapper.dbname();
+				SqlCore currSqlCore=(SqlCore) getMaRepBean(id);
 				if (!"".equals(mapper.id()))
-					addMapperMap(mapper.id(), sqlCore.getMapper(repository));
+					addMapperMap(mapper.id(), currSqlCore.getMapper(repository));
 				else
-					addMapperMap(LuckyUtils.TableToClass1(repository.getSimpleName()), sqlCore.getMapper(repository));
+					addMapperMap(LuckyUtils.TableToClass1(repository.getSimpleName()), currSqlCore.getMapper(repository));
 			}
 		}
 		return this;

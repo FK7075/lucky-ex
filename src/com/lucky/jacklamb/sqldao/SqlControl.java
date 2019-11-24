@@ -4,13 +4,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.lucky.jacklamb.cache.StartCache;
-import com.lucky.jacklamb.ioc.config.DataSource;
 import com.lucky.jacklamb.mapper.LuckyMapperProxy;
 import com.lucky.jacklamb.query.ObjectToJoinSql;
 import com.lucky.jacklamb.query.QueryBuilder;
 import com.lucky.jacklamb.table.CreateTable;
 import com.lucky.jacklamb.table.TableToJava;
 import com.lucky.jacklamb.utils.LuckyManager;
+import com.lucky.jacklamb.utils.ReadProperties;
 
 /**
  * Lucky的用户使用类(操作数据库)
@@ -20,81 +20,79 @@ import com.lucky.jacklamb.utils.LuckyManager;
  */
 @SuppressWarnings("unchecked")
 public class SqlControl implements SqlCore {
-	
-	private SqlOperation sqlOperation = LuckyManager.getSqlOperation();
-	private StartCache start = new StartCache();
-	private boolean cache = DataSource.getDataSource().isCache();
 
+	private SqlOperation sqlOperation;
+	private StartCache start;
+	private boolean cache;
+	private TableToJava tableToJava;
+	private String dbname;
+
+	private SqlControl(String dbname) {
+		this.dbname=dbname;
+		tableToJava=new TableToJava(dbname);
+		cache = ReadProperties.getDataSource(dbname).isCache();
+		sqlOperation = LuckyManager.getSqlOperation(dbname);
+		start = new StartCache(dbname);
+	}
 	
-	public static SqlControl getSqlControl() {
+	private SqlControl() {
+		new SqlControl("defaultDB");
+	}
+	
+	public static SqlControl getSqlControl(String...dbname) {
+		if(dbname!=null&&dbname.length!=0)
+			return new SqlControl(dbname[0]);
 		return new SqlControl();
 	}
 	
-	public static SqlControl getSqlControlAddCJavaBean() {
-		SqlControl sqlControl=new SqlControl();
-		TableToJava.generateJavaSrc();
-		return sqlControl;
-	}
 	
-	public static SqlControl getSqlControlAddCJavaBean(String classPath) {
-		return new SqlControl(classPath);
-	}
-	
-	public static SqlControl getSqlControlAddCJavaBean(String classPath, String...tables) {
-		return new SqlControl(classPath,tables);
-	}
-	
-	public static SqlControl getSqlControlAddCJavaBean(String... tables) {
-		return new SqlControl(tables);
-	}
 
-	public static SqlControl getSqlControl(boolean isCreateTable) {
-		return new SqlControl(isCreateTable);
-	}
 	/**
-	 * 无参构造(不负责建表)
+	 * 数据库表逆向生成JavaBean
 	 */
-	private SqlControl() {}
-
-	/**
-	 * 是否建表
-	 * @param table
-	 */
-	private SqlControl(boolean table) {
-		if (table) {
-			CreateTable ct = new CreateTable();
-			ct.creatTable();
-		}
+	public void createJavaBean() {
+		tableToJava.generateJavaSrc();
 	}
 
 	/**
-	 * 有参构造(逆向工程生成JavaBean)
-	 * @param srcPath src目录的绝对路径
+	 * 数据库表逆向生成JavaBean
+	 * 
+	 * @param srcPath
+	 *            src目录的绝对路径
 	 */
-	private SqlControl(String srcPath) {
-		TableToJava.generateJavaSrc(srcPath);
+	public void createJavaBean(String srcPath) {
+		tableToJava.generateJavaSrc(srcPath);
 	}
 
 	/**
-	 * 有参构造(逆向工程生成JavaBean)
+	 * 数据库表逆向生成JavaBean
 	 * 
 	 * @param tables
 	 *            表名
 	 */
-	private SqlControl(String... tables) {
-		TableToJava.b_generateJavaSrc(tables);
+	public void createJavaBean(String... tables) {
+		tableToJava.b_generateJavaSrc(tables);
 	}
-
+	
 	/**
-	 * 有参构造(逆向工程生成JavaBean)
+	 * 数据库表逆向生成JavaBean
 	 * 
 	 * @param srcPath
 	 *            src目录的绝对路径
 	 * @param tables
 	 *            表名
 	 */
-	private SqlControl(String srcPath, String... tables) {
-		TableToJava.a_generateJavaSrc(srcPath, tables);
+	public void createJavaBean(String srcPath, String... tables) {
+		tableToJava.a_generateJavaSrc(srcPath, tables);
+	}
+
+	/**
+	 * 根据实体类创建数据库表
+	 * @param name DataSourceName
+	 */
+	public void createTable() {
+		CreateTable ct = new CreateTable(dbname);
+		ct.creatTable();
 	}
 
 	/**
@@ -193,11 +191,11 @@ public class SqlControl implements SqlCore {
 	 *            包含添加信息的包装类的对象
 	 * @return
 	 */
-	public <T> boolean save(T t,boolean...addId) {
-		if (!cache) 
-			return start.save(t,addId);
-		else 
-			return start.saveCache(t,addId);
+	public <T> boolean save(T t, boolean... addId) {
+		if (!cache)
+			return start.save(t, addId);
+		else
+			return start.saveCache(t, addId);
 	}
 
 	/**
@@ -333,11 +331,11 @@ public class SqlControl implements SqlCore {
 	 *            包含保存信息的对象数组
 	 * @return
 	 */
-	public boolean saveArrayBatch(boolean addId,Object... obj) {
+	public boolean saveArrayBatch(boolean addId, Object... obj) {
 		if (!cache)
-			return start.saveBatchByArray(addId,obj);
+			return start.saveBatchByArray(addId, obj);
 		else
-			return start.saveBatchByArrayCache(addId,obj);
+			return start.saveBatchByArrayCache(addId, obj);
 	}
 
 	/**
@@ -499,9 +497,9 @@ public class SqlControl implements SqlCore {
 
 	public <T> T getMapper(Class<T> clazz) {
 		LuckyMapperProxy mapperProxy = new LuckyMapperProxy(this);
-		Object obj=null;
+		Object obj = null;
 		try {
-			obj= mapperProxy.getMapperProxyObject(clazz);
+			obj = mapperProxy.getMapperProxyObject(clazz);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -512,7 +510,7 @@ public class SqlControl implements SqlCore {
 		return (T) obj;
 	}
 
-	public <T> List<T> query(QueryBuilder query,Class<T> resultClass,String...expression) {
+	public <T> List<T> query(QueryBuilder query, Class<T> resultClass, String... expression) {
 		ObjectToJoinSql join = new ObjectToJoinSql(query);
 		String sql = join.getJoinSql(expression);
 		Object[] obj = join.getJoinObject();
@@ -523,6 +521,5 @@ public class SqlControl implements SqlCore {
 	public void clear() {
 		start.clear();
 	}
-
 
 }

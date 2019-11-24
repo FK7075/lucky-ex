@@ -11,13 +11,6 @@ public abstract class ApplicationConfig {
 	}
 	
 	/**
-	 * 数据源相关配置
-	 * @param data
-	 */
-	public void setDataSource(DataSource data) {
-	}
-	
-	/**
 	 * Web层相关配置
 	 * @param web
 	 */

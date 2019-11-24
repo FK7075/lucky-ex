@@ -24,8 +24,8 @@ public class Tables {
 	/**
 	 * 得到数据库中所有表的名字
 	 */
-	public Tables() {
-		ResultSet rs=LuckyUtils.getResultSet("show tables;");
+	public Tables(String dbname) {
+		ResultSet rs=LuckyUtils.getResultSet(dbname,"show tables;");
 			try {
 					while(rs.next()) {
 						this.tablenames.add(LuckyUtils.TableToClass(rs.getString(1)));

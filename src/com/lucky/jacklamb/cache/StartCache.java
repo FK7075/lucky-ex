@@ -10,15 +10,24 @@ import com.lucky.jacklamb.sqldao.SqlOperation;
 import com.lucky.jacklamb.utils.LuckyManager;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
-//@SuppressWarnings("all")
 public class StartCache {
-	protected List<?> list = null;
-	protected SqlOperation sqlOperation =LuckyManager.getSqlOperation();
-	protected boolean isOk = false;
-	protected LuckyCache lucy = LuckyCache.getLuckyCache();
-	protected AutoPackage autopackage = new AutoPackage();
-	protected CreateSql createSql = new CreateSql();
-	protected ClassUtils classUtils = new ClassUtils();
+	protected List<?> list;
+	protected SqlOperation sqlOperation;
+	protected boolean isOk;
+	protected LuckyCache lucy;
+	protected AutoPackage autopackage;
+	protected CreateSql createSql;
+	protected ClassUtils classUtils;
+	
+	public  StartCache(String dbname) {
+		list = null;
+		isOk = false;
+		createSql = new CreateSql();
+		classUtils = new ClassUtils();
+		autopackage = new AutoPackage(dbname);
+		sqlOperation =LuckyManager.getSqlOperation(dbname);
+		lucy = LuckyCache.getLuckyCache();
+	}
 
 	/**
 	 * 启用缓存机制的ID查询

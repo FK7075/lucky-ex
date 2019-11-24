@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.lucky.jacklamb.exception.NoDataSourceException;
 import com.lucky.jacklamb.ioc.config.DataSource;
+import com.lucky.jacklamb.utils.ReadProperties;
 
 /**
  * 负责将数据库中的表转化为对应的JavaBean
@@ -15,13 +16,20 @@ import com.lucky.jacklamb.ioc.config.DataSource;
  *
  */
 public class TableToJava {
+	
+	private  DataSource data;
+	private String dbname;
+	
+	public TableToJava(String dbname) {
+		data=ReadProperties.getDataSource(dbname);
+	}
 	/**
 	 * 创建JavaBean(配置方式url)
 	 */
-	public static void generateJavaSrc() {
-		List<GetJavaSrc> src=JavaFieldGetSet.getMoreJavaSrc();
-		String srcpath=DataSource.getDataSource().getSrcPath();
-		String packpath=DataSource.getDataSource().getReversePack().replaceAll("\\.", "/");
+	public void generateJavaSrc() {
+		List<GetJavaSrc> src=JavaFieldGetSet.getMoreJavaSrc(dbname);
+		String srcpath=data.getSrcPath();
+		String packpath=data.getReversePack().replaceAll("\\.", "/");
 		String url=srcpath+"/"+packpath;
 		writerToJava(src,url,false,true);
 	}
@@ -30,10 +38,10 @@ public class TableToJava {
 	 * 创建JavaBean(配置方式url,手动输入表名)
 	 * @param tables 表名
 	 */
-	public static void b_generateJavaSrc(String...tables) {
-		List<GetJavaSrc> src=JavaFieldGetSet.getAssignJavaSrc(tables);
-		String srcpath=DataSource.getDataSource().getSrcPath();
-		String packpath=DataSource.getDataSource().getReversePack().replaceAll("\\.", "/");
+	public void b_generateJavaSrc(String...tables) {
+		List<GetJavaSrc> src=JavaFieldGetSet.getAssignJavaSrc(dbname,tables);
+		String srcpath=data.getSrcPath();
+		String packpath=data.getReversePack().replaceAll("\\.", "/");
 		String url=srcpath+"/"+packpath;
 		writerToJava(src,url,false,false);
 	}
@@ -43,9 +51,9 @@ public class TableToJava {
 	 * @param srcPath src文件绝对路径
 	 * @param tables 需要逆向工程生成javabean的表
 	 */
-	public static void a_generateJavaSrc(String srcPath,String...tables) {
-		List<GetJavaSrc> src=JavaFieldGetSet.getAssignJavaSrc(tables);
-		String packpath=DataSource.getDataSource().getReversePack().replaceAll("\\.", "/");
+	public void a_generateJavaSrc(String srcPath,String...tables) {
+		List<GetJavaSrc> src=JavaFieldGetSet.getAssignJavaSrc(dbname,tables);
+		String packpath=data.getReversePack().replaceAll("\\.", "/");
 		String url=srcPath+"/"+packpath;
 		writerToJava(src,url,true,false);
 	}
@@ -53,9 +61,9 @@ public class TableToJava {
 	 * 创建JavaBean(手动输入url)
 	 * @param srcPath src文件夹的绝对路径
 	 */
-	public static void generateJavaSrc(String srcPath) {
-		List<GetJavaSrc> src=JavaFieldGetSet.getMoreJavaSrc();
-		String packpath=DataSource.getDataSource().getReversePack().replaceAll("\\.", "/");
+	public void generateJavaSrc(String srcPath) {
+		List<GetJavaSrc> src=JavaFieldGetSet.getMoreJavaSrc(dbname);
+		String packpath=data.getReversePack().replaceAll("\\.", "/");
 		String url=srcPath+"/"+packpath;
 		writerToJava(src,url,true,true);
 	}
@@ -67,7 +75,7 @@ public class TableToJava {
 	 * @param isManual 是否手动
 	 * @param ispackBox 是否生成PackBox
 	 */
-	private static void writerToJava(List<GetJavaSrc> src,String path,boolean isManual,boolean ispackBox) {
+	private void writerToJava(List<GetJavaSrc> src,String path,boolean isManual,boolean ispackBox) {
 		File file=new File(path);
 		if(!file.exists())
 			file.mkdirs();
@@ -93,7 +101,7 @@ public class TableToJava {
 			}
 		}
 		if(ispackBox) {
-			PackBoxSrc p=PackBoxSrc.getPackBoxSrc();
+			PackBoxSrc p=PackBoxSrc.getPackBoxSrc(dbname);
 			try {
 				bw=new BufferedWriter(new FileWriter(new File(path+"/"+p.getClassName()+".java")));
 				System.out.println(path+"/"+p.getClassName()+".java");

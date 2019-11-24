@@ -11,6 +11,16 @@ public interface SqlCore {
 	 */
 	public Transaction openTransaction();
 	
+	public void createJavaBean();
+	
+	public void createJavaBean(String srcPath);
+	
+	public void createJavaBean(String... tables);
+	
+	public void createJavaBean(String srcPath, String... tables);
+	
+	public void createTable();
+	
 	/**
 	 * ¹Ø±Õ×ÊÔ´
 	 */

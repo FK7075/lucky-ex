@@ -18,6 +18,7 @@ public class TableStructure {
 	private List<String> types=new ArrayList<String>();//对应的类型集
 	private String pri;//主键
 	private List<String> muls=new ArrayList<String>();//外键
+	private static String dbname;
 	
 	
 	@Override
@@ -92,9 +93,10 @@ public class TableStructure {
 	 * 获得tableName表对应的表的结构
 	 * @param tableName 表名
 	 */
-	public TableStructure(String tableName) {
+	public TableStructure(String dbname,String tableName) {
+		TableStructure.dbname=dbname;
 		this.tableName=LuckyUtils.TableToClass(tableName);
-		ResultSet rs=LuckyUtils.getResultSet("DESCRIBE "+tableName);
+		ResultSet rs=LuckyUtils.getResultSet(dbname,"DESCRIBE "+tableName);
 		try {
 			while(rs.next()) {
 				this.getFields().add(rs.getString("Field"));
@@ -118,7 +120,7 @@ public class TableStructure {
 	public static List<TableStructure> getAssignTableStructure(String...tables){
 		List<TableStructure> list=new ArrayList<TableStructure>();
 		for (String tablename : tables) {
-			TableStructure table=new TableStructure(tablename);
+			TableStructure table=new TableStructure(dbname,tablename);
 			list.add(table);
 		}
 		return list;
@@ -131,7 +133,7 @@ public class TableStructure {
 	public static List<TableStructure> getMoreTableStructure(Tables tables){
 		List<TableStructure> list=new ArrayList<TableStructure>();
 		for (String t_name : tables.getTablenames()) {
-			TableStructure table=new TableStructure(t_name);
+			TableStructure table=new TableStructure(dbname,t_name);
 			list.add(table);
 		}
 		return list;

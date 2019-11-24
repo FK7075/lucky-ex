@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Mapper {
 	String id() default "";
+	String dbname() default "defaultDB";
 	Class<?> value() default Void.class;
 	String[] properties() default {};
 	String  codedformat() default "gbk";

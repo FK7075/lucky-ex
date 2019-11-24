@@ -4,6 +4,11 @@ import java.util.List;
 
 public final class CacheFindListAndSet extends StartCache {
 
+	public CacheFindListAndSet(String dbname) {
+		super(dbname);
+		// TODO Auto-generated constructor stub
+	}
+
 	public List<?> getListCache(Class<?> c, String sql, Object... obj) {
 		// TODO Auto-generated method stub
 		return super.getListCache(c, sql, obj);

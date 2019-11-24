@@ -6,8 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.lucky.jacklamb.enums.RequestMethod;
-
 /**
  * 与@Controller注解一起使用配置URL映射(支持Rest风格的URL)
  * 	value:标注在类上定义一层虚拟文件结构
@@ -30,11 +28,10 @@ import com.lucky.jacklamb.enums.RequestMethod;
  * @author fk-7075
  *
  */
-@Target({ElementType.TYPE,ElementType.METHOD})
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface GetMapping {
 	String value() default "";
-	RequestMethod[] method() default {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.DELETE};
 	
 }

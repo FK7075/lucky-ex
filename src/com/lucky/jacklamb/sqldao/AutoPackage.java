@@ -21,7 +21,11 @@ import com.lucky.jacklamb.utils.LuckyUtils;
  */
 public class AutoPackage {
 	private ResultSet rs = null;
-	private SqlOperation sqloperation = LuckyManager.getSqlOperation();
+	private SqlOperation sqloperation;
+	
+	public AutoPackage(String dbname) {
+		sqloperation = LuckyManager.getSqlOperation(dbname);
+	}
 
 	/**
 	 * 自动将结果集中的内容封装起来

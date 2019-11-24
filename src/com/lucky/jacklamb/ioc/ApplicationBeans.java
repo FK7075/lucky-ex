@@ -1,12 +1,14 @@
 package com.lucky.jacklamb.ioc;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.lucky.jacklamb.annotation.Controller;
 import com.lucky.jacklamb.exception.NotFindBeanException;
+import com.lucky.jacklamb.ioc.config.DataSource;
 import com.lucky.jacklamb.ioc.config.WebConfig;
 import com.lucky.jacklamb.servlet.Model;
 import com.lucky.jacklamb.utils.Jacklabm;
@@ -182,6 +184,17 @@ public class ApplicationBeans {
 				return obj;
 		}
 		return null;
+	}
+	
+	public List<DataSource> getDataSources() {
+		List<DataSource> list=new ArrayList<>();
+		for(Entry<String,Object> entry:getComponentBeans().entrySet()) {
+			Object obj=entry.getValue();
+			Class<?> mapClass=obj.getClass();
+			if(DataSource.class.isAssignableFrom(mapClass))
+				list.add((DataSource)entry.getValue());
+		}
+		return list;
 	}
 	
 	/**

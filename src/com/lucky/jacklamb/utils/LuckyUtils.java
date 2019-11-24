@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.lucky.jacklamb.enums.PrimaryType;
-import com.lucky.jacklamb.ioc.config.DataSource;
 import com.lucky.jacklamb.sqldao.PojoManage;
 import com.lucky.jacklamb.sqldao.SqlOperation;
 
@@ -42,8 +41,8 @@ public class LuckyUtils {
 	 * @param obj 填充占位符的对象数组
 	 * @return 查询结果集
 	 */
-	public static ResultSet getResultSet(String sql,Object...obj) {
-		SqlOperation sqlop=LuckyManager.getSqlOperation();
+	public static ResultSet getResultSet(String name,String sql,Object...obj) {
+		SqlOperation sqlop=LuckyManager.getSqlOperation(name);
 		return sqlop.getResultSet(sql, obj);
 	}
 	/**
@@ -165,8 +164,13 @@ public class LuckyUtils {
 	}
 	
 	//获得当前数据库的名称
-	public static String getDatabaseName() {
-		String url = DataSource.getDataSource().getUrl();
+	public static String getDatabaseName(String...name) {
+		String dbname;
+		if(name!=null&&name.length!=0)
+			dbname=name[0];
+		else
+			dbname="defaultDB";
+		String url = ReadProperties.getDataSource(dbname).getJdbcUrl();
 		String databasename=url.substring((url.lastIndexOf("/")+1),url.length());
 		if(databasename.contains("?")) {
 			databasename=databasename.substring(0, databasename.indexOf("?"));

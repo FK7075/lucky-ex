@@ -5,16 +5,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucky.jacklamb.ioc.config.DataSource;
 import com.lucky.jacklamb.sqldao.PojoManage;
 import com.lucky.jacklamb.sqldao.SqlOperation;
 import com.lucky.jacklamb.utils.LuckyManager;
 
 public class DeleteKeySql {
-	private SqlOperation sqlop = LuckyManager.getSqlOperation();
+	private SqlOperation sqlop;
 	private String databasename;
 	private List<String> delkeysql = new ArrayList<String>();
-	private List<String> classlist=DataSource.getDataSource().getCaeateTable();
+	private List<String> classlist;
 
 	public String getDatabasename() {
 		return databasename;
@@ -71,8 +70,9 @@ public class DeleteKeySql {
 	/**
 	 * 得到数据库的名字和删除数据库所有表外键的sql语句集合并封装到属性中
 	 */
-	public DeleteKeySql() {
-
+	public DeleteKeySql(String dbname,List<String> classlist) {
+		sqlop = LuckyManager.getSqlOperation(dbname);
+		this.classlist = classlist;
 	}
 
 	/**

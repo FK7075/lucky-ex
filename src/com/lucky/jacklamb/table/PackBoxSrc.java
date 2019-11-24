@@ -2,8 +2,8 @@ package com.lucky.jacklamb.table;
 
 import java.util.List;
 
-import com.lucky.jacklamb.ioc.config.DataSource;
 import com.lucky.jacklamb.utils.LuckyUtils;
+import com.lucky.jacklamb.utils.ReadProperties;
 
 /**
  * 万能包装箱
@@ -69,16 +69,16 @@ public class PackBoxSrc {
 		this.end = end;
 	}
 
-	public static PackBoxSrc getPackBoxSrc(String... classnames) {
+	public static PackBoxSrc getPackBoxSrc(String dbname,String... classnames) {
 		PackBoxSrc pack = new PackBoxSrc();
 		pack.setClassName("PackBox");
-		pack.setPack("package " + DataSource.getDataSource().getReversePack() + ";\n\n/**\n * 万能打包器，任何数据库的操作都可以由此类来包装\n * @author FK7075\n */");
+		pack.setPack("package " + ReadProperties.getDataSource(dbname).getCaeateTable() + ";\n\n/**\n * 万能打包器，任何数据库的操作都可以由此类来包装\n * @author FK7075\n */");
 		pack.setImpor("\npublic class PackBox {\n\n");
 		pack.setField("");
 		pack.setGetset("");
 		pack.setEnd("\n}");
 		if (classnames.length == 0) {
-			Tables table=new Tables();
+			Tables table=new Tables(dbname);
 			List<String> list=table.getTablenames();
 			String[] tabs=new String[list.size()];
 			tabs=list.toArray(tabs);

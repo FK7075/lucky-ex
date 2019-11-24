@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.lucky.jacklamb.ioc.config.DataSource;
 import com.lucky.jacklamb.utils.LuckyUtils;
+import com.lucky.jacklamb.utils.ReadProperties;
 
 /**
  * 得到关于某个属性的源代码（属性声明，get/set方法的源码）
@@ -15,6 +16,8 @@ public class JavaFieldGetSet {
 	private String field;
 	private String getField;
 	private String setField;
+	private static String dbname;
+	private static DataSource data;
 	public String getField() {
 		return field;
 	}
@@ -39,9 +42,11 @@ public class JavaFieldGetSet {
 		System.out.println(setField);
 	}
 	
-	public JavaFieldGetSet(String field,String type,String id,List<String> keys) {
+	public JavaFieldGetSet(String field,String type,String id,List<String> keys,String dbname) {
+		JavaFieldGetSet.dbname=dbname;
 		String Id="";
 		String key="";
+		data=ReadProperties.getDataSource(dbname);
 		if(id.equals(field)) {
 			Id="\t@Id\n";
 		}
@@ -58,18 +63,18 @@ public class JavaFieldGetSet {
 	 * @param ts TableStructure对象
 	 * @return 对应表的java源代码
 	 */
-	public static GetJavaSrc getOneJavaSrc(TableStructure ts){
+	public static GetJavaSrc getOneJavaSrc(TableStructure ts,String name){
 		GetJavaSrc javasrc=new GetJavaSrc();
 		List<JavaFieldGetSet> list=new ArrayList<JavaFieldGetSet>();
 		javasrc.setClassName(ts.getTableName());
-		javasrc.setPack("package "+DataSource.getDataSource().getReversePack()+";");
+		javasrc.setPack("package "+data.getCaeateTable()+";");
 		javasrc.setImpor("import java.util.Date;\nimport java.sql.*;\nimport java.util.*;\nimport com.lucky.annotation.Id;\nimport com.lucky.annotation.Key;");
 		javasrc.setToString(ts.getToString());
 		javasrc.setConstructor(ts.getConstructor());
 		javasrc.setParameterConstructor(ts.getParameterConstructor());
 		String src="@SuppressWarnings(\"all\")\npublic class "+ts.getTableName()+"{\n";
 		for(int i=0;i<ts.getFields().size();i++) {
-			JavaFieldGetSet jf=new JavaFieldGetSet(ts.getFields().get(i), ts.getTypes().get(i),ts.getPri(),ts.getMuls());
+			JavaFieldGetSet jf=new JavaFieldGetSet(ts.getFields().get(i), ts.getTypes().get(i),ts.getPri(),ts.getMuls(),name);
 			list.add(jf);
 		}
 		for (JavaFieldGetSet jf : list) {
@@ -90,11 +95,11 @@ public class JavaFieldGetSet {
 	 * @param tables 表名
 	 * @return
 	 */
-	public static List<GetJavaSrc> getAssignJavaSrc(String...tables){
+	public static List<GetJavaSrc> getAssignJavaSrc(String name,String...tables){
 		List<GetJavaSrc> javasrclist=new ArrayList<GetJavaSrc>();
 		List<TableStructure> list=TableStructure.getAssignTableStructure(tables);
 		for (TableStructure tableStructure : list) {
-			GetJavaSrc java=JavaFieldGetSet.getOneJavaSrc(tableStructure);
+			GetJavaSrc java=JavaFieldGetSet.getOneJavaSrc(tableStructure,name);
 			javasrclist.add(java);
 		}
 		return javasrclist;
@@ -104,11 +109,11 @@ public class JavaFieldGetSet {
 	 * 得到数据库中所有表对应的java源码对象GetJavaSrc的集合
 	 * @return
 	 */
-	public static List<GetJavaSrc> getMoreJavaSrc(){
+	public static List<GetJavaSrc> getMoreJavaSrc(String name){
 		List<GetJavaSrc> javasrclist=new ArrayList<GetJavaSrc>();
-		List<TableStructure> list=TableStructure.getMoreTableStructure(new Tables());
+		List<TableStructure> list=TableStructure.getMoreTableStructure(new Tables(dbname));
 		for (TableStructure tableStructure : list) {
-			GetJavaSrc java=JavaFieldGetSet.getOneJavaSrc(tableStructure);
+			GetJavaSrc java=JavaFieldGetSet.getOneJavaSrc(tableStructure,name);
 			javasrclist.add(java);
 		}
 		return javasrclist;

@@ -1,9 +1,12 @@
 package com.lucky.jacklamb.sqldao;
 
+import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import com.lucky.jacklamb.c3p0.C3p0Util;
 /**
  * JDBC相关操作类
  * @author fk-7075
@@ -26,8 +29,8 @@ public class SqlOperation {
 		this.conn = conn;
 	}
 	
-	public SqlOperation() {
-		conn=JdbcUtils.getConnection();
+	public SqlOperation(String dbname) {
+		conn=C3p0Util.getConnecion(dbname);
 		log=new LogInfo();
 	}
 	/**
@@ -52,7 +55,7 @@ public class SqlOperation {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			JdbcUtils.release(rs, ps, conn);
+			C3p0Util.release(rs, ps, conn);
 		}
 		return isOk;
 	}
@@ -86,7 +89,7 @@ public class SqlOperation {
 			e.printStackTrace();
 		}
 		 finally {
-				JdbcUtils.release(rs, ps, conn);
+			 C3p0Util.release(rs, ps, conn);
 			}
 		return isOk;
 	}
@@ -116,7 +119,7 @@ public class SqlOperation {
 	 * 关闭资源
 	 */
 	public void close() {
-		JdbcUtils.release(rs, ps, conn);
+		C3p0Util.release(rs, ps, conn);
 	}
 	
 
