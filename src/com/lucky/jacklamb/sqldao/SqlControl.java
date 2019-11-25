@@ -34,14 +34,10 @@ public class SqlControl implements SqlCore {
 		start = new StartCache(dbname);
 	}
 	
-	private SqlControl() {
-		new SqlControl("defaultDB");
-	}
-	
 	public static SqlControl getSqlControl(String...dbname) {
 		if(dbname!=null&&dbname.length!=0)
 			return new SqlControl(dbname[0]);
-		return new SqlControl();
+		return new SqlControl("defaultDB");
 	}
 	
 	
