@@ -19,11 +19,11 @@ public class ClassUtils {
 	private TypeChange tych;
 	private LogInfo log;
 
-	public ClassUtils() {
+	public ClassUtils(String dbname) {
 		tych = new TypeChange();
 		names = new ArrayList<String>();
 		values = new ArrayList<Object>();
-		log = new LogInfo();
+		log = new LogInfo(dbname);
 		
 	}
 	

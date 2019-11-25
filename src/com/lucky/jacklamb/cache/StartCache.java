@@ -18,12 +18,14 @@ public class StartCache {
 	protected AutoPackage autopackage;
 	protected CreateSql createSql;
 	protected ClassUtils classUtils;
+	protected String dbname;
 	
 	public  StartCache(String dbname) {
+		this.dbname=dbname;
 		list = null;
 		isOk = false;
 		createSql = new CreateSql();
-		classUtils = new ClassUtils();
+		classUtils = new ClassUtils(dbname);
 		autopackage = new AutoPackage(dbname);
 		sqlOperation =LuckyManager.getSqlOperation(dbname);
 		lucy = LuckyCache.getLuckyCache();
@@ -40,11 +42,11 @@ public class StartCache {
 		Object object = null;
 		String id_ = PojoManage.getIdString(c);
 		String sql = "SELECT * FROM " + PojoManage.getTable(c) + " WHERE " + id_ + "=?";
-		if (!lucy.contains(createSql.getSqlString(sql, id))) {
+		if (!lucy.contains(dbname,createSql.getSqlString(sql, id))) {
 			list = autopackage.autoPackageToList(c, sql, id);
-			lucy.add(createSql.getSqlString(sql, id), list);
+			lucy.add(dbname,createSql.getSqlString(sql, id), list);
 		} else {
-			list = lucy.get(createSql.getSqlString(sql, id));
+			list = lucy.get(dbname,createSql.getSqlString(sql, id));
 		}
 		if (!(list == null || list.isEmpty()))
 			object = list.get(0);
@@ -63,11 +65,11 @@ public class StartCache {
 	 * @return
 	 */
 	public List<?> getListCache(Class<?> c, String sql, Object... obj) {
-		if (lucy.get(createSql.getSqlString(sql, obj)) == null) {
+		if (lucy.get(dbname,createSql.getSqlString(sql, obj)) == null) {
 			list = autopackage.autoPackageToList(c, sql, obj);
-			lucy.add(createSql.getSqlString(sql, obj), list);
+			lucy.add(dbname,createSql.getSqlString(sql, obj), list);
 		} else {
-			list = lucy.get(createSql.getSqlString(sql, obj));
+			list = lucy.get(dbname,createSql.getSqlString(sql, obj));
 		}
 		return list;
 	}
@@ -80,11 +82,11 @@ public class StartCache {
 	 */
 	public <T> List<?> getListCache(T t) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), "select");
-		if (lucy.get(createSql.getSqlString(f)) == null) {
+		if (lucy.get(dbname,createSql.getSqlString(f)) == null) {
 			list = autopackage.autoPackageToList(t.getClass(), f.getSql(), f.getObj());
-			lucy.add(createSql.getSqlString(f), list);
+			lucy.add(dbname,createSql.getSqlString(f), list);
 		} else {
-			list = lucy.get(createSql.getSqlString(f));
+			list = lucy.get(dbname,createSql.getSqlString(f));
 		}
 		return list;
 	}
@@ -101,11 +103,11 @@ public class StartCache {
 	 */
 	public <T> List<?> getPagListCache(T t, int index, int size) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), index, size);
-		if (lucy.get(createSql.getSqlString(f)) == null) {
+		if (lucy.get(dbname,createSql.getSqlString(f)) == null) {
 			list = autopackage.autoPackageToList(t.getClass(), f.getSql(), f.getObj());
-			lucy.add(createSql.getSqlString(f), list);
+			lucy.add(dbname,createSql.getSqlString(f), list);
 		} else {
-			list = lucy.get(createSql.getSqlString(f));
+			list = lucy.get(dbname,createSql.getSqlString(f));
 		}
 		return list;
 	}
@@ -122,11 +124,11 @@ public class StartCache {
 	 */
 	public <T> List<?> getSortListCache(T t, String property, int r) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), property, r);
-		if (lucy.get(createSql.getSqlString(f)) == null) {
+		if (lucy.get(dbname,createSql.getSqlString(f)) == null) {
 			list = autopackage.autoPackageToList(t.getClass(), f.getSql(), f.getObj());
-			lucy.add(createSql.getSqlString(f), list);
+			lucy.add(dbname,createSql.getSqlString(f), list);
 		} else {
-			list = lucy.get(createSql.getSqlString(f));
+			list = lucy.get(dbname,createSql.getSqlString(f));
 		}
 		return list;
 	}
@@ -144,11 +146,11 @@ public class StartCache {
 	public <T> List<?> getFuzzyListCache(Class<?> c, String property, String info) {
 		info = "%" + info + "%";
 		SqlInfo f = classUtils.getSqlInfo(c, property, info);
-		if (lucy.get(createSql.getSqlString(f)) == null) {
+		if (lucy.get(dbname,createSql.getSqlString(f)) == null) {
 			list = autopackage.autoPackageToList(c, f.getSql(), f.getObj());
-			lucy.add(createSql.getSqlString(f), list);
+			lucy.add(dbname,createSql.getSqlString(f), list);
 		} else {
-			list = lucy.get(createSql.getSqlString(f));
+			list = lucy.get(dbname,createSql.getSqlString(f));
 		}
 		return list;
 	}
@@ -166,7 +168,7 @@ public class StartCache {
 		String id_ = PojoManage.getIdString(c);
 		String sql = "DELETE FROM " +  PojoManage.getTable(c) + " WHERE " + id_ + "=?";
 		isOk = sqlOperation.setSql(sql, id);
-		lucy.evenChange();
+		lucy.evenChange(dbname);
 		return isOk;
 	}
 	
@@ -178,7 +180,7 @@ public class StartCache {
 	 */
 	public boolean deleteCache(String sql, Object... obj) {
 		isOk = sqlOperation.setSql(sql, obj);
-		lucy.evenChange();
+		lucy.evenChange(dbname);
 		return isOk;
 	}
 	
@@ -190,7 +192,7 @@ public class StartCache {
 	 */
 	public boolean updateCache(String sql, Object... obj) {
 		isOk = sqlOperation.setSql(sql, obj);
-		lucy.evenChange();
+		lucy.evenChange(dbname);
 		return isOk;
 	}
 	
@@ -202,7 +204,7 @@ public class StartCache {
 	 */
 	public boolean saveCache(String sql, Object... obj) {
 		isOk = sqlOperation.setSql(sql, obj);
-		lucy.evenChange();
+		lucy.evenChange(dbname);
 		return isOk;
 	}
 	
@@ -215,9 +217,9 @@ public class StartCache {
 	public <T> boolean saveCache(T t,boolean...addId) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), "insert");
 		sqlOperation.setSql(f.getSql(), f.getObj());
-		lucy.evenChange();
+		lucy.evenChange(dbname);
 		if(addId!=null&&addId.length!=0&&addId[0])
-			LuckyUtils.pojoSetId(t);
+			LuckyUtils.pojoSetId(dbname,t);
 		return true;
 	}
 	
@@ -230,7 +232,7 @@ public class StartCache {
 	public <T> boolean deleteCache(T t) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), "delete");
 		sqlOperation.setSql(f.getSql(), f.getObj());
-		lucy.evenChange();
+		lucy.evenChange(dbname);
 		return true;
 	}
 	
@@ -243,7 +245,7 @@ public class StartCache {
 	public <T> boolean updateCache(T t) {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), "update");
 		sqlOperation.setSql(f.getSql(), f.getObj());
-		lucy.evenChange();
+		lucy.evenChange(dbname);
 		return true;
 	}
 
@@ -398,7 +400,7 @@ public class StartCache {
 		SqlInfo f = classUtils.getSqlInfo(PojoManage.createClassInfo(t), "insert");
 		sqlOperation.setSql(f.getSql(), f.getObj());
 		if(addId!=null&&addId.length!=0&&addId[0])
-			LuckyUtils.pojoSetId(t);
+			LuckyUtils.pojoSetId(dbname,t);
 		return true;
 	}
 	
@@ -492,7 +494,7 @@ public class StartCache {
 	 */
 	public boolean saveBatchCache(String sql,Object[]... obj) {
 		isOk = sqlOperation.setSqlBatch(sql, obj);
-		lucy.evenChange();
+		lucy.evenChange(dbname);
 		return isOk;
 	}
 	/**
@@ -506,7 +508,7 @@ public class StartCache {
 	 */
 	public boolean deleteBatchCache(String sql,Object[]... obj) {
 		isOk = sqlOperation.setSqlBatch(sql, obj);
-		lucy.evenChange();
+		lucy.evenChange(dbname);
 		return isOk;
 	}
 	/**
@@ -520,7 +522,7 @@ public class StartCache {
 	 */
 	public boolean updateBatchCache(String sql,Object[]... obj) {
 		isOk = sqlOperation.setSqlBatch(sql, obj);
-		lucy.evenChange();
+		lucy.evenChange(dbname);
 		return isOk;
 	}
 	/**
@@ -696,7 +698,7 @@ public class StartCache {
 	public <T> boolean saveBatchByListCache(List<T> list){
 		BatchInsert bbi=new BatchInsert(list);
 		isOk = sqlOperation.setSqlBatch(bbi.getInsertSql(), bbi.getInsertObject());
-		lucy.evenChange();
+		lucy.evenChange(dbname);
 		return true;
 	}
 	/**
@@ -726,6 +728,6 @@ public class StartCache {
 	 * Çå¿Õ»º´æ
 	 */
 	public void clear() {
-		lucy.empty();
+		lucy.empty(dbname);
 	}
 }

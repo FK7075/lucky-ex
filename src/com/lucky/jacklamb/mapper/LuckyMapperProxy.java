@@ -454,7 +454,7 @@ public class LuckyMapperProxy {
 					Field idField = PojoManage.getIdField(args[0].getClass());
 					Id id=idField.getAnnotation(Id.class);
 					if(id.type()==PrimaryType.AUTO_INT)
-						LuckyUtils.pojoSetId(args[0]);
+						LuckyUtils.pojoSetId(sqlCore.getDbName(),args[0]);
 					else if(id.type()==PrimaryType.AUTO_UUID){
 						idField.setAccessible(true);
 						idField.set(args[0], UUID.randomUUID().toString().replaceAll("-", ""));

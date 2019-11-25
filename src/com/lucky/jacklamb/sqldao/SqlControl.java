@@ -521,4 +521,9 @@ public class SqlControl implements SqlCore {
 		start.clear();
 	}
 
+	@Override
+	public String getDbName() {
+		return dbname;
+	}
+
 }

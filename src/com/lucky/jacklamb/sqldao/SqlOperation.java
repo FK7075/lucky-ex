@@ -1,6 +1,5 @@
 package com.lucky.jacklamb.sqldao;
 
-import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,14 +11,12 @@ import com.lucky.jacklamb.c3p0.C3p0Util;
  * @author fk-7075
  *
  */
-@SuppressWarnings("all")
 public class SqlOperation {
-	private static SqlOperation sqloper=null;
-	private Connection conn = null;
-	private PreparedStatement ps = null;
-	private LogInfo log=null;
-	private ResultSet rs = null;
-	private boolean isOk = false;
+	private Connection conn;
+	private PreparedStatement ps;
+	private LogInfo log;
+	private ResultSet rs;
+	private boolean isOk;
 
 	public Connection getConn() {
 		return conn;
@@ -31,7 +28,7 @@ public class SqlOperation {
 	
 	public SqlOperation(String dbname) {
 		conn=C3p0Util.getConnecion(dbname);
-		log=new LogInfo();
+		log=new LogInfo(dbname);
 	}
 	/**
 	 * 实现对表的曾刪改操作

@@ -65,7 +65,7 @@ public class ReadProperties {
 			e.printStackTrace();
 		}
 		String name, driverClass, jdbcUrl, user, password, acquireIncrement, initialPoolSize, maxPoolSize, minPoolSize,
-				maxidleTime, maxConnectionAge, maxStatements, maxStatementsPerConnection, reversePckage, log, cache,
+				maxidleTime, maxConnectionAge, maxStatements,checkoutTimeout, maxStatementsPerConnection, reversePckage, log, cache,
 				srcpath, createTable, otherproperties;
 		name = property.getProperty("name");
 		driverClass = property.getProperty("driverClass");
@@ -78,6 +78,7 @@ public class ReadProperties {
 		minPoolSize = property.getProperty("minPoolSize");
 		maxidleTime = property.getProperty("maxidleTime");
 		maxConnectionAge = property.getProperty("maxConnectionAge");
+		checkoutTimeout= property.getProperty("checkoutTimeout");
 		maxStatements = property.getProperty("maxStatements");
 		maxStatementsPerConnection = property.getProperty("maxStatementsPerConnection");
 		reversePckage = property.getProperty("reverse.pckage");
@@ -125,6 +126,8 @@ public class ReadProperties {
 			dataSource.setInitialPoolSize(Integer.parseInt(initialPoolSize));
 		if (maxPoolSize != null && maxPoolSize != "")
 			dataSource.setMaxPoolSize(Integer.parseInt(maxPoolSize));
+		if (checkoutTimeout != null && checkoutTimeout != "")
+			dataSource.setCheckoutTimeout(Integer.parseInt(checkoutTimeout));
 		if (minPoolSize != null && minPoolSize != "")
 			dataSource.setMinPoolSize(Integer.parseInt(minPoolSize));
 		if (maxidleTime != null && maxidleTime != "")
@@ -184,8 +187,10 @@ public class ReadProperties {
 					break;
 				}
 			}
-			if(!haveDefaultDB)
+			if(!haveDefaultDB&&iocDataSources.size()!=1)
 				throw new NoDataSourceException("找不到默认的数据源，请检查是否配置了name属性为\"defaultDB\"的数据源");
+			if(!haveDefaultDB&&iocDataSources.size()==1)
+				iocDataSources.get(0).setName("defaultDB");
 			allDataSource = iocDataSources;
 		}
 	}

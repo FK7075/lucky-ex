@@ -165,12 +165,7 @@ public class LuckyUtils {
 	}
 	
 	//获得当前数据库的名称
-	public static String getDatabaseName(String...name) {
-		String dbname;
-		if(name!=null&&name.length!=0)
-			dbname=name[0];
-		else
-			dbname="defaultDB";
+	public static String getDatabaseName(String dbname) {
 		String url = ReadProperties.getDataSource(dbname).getJdbcUrl();
 		String databasename=url.substring((url.lastIndexOf("/")+1),url.length());
 		if(databasename.contains("?")) {
@@ -180,12 +175,12 @@ public class LuckyUtils {
 	}
 	
 	//设置自增主键的值到Pojo中
-	public static void pojoSetId(Object pojo) {
+	public static void pojoSetId(String dbname,Object pojo) {
 		int next_id=0;
 		Class<?> clzz=pojo.getClass();
 		if(PojoManage.getIdType(clzz)==PrimaryType.AUTO_INT) {
 			String sql="SELECT auto_increment as nextID FROM information_schema.`TABLES` WHERE table_name=? AND TABLE_SCHEMA=?";
-			ResultSet resultSet = getResultSet(sql,PojoManage.getTable(clzz),getDatabaseName());
+			ResultSet resultSet = getResultSet(sql,PojoManage.getTable(clzz),getDatabaseName(dbname));
 			try {
 				while(resultSet.next()) {
 					String nextID= resultSet.getString("nextID");

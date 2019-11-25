@@ -39,6 +39,7 @@ public class C3p0Util {
 			db.setMaxIdleTime(data.getMaxidleTime());
 			db.setMaxStatements(data.getMaxStatements());
 			db.setMaxConnectionAge(data.getMaxConnectionAge());
+			db.setCheckoutTimeout(data.getCheckoutTimeout());
 			db.setMaxStatementsPerConnection(data.getMaxStatementsPerConnection());
 			dbMap.put(data.getName(), db);
 		}

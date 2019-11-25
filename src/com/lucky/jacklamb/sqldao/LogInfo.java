@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.sqldao;
 
+import com.lucky.jacklamb.ioc.config.DataSource;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**
@@ -9,7 +10,16 @@ import com.lucky.jacklamb.utils.LuckyUtils;
  *
  */
 public class LogInfo {
-	private boolean log=ReadProperties.getDataSource("defaultDB").isLog();
+	
+	private boolean log;
+	private DataSource dataSource;
+	private String dataName;
+	
+	LogInfo(String dbname) {
+		dataSource=ReadProperties.getDataSource(dbname);
+		log=dataSource.isLog();
+		dataName=LuckyUtils.getDatabaseName(dataSource.getName());
+	}
 	
 	public void isShowLog(String sql, Object[] obj) {
 		if(log)
@@ -28,15 +38,15 @@ public class LogInfo {
 	
 	
 	private void log(String sql, Object[] obj) {
-		System.out.println(LuckyUtils.showtime()+"PrecompiledSql: " + sql);
+		System.out.println(LuckyUtils.showtime()+"PrecompiledSql("+dataName+"):" + sql);
 		if (obj == null)
-			System.out.println(LuckyUtils.showtime()+"Parameters    : [ ]");
+			System.out.println(LuckyUtils.showtime()+"Parameters    : { }");
 		else {
-			System.out.print(LuckyUtils.showtime()+"Parameters    : [");
+			System.out.print(LuckyUtils.showtime()+"Parameters    :{ ");
 			for (Object o : obj) {
 				System.out.print("("+(o!=null?o.getClass().getSimpleName():"NULL")+")"+o+"   ");
 			}
-			System.out.println("]");
+			System.out.println("}");
 		}
 	}
 	/**
@@ -45,15 +55,15 @@ public class LogInfo {
 	 * @param obj
 	 */
 	private void logBatch(String sql,Object obj[][]) {
-		System.out.println(LuckyUtils.showtime()+"PrecompiledSql: " + sql);
+		System.out.println(LuckyUtils.showtime()+"PrecompiledSql("+dataName+"): " + sql);
 		if(obj==null||obj.length==0)
-			System.out.println("Parameters    : [ ]");
+			System.out.println(LuckyUtils.showtime()+"Parameters    : { }");
 		else {
 			for(int i=0;i<obj.length;i++) {
-				System.out.print("Parameters    : [");
+				System.out.print(LuckyUtils.showtime()+"Parameters    :{");
 				for(Object o:obj[i])
 					System.out.print("("+(o!=null?o.getClass().getSimpleName():"NULL")+")"+o+"   ");
-				System.out.println("]");
+				System.out.println(" }");
 			}
 		}
 	}
