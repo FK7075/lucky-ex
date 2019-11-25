@@ -8,7 +8,7 @@ import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.lucky.jacklamb.annotation.Real;
+import com.lucky.jacklamb.annotation.ioc.Real;
 import com.lucky.jacklamb.enums.Location;
 
 @SuppressWarnings("all")

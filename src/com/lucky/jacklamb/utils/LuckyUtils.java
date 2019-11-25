@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.sqldao.PojoManage;
+import com.lucky.jacklamb.sqldao.ReadProperties;
 import com.lucky.jacklamb.sqldao.SqlOperation;
 
 /**

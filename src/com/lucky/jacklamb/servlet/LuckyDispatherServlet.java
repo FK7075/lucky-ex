@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.lucky.jacklamb.annotation.Download;
+import com.lucky.jacklamb.annotation.mvc.Download;
 import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.ControllerAndMethod;

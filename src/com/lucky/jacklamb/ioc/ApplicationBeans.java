@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.lucky.jacklamb.annotation.Controller;
+import com.lucky.jacklamb.annotation.ioc.Controller;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.ioc.config.DataSource;
 import com.lucky.jacklamb.ioc.config.WebConfig;

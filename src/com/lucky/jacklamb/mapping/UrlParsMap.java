@@ -9,9 +9,9 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.lucky.jacklamb.annotation.Controller;
-import com.lucky.jacklamb.annotation.CrossOrigin;
-import com.lucky.jacklamb.annotation.RequestMapping;
+import com.lucky.jacklamb.annotation.ioc.Controller;
+import com.lucky.jacklamb.annotation.mvc.CrossOrigin;
+import com.lucky.jacklamb.annotation.mvc.RequestMapping;
 import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.ioc.ControllerAndMethod;
 import com.lucky.jacklamb.servlet.LuckyWebContext;

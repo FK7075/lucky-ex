@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lucky.jacklamb.ioc.config.DataSource;
+import com.lucky.jacklamb.sqldao.ReadProperties;
 import com.lucky.jacklamb.utils.LuckyUtils;
-import com.lucky.jacklamb.utils.ReadProperties;
 
 /**
  * 得到关于某个属性的源代码（属性声明，get/set方法的源码）

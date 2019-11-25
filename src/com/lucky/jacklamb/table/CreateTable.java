@@ -3,9 +3,9 @@ package com.lucky.jacklamb.table;
 import java.util.List;
 
 import com.lucky.jacklamb.exception.NoDataSourceException;
+import com.lucky.jacklamb.sqldao.ReadProperties;
 import com.lucky.jacklamb.sqldao.SqlOperation;
 import com.lucky.jacklamb.utils.LuckyManager;
-import com.lucky.jacklamb.utils.ReadProperties;
 
 public class CreateTable {
 	private SqlOperation sqlop;

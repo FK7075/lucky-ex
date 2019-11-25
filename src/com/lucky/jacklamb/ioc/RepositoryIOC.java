@@ -5,15 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.lucky.jacklamb.annotation.Mapper;
-import com.lucky.jacklamb.annotation.Repository;
+import com.lucky.jacklamb.annotation.db.Mapper;
+import com.lucky.jacklamb.annotation.ioc.Repository;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.ioc.config.DataSource;
+import com.lucky.jacklamb.sqldao.ReadProperties;
 import com.lucky.jacklamb.sqldao.SqlCore;
 import com.lucky.jacklamb.sqldao.SqlCoreFactory;
 import com.lucky.jacklamb.utils.LuckyUtils;
-import com.lucky.jacklamb.utils.ReadProperties;
 
 public class RepositoryIOC {
 

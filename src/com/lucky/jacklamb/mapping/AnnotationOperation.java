@@ -19,10 +19,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-import com.lucky.jacklamb.annotation.Download;
-import com.lucky.jacklamb.annotation.RequestParam;
-import com.lucky.jacklamb.annotation.RestParam;
-import com.lucky.jacklamb.annotation.Upload;
+import com.lucky.jacklamb.annotation.mvc.Download;
+import com.lucky.jacklamb.annotation.mvc.RequestParam;
+import com.lucky.jacklamb.annotation.mvc.RestParam;
+import com.lucky.jacklamb.annotation.mvc.Upload;
 import com.lucky.jacklamb.exception.NotFindRequestException;
 import com.lucky.jacklamb.file.MultipartFile;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
@@ -191,7 +191,7 @@ public class AnnotationOperation {
 					&& !ServletRequest.class.isAssignableFrom(param.getType())
 					&& !ServletResponse.class.isAssignableFrom(param.getType())
 					&& !HttpSession.class.isAssignableFrom(param.getType())
-					&& !Model.class.isAssignableFrom(param.getType()) && getRequeatParamDefValue(param) == null) {
+					&& !Model.class.isAssignableFrom(param.getType()) && canInjection(param.getType(),model)) {
 				Class<?> pojoclzz = param.getType();
 				Object pojo = pojoclzz.newInstance();
 				Field[] fields = pojoclzz.getDeclaredFields();
@@ -364,6 +364,11 @@ public class AnnotationOperation {
 		}
 	}
 
+	/**
+	 * 得到RequestParam注解中def的值
+	 * @param param
+	 * @return
+	 */
 	private String getRequeatParamDefValue(Parameter param) {
 		if (param.isAnnotationPresent(RequestParam.class)) {
 			RequestParam rp = param.getAnnotation(RequestParam.class);
@@ -374,5 +379,14 @@ public class AnnotationOperation {
 		} else {
 			return null;
 		}
+	}
+	
+	private boolean canInjection(Class<?> pojoClass,Model model) {
+		Field[] pojoFields=pojoClass.getDeclaredFields();
+		for(Field field:pojoFields) {
+			if(model.parameterMapContainsKey(field.getName())||model.restMapContainsKey(field.getName()))
+				return true;
+		}
+		return false;
 	}
 }

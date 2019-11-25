@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.lucky.jacklamb.annotation.Bean;
-import com.lucky.jacklamb.annotation.BeanFactory;
-import com.lucky.jacklamb.annotation.Component;
+import com.lucky.jacklamb.annotation.ioc.Bean;
+import com.lucky.jacklamb.annotation.ioc.BeanFactory;
+import com.lucky.jacklamb.annotation.ioc.Component;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.utils.LuckyUtils;

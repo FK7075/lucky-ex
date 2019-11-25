@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.lucky.jacklamb.annotation.Controller;
-import com.lucky.jacklamb.annotation.DeleteMapping;
-import com.lucky.jacklamb.annotation.GetMapping;
-import com.lucky.jacklamb.annotation.PostMapping;
-import com.lucky.jacklamb.annotation.PutMapping;
-import com.lucky.jacklamb.annotation.RequestMapping;
+import com.lucky.jacklamb.annotation.ioc.Controller;
+import com.lucky.jacklamb.annotation.mvc.DeleteMapping;
+import com.lucky.jacklamb.annotation.mvc.GetMapping;
+import com.lucky.jacklamb.annotation.mvc.PostMapping;
+import com.lucky.jacklamb.annotation.mvc.PutMapping;
+import com.lucky.jacklamb.annotation.mvc.RequestMapping;
 import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;

@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import com.lucky.jacklamb.annotation.Column;
-import com.lucky.jacklamb.annotation.Id;
-import com.lucky.jacklamb.annotation.Key;
-import com.lucky.jacklamb.annotation.Table;
+import com.lucky.jacklamb.annotation.db.Column;
+import com.lucky.jacklamb.annotation.db.Id;
+import com.lucky.jacklamb.annotation.db.Key;
+import com.lucky.jacklamb.annotation.db.Table;
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.exception.NotFindFlieException;
 

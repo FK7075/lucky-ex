@@ -14,8 +14,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.lucky.jacklamb.annotation.Autowired;
-import com.lucky.jacklamb.annotation.Value;
+import com.lucky.jacklamb.annotation.ioc.Autowired;
+import com.lucky.jacklamb.annotation.ioc.Value;
 import com.lucky.jacklamb.aop.defaultexpand.CacheExpand;
 import com.lucky.jacklamb.exception.InjectionPropertiesException;
 import com.lucky.jacklamb.ioc.config.ScanConfig;

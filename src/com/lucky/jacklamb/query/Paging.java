@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucky.jacklamb.annotation.Page;
+import com.lucky.jacklamb.annotation.db.Page;
 import com.lucky.jacklamb.enums.JOIN;
 import com.lucky.jacklamb.sqldao.SqlCore;
 import com.lucky.jacklamb.sqldao.SqlCoreFactory;

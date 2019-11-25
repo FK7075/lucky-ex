@@ -1,7 +1,6 @@
 package com.lucky.jacklamb.sqldao;
 
 import com.lucky.jacklamb.utils.LuckyUtils;
-import com.lucky.jacklamb.utils.ReadProperties;
 
 /**
  * 日志管理类

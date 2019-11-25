@@ -10,7 +10,6 @@ import com.lucky.jacklamb.query.QueryBuilder;
 import com.lucky.jacklamb.table.CreateTable;
 import com.lucky.jacklamb.table.TableToJava;
 import com.lucky.jacklamb.utils.LuckyManager;
-import com.lucky.jacklamb.utils.ReadProperties;
 
 /**
  * Lucky的用户使用类(操作数据库)

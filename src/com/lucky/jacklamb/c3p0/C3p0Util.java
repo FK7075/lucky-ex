@@ -11,7 +11,7 @@ import java.util.Map;
 
 import com.lucky.jacklamb.exception.NoDataSourceException;
 import com.lucky.jacklamb.ioc.config.DataSource;
-import com.lucky.jacklamb.utils.ReadProperties;
+import com.lucky.jacklamb.sqldao.ReadProperties;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class C3p0Util {

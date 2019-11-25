@@ -8,7 +8,7 @@ import java.util.List;
 
 import com.lucky.jacklamb.exception.NoDataSourceException;
 import com.lucky.jacklamb.ioc.config.DataSource;
-import com.lucky.jacklamb.utils.ReadProperties;
+import com.lucky.jacklamb.sqldao.ReadProperties;
 
 /**
  * 负责将数据库中的表转化为对应的JavaBean

@@ -2,8 +2,8 @@ package com.lucky.jacklamb.table;
 
 import java.util.List;
 
+import com.lucky.jacklamb.sqldao.ReadProperties;
 import com.lucky.jacklamb.utils.LuckyUtils;
-import com.lucky.jacklamb.utils.ReadProperties;
 
 /**
  * 万能包装箱
