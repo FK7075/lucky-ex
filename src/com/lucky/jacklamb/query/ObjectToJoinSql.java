@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import com.lucky.jacklamb.sqldao.PojoManage;
+import com.lucky.jacklamb.sqlcore.PojoManage;
 
 public class ObjectToJoinSql{
 	

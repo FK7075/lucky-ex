@@ -2,11 +2,11 @@ package com.lucky.jacklamb.cache;
 
 import java.util.List;
 
-import com.lucky.jacklamb.sqldao.AutoPackage;
-import com.lucky.jacklamb.sqldao.ClassUtils;
-import com.lucky.jacklamb.sqldao.PojoManage;
-import com.lucky.jacklamb.sqldao.SqlInfo;
-import com.lucky.jacklamb.sqldao.SqlOperation;
+import com.lucky.jacklamb.sqlcore.AutoPackage;
+import com.lucky.jacklamb.sqlcore.ClassUtils;
+import com.lucky.jacklamb.sqlcore.PojoManage;
+import com.lucky.jacklamb.sqlcore.SqlInfo;
+import com.lucky.jacklamb.sqlcore.SqlOperation;
 import com.lucky.jacklamb.utils.LuckyManager;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
@@ -25,7 +25,7 @@ public class StartCache {
 		list = null;
 		isOk = false;
 		createSql = new CreateSql();
-		classUtils = new ClassUtils(dbname);
+		classUtils = new ClassUtils();
 		autopackage = new AutoPackage(dbname);
 		sqlOperation =LuckyManager.getSqlOperation(dbname);
 		lucy = LuckyCache.getLuckyCache();

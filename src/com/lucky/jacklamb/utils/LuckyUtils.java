@@ -9,9 +9,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.lucky.jacklamb.enums.PrimaryType;
-import com.lucky.jacklamb.sqldao.PojoManage;
-import com.lucky.jacklamb.sqldao.ReadProperties;
-import com.lucky.jacklamb.sqldao.SqlOperation;
+import com.lucky.jacklamb.sqlcore.PojoManage;
+import com.lucky.jacklamb.sqlcore.ReadProperties;
+import com.lucky.jacklamb.sqlcore.SqlOperation;
 
 /**
  * Lucky的工具类
@@ -57,27 +57,8 @@ public class LuckyUtils {
 		else
 			return type;
 	}
-	/**
-	 * MySql类型转Java类型
-	 * @param trpe MySql类型
-	 * @return Java类型
-	 */
-	public static String mysqlToJava(String trpe) {
-		switch (trpe) {
-		case "int":
-			return "Integer";
-		case "double":
-			return "Double";
-		case "varchar":
-			return "String";
-		case "datetime":
-			return "Date";
-		case "date":
-			return "Date";
-		default:
-			return "String";
-		}
-	}
+	
+	
 	/**
 	 * 将用','分隔的字符串截取为集合
 	 * @param 用','分隔的字符串
@@ -92,43 +73,6 @@ public class LuckyUtils {
 		return list;
 	}
 	
-	/**
-	 * 类型转换
-	 * 
-	 * @param goal
-	 * @param type
-	 * @return
-	 */
-	public static Object typeCast(String goal, String type) {
-		switch (type) {
-		case "int":
-			return Integer.parseInt(goal);
-		case "Integer":
-			return Integer.parseInt(goal);
-		case "Double":
-			return Double.parseDouble(goal);
-		case "double":
-			return Double.parseDouble(goal);
-		case "long":
-			return Long.parseLong(goal);
-		case "Long":
-			return Long.parseLong(goal);
-		case "float":
-			return Float.parseFloat(goal);
-		case "Float":
-			return Float.parseFloat(goal);
-		case "byte":
-			return Byte.parseByte(goal);
-		case "Byte":
-			return Byte.parseByte(goal);
-		case "boolean":
-			return Boolean.parseBoolean(goal);
-		case "Boolean":
-			return Boolean.parseBoolean(goal);
-		default:
-			return goal;
-		}
-	}
 	
 	public static String getSqlStatem(String nosql) {
 		if(nosql.contains("#{")) {

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.lucky.jacklamb.enums.JOIN;
 import com.lucky.jacklamb.enums.Sort;
-import com.lucky.jacklamb.sqldao.PojoManage;
+import com.lucky.jacklamb.sqlcore.PojoManage;
 
 public class QueryBuilder {
 	

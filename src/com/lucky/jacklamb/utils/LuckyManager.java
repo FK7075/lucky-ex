@@ -1,6 +1,6 @@
 package com.lucky.jacklamb.utils;
 
-import com.lucky.jacklamb.sqldao.SqlOperation;
+import com.lucky.jacklamb.sqlcore.SqlOperation;
 
 public class LuckyManager {
 //	public static DBConnectionPool dbpool;

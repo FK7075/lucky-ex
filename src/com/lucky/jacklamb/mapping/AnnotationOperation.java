@@ -27,6 +27,7 @@ import com.lucky.jacklamb.exception.NotFindRequestException;
 import com.lucky.jacklamb.file.MultipartFile;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.servlet.Model;
+import com.lucky.jacklamb.tcconversion.typechange.JavaConversion;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class AnnotationOperation {
@@ -282,7 +283,7 @@ public class AnnotationOperation {
 				String restKey = rp.value();
 				if (!model.restMapContainsKey(restKey))
 					throw new NotFindRequestException("缺少请求参数：" + restKey);
-				args[i] = LuckyUtils.typeCast(model.getRestMap().get(restKey), parameters[i].getType().getSimpleName());
+				args[i] = JavaConversion.strToBasic(model.getRestMap().get(restKey), parameters[i].getType());
 
 			} else {
 				String reqParaName = getParamName(parameters[i]);
@@ -304,7 +305,7 @@ public class AnnotationOperation {
 						if (defparam == null)
 							throw new NotFindRequestException("缺少请求参数：" + reqParaName);
 						if (parameters[i].getType().getClassLoader() == null) {
-							args[i] = LuckyUtils.typeCast(defparam, parameters[i].getType().getSimpleName());
+							args[i] = JavaConversion.strToBasic(defparam, parameters[i].getType());
 						} else {
 							args[i] = ApplicationBeans.createApplicationBeans().getBean(defparam);
 						}

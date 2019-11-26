@@ -1,6 +1,6 @@
 package com.lucky.jacklamb.cache;
 
-import com.lucky.jacklamb.sqldao.SqlInfo;
+import com.lucky.jacklamb.sqlcore.SqlInfo;
 
 public class CreateSql {
 	private String sql=null;

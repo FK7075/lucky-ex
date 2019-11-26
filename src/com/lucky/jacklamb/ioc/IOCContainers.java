@@ -20,8 +20,8 @@ import com.lucky.jacklamb.aop.defaultexpand.CacheExpand;
 import com.lucky.jacklamb.exception.InjectionPropertiesException;
 import com.lucky.jacklamb.ioc.config.ScanConfig;
 import com.lucky.jacklamb.servlet.Model;
+import com.lucky.jacklamb.tcconversion.typechange.JavaConversion;
 import com.lucky.jacklamb.utils.ArrayCast;
-import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**
  * 扫描所有配置包，将所有的IOC组件都加载到相应的IOC容器中
@@ -226,7 +226,7 @@ public class IOCContainers {
 							}
 						}else {
 							for(String z:val) {
-								list.add(LuckyUtils.typeCast(z, fx));
+								list.add(JavaConversion.strToBasic(z, fx));
 							}
 						}
 						field.set(component, list);
@@ -239,7 +239,7 @@ public class IOCContainers {
 							}
 						}else {
 							for(String z:val) {
-								set.add(LuckyUtils.typeCast(z, fx));
+								set.add(JavaConversion.strToBasic(z, fx));
 							}
 						}
 						field.set(component, set);
@@ -256,22 +256,22 @@ public class IOCContainers {
 						}else if(one&&!two) {//V是基本类型
 							for(String z:val) {
 								String[] kv=z.split(":");
-								map.put(beans.getBean(kv[0]), LuckyUtils.typeCast(kv[1], fx[1]));
+								map.put(beans.getBean(kv[0]), JavaConversion.strToBasic(kv[1], fx[1]));
 							}
 						}else if(!one&&two) {//K是基本类型
 							for(String z:val) {
 								String[] kv=z.split(":");
-								map.put(LuckyUtils.typeCast(kv[0], fx[0]),beans.getBean(kv[1]));
+								map.put(JavaConversion.strToBasic(kv[0], fx[0]),beans.getBean(kv[1]));
 							}
 						}else {//K-V都是基本类型
 							for(String z:val) {
 								String[] kv=z.split(":");
-								map.put(LuckyUtils.typeCast(kv[0], fx[0]), LuckyUtils.typeCast(kv[1], fx[1]));
+								map.put(JavaConversion.strToBasic(kv[0], fx[0]), JavaConversion.strToBasic(kv[1], fx[1]));
 							}
 						}
 						field.set(component, map);
 					}else {
-						field.set(component, LuckyUtils.typeCast(val[0], fieldClass.getSimpleName()));
+						field.set(component, JavaConversion.strToBasic(val[0], fieldClass.getSimpleName()));
 					}
 					
 				}

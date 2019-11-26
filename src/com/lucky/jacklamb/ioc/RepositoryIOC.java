@@ -10,9 +10,9 @@ import com.lucky.jacklamb.annotation.ioc.Repository;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.ioc.config.DataSource;
-import com.lucky.jacklamb.sqldao.ReadProperties;
-import com.lucky.jacklamb.sqldao.SqlCore;
-import com.lucky.jacklamb.sqldao.SqlCoreFactory;
+import com.lucky.jacklamb.sqlcore.ReadProperties;
+import com.lucky.jacklamb.sqlcore.SqlCore;
+import com.lucky.jacklamb.sqlcore.SqlCoreFactory;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class RepositoryIOC {

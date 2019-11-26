@@ -15,8 +15,8 @@ import javax.servlet.http.HttpSession;
 
 import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.json.LSON;
+import com.lucky.jacklamb.tcconversion.typechange.JavaConversion;
 import com.lucky.jacklamb.utils.ArrayCast;
-import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**
  * mvc的核心中转类
@@ -334,9 +334,8 @@ public class Model {
 	 * @param changTypeClass
 	 * @return T[]
 	 */
-	@SuppressWarnings("unchecked")
 	public <T> T[] strArrayChange(String[] strArr,Class<T> changTypeClass) {
-		return (T[]) ArrayCast.strToList(strArr, changTypeClass.getSimpleName());
+		return  ArrayCast.strArrayChange(strArr, changTypeClass);
 	}
 	
 	/**
@@ -375,7 +374,7 @@ public class Model {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getRestParam(String key,Class<T> clzz) {
-		return (T) LuckyUtils.typeCast(restMap.get(key), clzz.getSimpleName());
+		return (T) JavaConversion.strToBasic(restMap.get(key), clzz);
 	}
 
 }
