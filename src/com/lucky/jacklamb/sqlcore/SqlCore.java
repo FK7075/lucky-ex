@@ -125,7 +125,7 @@ public interface SqlCore {
 	public <T> List<T> getFuzzyList(Class<T> c, String property, String info);
 	
 	/**
-	 * 
+	 * SQL查询
 	 * @param c
 	 * 包装类的Class
 	 * @param sql
@@ -135,8 +135,9 @@ public interface SqlCore {
 	 */
 	public <T> List<T> getList(Class<T> c, String sql, Object... obj);
 	
+	
 	/**
-	 * 查询数据
+	 * 对象查询
 	 * @param c
 	 * 包含查询信息的包装类的对象
 	 * @param t
@@ -144,6 +145,7 @@ public interface SqlCore {
 	 * @return
 	 */
 	public <T> List<T> getList(T t);
+	
 	
 	/**
 	 * 预编译sql方式获得单一对象

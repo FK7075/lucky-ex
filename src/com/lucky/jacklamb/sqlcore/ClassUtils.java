@@ -1,5 +1,7 @@
 package com.lucky.jacklamb.sqlcore;
 
+import com.lucky.jacklamb.query.QFilter;
+
 /**
  * 泛型参数类类信息的抓取与sql语句拼接类
  * 
@@ -23,6 +25,7 @@ public class ClassUtils {
 		cs2.getValues().toArray(valueY);
 		/// 根据属性与属性值拼接sql语句
 		if ("SELECT".equalsIgnoreCase(operation)) {
+			QFilter qf=new QFilter(cs2.getClzz());
 			sql = "SELECT * FROM " + cs2.getClassName();
 			for (int i = 0; i < cs2.getNames().size(); i++) {
 				if(i==0)
@@ -30,6 +33,7 @@ public class ClassUtils {
 				else
 					sql+= "AND " + cs2.getNames().get(i) + "=? ";
 			}
+			sql=sql.replaceFirst("\\*", qf.lines());
 		}
 		if ("DELETE".equalsIgnoreCase(operation)) {
 			sql = "DELETE FROM " + cs2.getClassName();
@@ -98,6 +102,7 @@ public class ClassUtils {
 	 * @return 预编译语句和填充对象数组的包装类
 	 */
 	public SqlInfo getSqlInfo(ClassInfo cs2, int index, int size) {
+		QFilter qf=new QFilter(cs2.getClzz());
 		SqlInfo sqlInfo = new SqlInfo();
 		Object[] valueY = new Object[cs2.getValues().size()];
 		cs2.getValues().toArray(valueY);
@@ -110,6 +115,7 @@ public class ClassUtils {
 				sql += "AND " + cs2.getNames().get(i) + "=? ";
 		}
 		sql = sql + sql2;
+		sql=sql.replaceFirst("\\*", qf.lines());
 		sqlInfo.setObj(valueY);
 		sqlInfo.setSql(sql);
 		return sqlInfo;
@@ -126,6 +132,7 @@ public class ClassUtils {
 	 * @return
 	 */
 	public SqlInfo getSqlInfo(ClassInfo cs2, String property, int r) {
+		QFilter qf=new QFilter(cs2.getClzz());
 		String ronk = null;
 		if (r == 0)
 			ronk = "ASC";
@@ -143,6 +150,7 @@ public class ClassUtils {
 				sql += "AND " + cs2.getNames().get(i) + "=? ";
 		}
 		sql = sql + sql2;
+		sql=sql.replaceFirst("\\*", qf.lines());
 		sqlInfo.setObj(valueY);
 		sqlInfo.setSql(sql);
 		return sqlInfo;
@@ -159,8 +167,11 @@ public class ClassUtils {
 	 * @return 预编译语句和填充对象数组的包装类
 	 */
 	public SqlInfo getSqlInfo(Class<?> c, String property, String info) {
+		QFilter qf=new QFilter(c);
 		SqlInfo sqlInfo = new SqlInfo();
-		sqlInfo.setSql("SELECT * FROM " + PojoManage.getTable(c) + " WHERE " + property + " LIKE ?");
+		String sql="SELECT * FROM " + PojoManage.getTable(c) + " WHERE " + property + " LIKE ?";
+		sql=sql.replaceFirst("\\*", qf.lines());
+		sqlInfo.setSql(sql);
 		Object[] obj = { info };
 		sqlInfo.setObj(obj);
 		return sqlInfo;

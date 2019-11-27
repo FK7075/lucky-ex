@@ -14,11 +14,13 @@ public class LogInfo {
 	private boolean log;
 	private DataSource dataSource;
 	private String dataName;
+	private String dataType;
 	
 	LogInfo(String dbname) {
 		dataSource=ReadProperties.getDataSource(dbname);
 		log=dataSource.isLog();
 		dataName=LuckyUtils.getDatabaseName(dataSource.getName());
+		dataType=LuckyUtils.getDatabaseType(dbname);
 	}
 	
 	public void isShowLog(String sql, Object[] obj) {
@@ -38,15 +40,17 @@ public class LogInfo {
 	
 	
 	private void log(String sql, Object[] obj) {
-		System.out.println(LuckyUtils.showtime()+"PrecompiledSql("+dataName+"):" + sql);
+		System.out.println(LuckyUtils.showtime()+"["+dataType+":"+dataName+"]SQL: " + sql);
 		if (obj == null)
 			System.out.println(LuckyUtils.showtime()+"Parameters    : { }");
 		else {
-			System.out.print(LuckyUtils.showtime()+"Parameters    :{ ");
+			StringBuilder out=new StringBuilder(LuckyUtils.showtime());
+			out.append("Parameters    :{ ");
 			for (Object o : obj) {
-				System.out.print("("+(o!=null?o.getClass().getSimpleName():"NULL")+")"+o+"   ");
+				out.append("(").append((o!=null?o.getClass().getSimpleName():"NULL")).append(")").append(o).append("   ");
 			}
-			System.out.println("}");
+			out.append("}");
+			System.out.println(out.toString());
 		}
 	}
 	/**
@@ -55,15 +59,18 @@ public class LogInfo {
 	 * @param obj
 	 */
 	private void logBatch(String sql,Object obj[][]) {
-		System.out.println(LuckyUtils.showtime()+"PrecompiledSql("+dataName+"): " + sql);
+		System.out.println(LuckyUtils.showtime()+"["+dataType+":"+dataName+"]SQL: " + sql);
 		if(obj==null||obj.length==0)
 			System.out.println(LuckyUtils.showtime()+"Parameters    : { }");
 		else {
 			for(int i=0;i<obj.length;i++) {
-				System.out.print(LuckyUtils.showtime()+"Parameters    :{");
-				for(Object o:obj[i])
-					System.out.print("("+(o!=null?o.getClass().getSimpleName():"NULL")+")"+o+"   ");
-				System.out.println(" }");
+				StringBuilder out=new StringBuilder(LuckyUtils.showtime());
+				out.append("Parameters    :{ ");
+				for(Object o:obj[i]) {
+					out.append("(").append((o!=null?o.getClass().getSimpleName():"NULL")).append(")").append(o).append("   ");
+				}
+				out.append("}");
+				System.out.println(out.toString());
 			}
 		}
 	}

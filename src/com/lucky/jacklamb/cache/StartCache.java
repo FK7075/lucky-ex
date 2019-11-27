@@ -2,6 +2,7 @@ package com.lucky.jacklamb.cache;
 
 import java.util.List;
 
+import com.lucky.jacklamb.query.QFilter;
 import com.lucky.jacklamb.sqlcore.AutoPackage;
 import com.lucky.jacklamb.sqlcore.ClassUtils;
 import com.lucky.jacklamb.sqlcore.PojoManage;
@@ -39,9 +40,11 @@ public class StartCache {
 	 * @return
 	 */
 	public Object getOneCache(Class<?> c, Object id) {
+		QFilter qf=new QFilter(c);
 		Object object = null;
 		String id_ = PojoManage.getIdString(c);
 		String sql = "SELECT * FROM " + PojoManage.getTable(c) + " WHERE " + id_ + "=?";
+		sql=sql.replaceFirst("\\*", qf.lines());
 		if (!lucy.contains(dbname,createSql.getSqlString(sql, id))) {
 			list = autopackage.autoPackageToList(c, sql, id);
 			lucy.add(dbname,createSql.getSqlString(sql, id), list);

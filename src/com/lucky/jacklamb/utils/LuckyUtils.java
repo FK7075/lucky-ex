@@ -118,7 +118,24 @@ public class LuckyUtils {
 		return databasename;
 	}
 	
-	//设置自增主键的值到Pojo中
+	public static String getDatabaseType(String dbname) {
+		String jdbcDriver=ReadProperties.getDataSource(dbname).getDriverClass();
+		if(jdbcDriver.contains("mysql"))
+			return "MySql";
+		if(jdbcDriver.contains("db2"))
+			return "DB2";
+		if(jdbcDriver.contains("oracle"))
+			return "Oracle";
+		if(jdbcDriver.contains("postgresql"))
+			return "PostgreSql";
+		if(jdbcDriver.contains("sqlserver"))
+			return "Sql Server";
+		if(jdbcDriver.contains("sybase"))
+			return "Sybase";
+		return null;
+	}
+	
+	//获得当前数据库的类型
 	public static void pojoSetId(String dbname,Object pojo) {
 		int next_id=0;
 		Class<?> clzz=pojo.getClass();

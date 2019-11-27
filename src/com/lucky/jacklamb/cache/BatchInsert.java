@@ -32,60 +32,60 @@ public class BatchInsert {
 	
 	public static String createInsertSql(Class<?> clzz,int size) {
 		Field[] fields=clzz.getDeclaredFields();
-		String prefix="INSERT INTO "+PojoManage.getTable(clzz);
-		String suffix=" VALUES ";
+		StringBuffer prefix=new StringBuffer("INSERT INTO "+PojoManage.getTable(clzz));
+		StringBuffer suffix=new StringBuffer(" VALUES ");
 		if(PojoManage.getIdType(clzz)==PrimaryType.AUTO_INT) {
 			List<Field> list=new ArrayList<>();
 			String id=PojoManage.getIdString(clzz);
 			Stream.of(fields).filter(field->!id.equals(PojoManage.getTableField(field))
 					&&field.getType().getClassLoader()==null
 					&&!(field.getType()).isAssignableFrom(List.class)).forEach(list::add);
-			String fk="";
+			StringBuffer fk=new StringBuffer("");
 			for(int i=0;i<list.size();i++) {
 				if(i==0) {
-					prefix+="("+PojoManage.getTableField(list.get(i))+",";
-					fk+="(?,";
+					prefix.append("(").append(PojoManage.getTableField(list.get(i))).append(",");
+					fk.append("(?,");
 				}else if(i==list.size()-1) {
-					prefix+=PojoManage.getTableField(list.get(i))+")";
-					fk+="?)";
+					prefix.append(PojoManage.getTableField(list.get(i))).append(")");
+					fk.append("?)");
 				}else {
-					prefix+=PojoManage.getTableField(list.get(i))+",";
-					fk+="?,";
+					prefix.append(PojoManage.getTableField(list.get(i))).append(",");
+					fk.append("?,");
 				}
 			}
 			for(int j=0;j<size;j++) {
 				if(j==size-1) {
-					suffix+=fk;
+					suffix.append(fk);
 				}else {
-					suffix+=fk+",";
+					suffix.append(fk).append(",");
 				}
 			}
 		}else {
 			List<Field> list=new ArrayList<>();
 			Stream.of(fields).filter(field->field.getType().getClassLoader()==null
 					&&!(field.getType()).isAssignableFrom(List.class)).forEach(list::add);
-			String fk="";
+			StringBuffer fk=new StringBuffer("");
 			for(int i=0;i<list.size();i++) {
 				if(i==0) {
-					prefix+="("+PojoManage.getTableField(list.get(i))+",";
-					fk+="(?,";
+					prefix.append("(").append(PojoManage.getTableField(list.get(i))).append(",");
+					fk.append("(?,");
 				}else if(i==list.size()-1) {
-					prefix+=PojoManage.getTableField(list.get(i))+")";
-					fk+="?)";
+					prefix.append(PojoManage.getTableField(list.get(i))).append(")");
+					fk.append("?)");
 				}else {
-					prefix+=PojoManage.getTableField(list.get(i))+",";
-					fk+="?,";
+					prefix.append(PojoManage.getTableField(list.get(i))).append(",");
+					fk.append("?,");
 				}
 			}
 			for(int j=0;j<size;j++) {
 				if(j==size-1) {
-					suffix+=fk;
+					suffix.append(fk);
 				}else {
-					suffix+=fk+",";
+					suffix.append(fk).append(",");
 				}
 			}
 		}
-		return prefix+suffix;
+		return prefix.append(suffix).toString();
 	}
 	
 	private <T> Object[] createInsertObject(List<T> list) {

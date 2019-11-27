@@ -99,8 +99,8 @@ public class QueryBuilder {
 	 * @param result
 	 * @return
 	 */
-	public QueryBuilder addResult(String field) {
-		this.result+= field+",";
+	public QueryBuilder addResult(String column) {
+		this.result+= column+",";
 		return this;
 	}
 
