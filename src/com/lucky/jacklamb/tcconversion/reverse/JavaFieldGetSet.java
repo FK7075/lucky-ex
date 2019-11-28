@@ -3,7 +3,7 @@ package com.lucky.jacklamb.tcconversion.reverse;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucky.jacklamb.ioc.config.DataSource;
+import com.lucky.jacklamb.sqlcore.DataSource;
 import com.lucky.jacklamb.sqlcore.ReadProperties;
 import com.lucky.jacklamb.utils.LuckyUtils;
 

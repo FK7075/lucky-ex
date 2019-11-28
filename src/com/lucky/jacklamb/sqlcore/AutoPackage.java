@@ -117,6 +117,10 @@ public class AutoPackage {
 	public boolean update(String sql,Object...obj) {
 		return sqloperation.setSql(sql, obj);
 	}
+	
+	public boolean updateBatch(String sql,Object[][] obj) {
+		return sqloperation.setSqlBatch(sql, obj);
+	}
 
 	/**
 	 * 判断结果集中是否有指定的列

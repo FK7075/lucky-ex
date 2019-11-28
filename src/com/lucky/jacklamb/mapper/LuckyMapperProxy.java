@@ -49,10 +49,16 @@ import net.sf.cglib.proxy.MethodInterceptor;
 public class LuckyMapperProxy {
 
 	private SqlCore sqlCore;
+	private com.lucky.jacklamb.sqlcore.abstractionlayer.SqlCore s;
 	private Map<String,String> sqlMap;
 
 	public LuckyMapperProxy(SqlCore sql) {
 		sqlCore = sql;
+		sqlMap=new HashMap<>();
+	}
+	
+	public LuckyMapperProxy(com.lucky.jacklamb.sqlcore.abstractionlayer.SqlCore sql) {
+		s = sql;
 		sqlMap=new HashMap<>();
 	}
 	

@@ -15,7 +15,6 @@ import java.util.Properties;
 import com.lucky.jacklamb.exception.NoDataSourceException;
 import com.lucky.jacklamb.exception.NotFindBeanPropertyException;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
-import com.lucky.jacklamb.ioc.config.DataSource;
 
 public class ReadProperties {
 

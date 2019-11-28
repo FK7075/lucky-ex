@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.lucky.jacklamb.exception.NoDataSourceException;
-import com.lucky.jacklamb.ioc.config.DataSource;
+import com.lucky.jacklamb.sqlcore.DataSource;
 import com.lucky.jacklamb.sqlcore.ReadProperties;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 

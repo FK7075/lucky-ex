@@ -1,6 +1,5 @@
 package com.lucky.jacklamb.sqlcore;
 
-import com.lucky.jacklamb.ioc.config.DataSource;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**

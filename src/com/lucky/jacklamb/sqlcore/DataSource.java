@@ -1,9 +1,10 @@
-package com.lucky.jacklamb.ioc.config;
+package com.lucky.jacklamb.sqlcore;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.lucky.jacklamb.ioc.PackageScan;
+import com.lucky.jacklamb.ioc.config.ScanConfig;
 
 public class DataSource {
 

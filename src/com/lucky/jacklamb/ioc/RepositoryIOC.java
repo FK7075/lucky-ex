@@ -9,7 +9,7 @@ import com.lucky.jacklamb.annotation.db.Mapper;
 import com.lucky.jacklamb.annotation.ioc.Repository;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
-import com.lucky.jacklamb.ioc.config.DataSource;
+import com.lucky.jacklamb.sqlcore.DataSource;
 import com.lucky.jacklamb.sqlcore.ReadProperties;
 import com.lucky.jacklamb.sqlcore.SqlCore;
 import com.lucky.jacklamb.sqlcore.SqlCoreFactory;

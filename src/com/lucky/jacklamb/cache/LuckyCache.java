@@ -14,7 +14,6 @@ import com.lucky.jacklamb.exception.NoDataSourceException;
  *
  */
 public class LuckyCache {
-	private static LuckyCache luckycache;
 	private static Map<String,Map<String, List<?>>> cacheMap;
 
 	private LuckyCache() {
@@ -23,10 +22,7 @@ public class LuckyCache {
 	}
 
 	public static LuckyCache getLuckyCache() {
-		if (luckycache == null) {
-			luckycache = new LuckyCache();
-		}
-		return luckycache;
+		return new LuckyCache();
 	}
 	
 	public boolean containsDbname(String dbname) {
@@ -71,7 +67,7 @@ public class LuckyCache {
 	 * @return
 	 */
 	public List<?> get(String dbname,String key) {
-		if (containsDbname(dbname)) {
+		if (contains(dbname,key)) {
 			return cacheMap.get(dbname).get(key);
 		} else {
 			return null;
