@@ -60,14 +60,6 @@ public interface GeneralObjectCore {
 	 */
 	public <T> int count(T t);
 	
-	/**
-	 * 添加数据
-	 * @param t
-	 * 包含添加信息的包装类的对象
-	 * @return
-	 */
-	public <T> boolean insert(T t,boolean...addId);
-	
 	
 	/**
 	 * 删除数据
@@ -93,13 +85,6 @@ public interface GeneralObjectCore {
 	 */
 	public boolean deleteBatchByArray(Object...obj);
 	
-	/**
-	 * 批量保存-数组模式
-	 * @param obj
-	 * 包含保存信息的对象数组
-	 * @return
-	 */
-	public boolean insertBatchByArray(boolean addId,Object...obj);
 	
 	/**
 	 * 批量更新-数组模式

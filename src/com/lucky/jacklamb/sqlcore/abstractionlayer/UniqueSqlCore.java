@@ -77,6 +77,22 @@ public interface UniqueSqlCore {
 	public <T> List<T> getSortList(T t, String property, int r);
 	
 	/**
+	 * 添加数据
+	 * @param t
+	 * 包含添加信息的包装类的对象
+	 * @return
+	 */
+	public <T> boolean insert(T t,boolean...addId);
+	
+	/**
+	 * 批量保存-数组模式
+	 * @param obj
+	 * 包含保存信息的对象数组
+	 * @return
+	 */
+	public boolean insertBatchByArray(boolean addId,Object...obj);
+	
+	/**
 	 * 对象方式的多表连接操作<br>
 	 * 	1.强链接  最前面的两个表之间必须使用强连接<br>
 	 * 		tab1-->tab2 [-->]   

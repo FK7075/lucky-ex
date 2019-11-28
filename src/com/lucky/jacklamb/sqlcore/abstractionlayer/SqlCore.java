@@ -68,16 +68,6 @@ public abstract class SqlCore implements UniqueSqlCore {
 		return generalObjectCore.count(pojo);
 	}
 	
-	/**
-	 * 添加数据
-	 * @param pojo 包含添加信息的包装类的对象
-	 * @param addId 需要删除的Id集合
-	 * @return
-	 */
-	protected <T> boolean insert(T pojo,boolean...addId) {
-		return generalObjectCore.insert(pojo, addId);
-	}
-	
 	
 	/**
 	 * 删除数据
@@ -109,15 +99,6 @@ public abstract class SqlCore implements UniqueSqlCore {
 		return generalObjectCore.deleteBatchByArray(pojos);
 	}
 	
-	/**
-	 * 批量保存-数组模式
-	 * @param pojos
-	 * 包含保存信息的对象数组
-	 * @return
-	 */
-	protected boolean insertBatchByArray(boolean addId,Object...pojos) {
-		return generalObjectCore.insertBatchByArray(addId, pojos);
-	}
 	
 	/**
 	 * 批量更新-数组模式

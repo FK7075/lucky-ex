@@ -72,5 +72,17 @@ public class SybaseCore extends SqlCore {
 		
 	}
 
+	@Override
+	public <T> boolean insert(T t, boolean... addId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean insertBatchByArray(boolean addId, Object... obj) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 }

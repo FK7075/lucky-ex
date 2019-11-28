@@ -68,12 +68,6 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 	}
 
 	@Override
-	public <T> boolean insert(T t, boolean... addId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public <T> boolean delete(T t) {
 		// TODO Auto-generated method stub
 		return false;
@@ -87,12 +81,6 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 
 	@Override
 	public boolean deleteBatchByArray(Object... obj) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean insertBatchByArray(boolean addId, Object... obj) {
 		// TODO Auto-generated method stub
 		return false;
 	}
