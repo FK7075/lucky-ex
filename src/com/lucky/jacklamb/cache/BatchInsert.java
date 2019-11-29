@@ -2,9 +2,11 @@ package com.lucky.jacklamb.cache;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.lucky.jacklamb.annotation.db.Id;
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.sqlcore.PojoManage;
 
@@ -126,5 +128,48 @@ public class BatchInsert {
 		}
 		return po.toArray();
 	}
+	public static void main(String[] args) {
+		List<Book> list=new ArrayList<>();
+		list.add(new Book(1,"b1",23.4));
+		list.add(new Book(2,null,28.8));
+		list.add(new Book(3,"b3",null));
+		BatchInsert bi=new BatchInsert(list);
+		System.out.println(bi.getInsertSql());
+		System.out.println(Arrays.toString(bi.getInsertObject()));
+	}
+	
+}
+
+class Book{
+	@Id
+	private Integer bid;
+	private String bname;
+	private Double price;
+	
+	
+	public Book(Integer bid, String bname, Double price) {
+		this.bid = bid;
+		this.bname = bname;
+		this.price = price;
+	}
+	public Integer getBid() {
+		return bid;
+	}
+	public void setBid(Integer bid) {
+		this.bid = bid;
+	}
+	public String getBname() {
+		return bname;
+	}
+	public void setBname(String bname) {
+		this.bname = bname;
+	}
+	public Double getPrice() {
+		return price;
+	}
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+	
 	
 }

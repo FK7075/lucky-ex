@@ -1,41 +1,63 @@
 package com.lucky.jacklamb.sqlcore.databaseimpl;
 
 
+import com.lucky.jacklamb.sqlcore.ReadProperties;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.SqlCore;
+import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class SqlCoreFactory {
 	
-//	private static DataSource dataSource;
-//	static {
-//		dataSource=DataSource.getDataSource();
-//	}
+	public static SqlCore createSqlCore(String dbname) {
+		String dbType=LuckyUtils.getDatabaseType(dbname);
+		switch (dbType) {
+		case "MySql":
+			return createMySqlCore(dbname);
+		case "DB2":
+			return createDB2Core(dbname);
+		case "Oracle":
+			return createOracleCore(dbname);
+		case "PostgreSql":
+			return createPostgreCore(dbname);
+		case "Sql Server":
+			return createSqlServerCore(dbname);
+		case "Sybase":
+			return createSyBaseCore(dbname);
+		case "Access":
+			return createAccessCore(dbname);
+		default:
+			throw new RuntimeException("Lucky目前还不支持该类型的数据库，我们正在拼命更新中！DatabaseType:"+ReadProperties.getDataSource(dbname).getDriverClass());
+		}
+	}
 	
 	public static SqlCore createSqlCore() {
-		
-		return null;
+		return createSqlCore("defaultDB");
 	}
 	
-	public static SqlCore createMySqlCore() {
-		return null;
+	private static SqlCore createMySqlCore(String dbname) {
+		return new MySqlCore(dbname);
 	}
 
-	public static SqlCore createOracleCore() {
-		return null;
+	private static SqlCore createOracleCore(String dbname) {
+		return new OracleCore(dbname);
 	}
 	
-	public static SqlCore createPostgreCore() {
-		return null;
+	private static SqlCore createPostgreCore(String dbname) {
+		return new PostgreSqlCore(dbname);
 	}
 	
-	public static SqlCore createSqlServerCore() {
-		return null;
+	private static SqlCore createSqlServerCore(String dbname) {
+		return new SqlServerCore(dbname);
 	}
 	
-	public static SqlCore createDB2Core() {
-		return null;
+	private static SqlCore createDB2Core(String dbname) {
+		return new DB2Core(dbname);
 	}
 	
-	public static SqlCore createSyBaseCore() {
-		return null;
+	private static SqlCore createSyBaseCore(String dbname) {
+		return new SybaseCore(dbname);
+	}
+	
+	private static SqlCore createAccessCore(String dbname) {
+		return new AccessSqlCore(dbname);
 	}
 }

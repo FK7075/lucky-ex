@@ -11,7 +11,9 @@ import com.lucky.jacklamb.sqlcore.abstractionlayer.StatementCore;
 @SuppressWarnings("unchecked")
 public final class StatementCoreImpl implements StatementCore {
 	
-	private DataSource dataSource;
+	private String dbname;
+	
+	private boolean isCache;
 	
 	private LuckyCache cache;
 	
@@ -23,20 +25,21 @@ public final class StatementCoreImpl implements StatementCore {
 	public StatementCoreImpl(DataSource dataSource) {
 		this.createSql= new CreateSql();
 		this.cache=LuckyCache.getLuckyCache();
-		this.dataSource=dataSource;
-		this.autopackage=new AutoPackage(dataSource.getName());
+		this.dbname=dataSource.getName();
+		this.isCache=dataSource.isCache();
+		this.autopackage=new AutoPackage(dbname);
 	}
 	
 	
 	@Override
 	public <T> List<T> getList(Class<T> c, String sql, Object... obj) {
 		List<?> result=null;
-		if(dataSource.isCache()) {
-			if (!cache.contains(dataSource.getName(),createSql.getSqlString(sql, obj))) {
+		if(isCache) {
+			if (!cache.contains(dbname,createSql.getSqlString(sql, obj))) {
 				result = autopackage.autoPackageToList(c, sql, obj);
-				cache.add(dataSource.getName(),createSql.getSqlString(sql, obj), result);
+				cache.add(dbname,createSql.getSqlString(sql, obj), result);
 			} else {
-				result = cache.get(dataSource.getName(),createSql.getSqlString(sql, obj));
+				result = cache.get(dbname,createSql.getSqlString(sql, obj));
 			}
 			return (List<T>) result;
 		}
@@ -53,15 +56,15 @@ public final class StatementCoreImpl implements StatementCore {
 
 	@Override
 	public boolean update(String sql, Object... obj) {
-		if(dataSource.isCache())
-			cache.empty(dataSource.getName());
+		if(isCache)
+			cache.empty(dbname);
 		return autopackage.update(sql, obj);
 	}
 
 	@Override
 	public boolean updateBatch(String sql, Object[][] obj) {
-		if(dataSource.isCache())
-			cache.empty(dataSource.getName());
+		if(isCache)
+			cache.empty(dbname);
 		return autopackage.updateBatch(sql, obj);
 	}
 

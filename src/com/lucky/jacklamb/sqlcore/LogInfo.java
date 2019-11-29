@@ -1,6 +1,6 @@
 package com.lucky.jacklamb.sqlcore;
 
-import com.lucky.jacklamb.utils.LuckyUtils;
+import static com.lucky.jacklamb.utils.LuckyUtils.*;
 
 /**
  * 日志管理类
@@ -18,8 +18,8 @@ public class LogInfo {
 	LogInfo(String dbname) {
 		dataSource=ReadProperties.getDataSource(dbname);
 		log=dataSource.isLog();
-		dataName=LuckyUtils.getDatabaseName(dataSource.getName());
-		dataType=LuckyUtils.getDatabaseType(dbname);
+		dataName=getDatabaseName(dataSource.getName());
+		dataType=getDatabaseType(dbname);
 	}
 	
 	public void isShowLog(String sql, Object[] obj) {
@@ -39,11 +39,11 @@ public class LogInfo {
 	
 	
 	private void log(String sql, Object[] obj) {
-		System.out.println(LuckyUtils.showtime()+"["+dataType+":"+dataName+"]SQL: " + sql);
+		System.out.println(showtime()+"["+dataType+":"+dataName+"]SQL: " + sql);
 		if (obj == null)
-			System.out.println(LuckyUtils.showtime()+"Parameters    : { }");
+			System.out.println(showtime()+"Parameters    : { }");
 		else {
-			StringBuilder out=new StringBuilder(LuckyUtils.showtime());
+			StringBuilder out=new StringBuilder(showtime());
 			out.append("Parameters    :{ ");
 			for (Object o : obj) {
 				out.append("(").append((o!=null?o.getClass().getSimpleName():"NULL")).append(")").append(o).append("   ");
@@ -58,12 +58,12 @@ public class LogInfo {
 	 * @param obj
 	 */
 	private void logBatch(String sql,Object obj[][]) {
-		System.out.println(LuckyUtils.showtime()+"["+dataType+":"+dataName+"]SQL: " + sql);
+		System.out.println(showtime()+"["+dataType+":"+dataName+"]SQL: " + sql);
 		if(obj==null||obj.length==0)
-			System.out.println(LuckyUtils.showtime()+"Parameters    : { }");
+			System.out.println(showtime()+"Parameters    : { }");
 		else {
 			for(int i=0;i<obj.length;i++) {
-				StringBuilder out=new StringBuilder(LuckyUtils.showtime());
+				StringBuilder out=new StringBuilder(showtime());
 				out.append("Parameters    :{ ");
 				for(Object o:obj[i]) {
 					out.append("(").append((o!=null?o.getClass().getSimpleName():"NULL")).append(")").append(o).append("   ");

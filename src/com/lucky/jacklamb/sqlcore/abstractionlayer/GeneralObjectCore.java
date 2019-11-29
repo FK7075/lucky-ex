@@ -75,7 +75,7 @@ public interface GeneralObjectCore {
 	 * 包含修改信息的包装类的对象
 	 * @return
 	 */
-	public <T> boolean update(T t);
+	public <T> boolean update(T t,String...conditions);
 	
 	/**
 	 * 批量删除-数组模式

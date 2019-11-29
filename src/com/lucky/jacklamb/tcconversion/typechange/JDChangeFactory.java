@@ -24,6 +24,8 @@ public class JDChangeFactory {
 			return new SqlServerJavaChange();
 		if(jdbcDriver.contains("sybase"))
 			return new SyBaseJavaChange();
+		if(jdbcDriver.contains("access"))
+			return new AccessJavaChange();
 		throw new NotSupportDataBasesException("Lucky现不支持该驱动对应的数据库！ driverClass:"+jdbcDriver);
 	}
 

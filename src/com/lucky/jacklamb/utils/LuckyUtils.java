@@ -132,6 +132,8 @@ public class LuckyUtils {
 			return "Sql Server";
 		if(jdbcDriver.contains("sybase"))
 			return "Sybase";
+		if(jdbcDriver.contains("access"))
+			return "Access";
 		return null;
 	}
 	
