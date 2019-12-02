@@ -8,6 +8,10 @@ public class PrecompileSqlAndObject {
 	private String precompileSql;
 	
 	private List<Object> objects;
+	
+	public PrecompileSqlAndObject() {
+		this.objects = new ArrayList<>();
+	}
 
 	public String getPrecompileSql() {
 		return precompileSql;
@@ -26,14 +30,10 @@ public class PrecompileSqlAndObject {
 	}
 	
 	public void addObjects(Object object) {
-		if(objects==null)
-			objects=new ArrayList<>();
 		objects.add(object);
 	}
 	
 	public void addAllObjects(List<Object> objects) {
-		if(objects==null)
-			objects=new ArrayList<>();
 		this.objects.addAll(objects);
 	}
 

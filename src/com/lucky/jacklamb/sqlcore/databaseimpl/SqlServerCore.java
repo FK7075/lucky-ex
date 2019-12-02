@@ -43,19 +43,7 @@ public class SqlServerCore extends SqlCore {
 	}
 
 	@Override
-	public <T> List<T> getFuzzyList(Class<T> c, String property, String info) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> List<T> getPagList(T t, int index, int size) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> List<T> getSortList(T t, String property, int r) {
+	public <T> List<T> getPageList(T t, int index, int size) {
 		// TODO Auto-generated method stub
 		return null;
 	}

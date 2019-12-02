@@ -16,14 +16,14 @@ public interface GeneralObjectCore {
 	 * @param id
 	 * @return
 	 */
-	public <T> T getOne(Class<T> c, Object id);
+	<T> T getOne(Class<T> c, Object id);
 	
 	/**
 	 * 对象方式获得单个对象
 	 * @param t
 	 * @return
 	 */
-	public <T> T getObject(T t);
+	<T> T getObject(T t);
 	
 	/**
 	 * id删除
@@ -33,32 +33,30 @@ public interface GeneralObjectCore {
 	 * id值
 	 * @return
 	 */
-	public boolean delete(Class<?> clazz,Object id);
+	boolean delete(Class<?> clazz,Object id);
 	
 	/**
 	 * 批量ID删除
-	 * @param clzz 要操作表对应类的Class
+	 * @param clazz 要操作表对应类的Class
 	 * @param ids 要删除的id所组成的集合
 	 * @return
 	 */
-	public boolean deleteBatchByID(Class<?> clazz,Object...ids);
+	boolean deleteBatchByID(Class<?> clazz,Object...ids);
 	
 	/**
 	 * 对象查询
-	 * @param c
-	 * 包含查询信息的包装类的对象
 	 * @param t
 	 * 对象
 	 * @return
 	 */
-	public <T> List<T> getList(T t);
+	<T> List<T> getList(T t);
 	
 	/**
 	 * 统计总数
 	 * @param t
 	 * @return
 	 */
-	public <T> int count(T t);
+	<T> int count(T t);
 	
 	
 	/**
@@ -67,7 +65,7 @@ public interface GeneralObjectCore {
 	 * 包含删除信息的包装类的对象
 	 * @return
 	 */
-	public <T> boolean delete(T t);
+	<T> boolean delete(T t);
 	
 	/**
 	 * 修改数据
@@ -75,7 +73,7 @@ public interface GeneralObjectCore {
 	 * 包含修改信息的包装类的对象
 	 * @return
 	 */
-	public <T> boolean update(T t,String...conditions);
+	<T> boolean update(T t,String...conditions);
 	
 	/**
 	 * 批量删除-数组模式
@@ -83,7 +81,7 @@ public interface GeneralObjectCore {
 	 * 包含删除信息的对象数组
 	 * @return
 	 */
-	public boolean deleteBatchByArray(Object...obj);
+	boolean deleteBatchByArray(Object...obj);
 	
 	
 	/**
@@ -92,27 +90,27 @@ public interface GeneralObjectCore {
 	 * 包含更新信息的对象数组
 	 * @return
 	 */
-	public boolean updateBatchByArray(Object...obj);
+	boolean updateBatchByArray(Object...obj);
 	
 	/**
 	 * 批量删除-集合模式
 	 * @param list 要操作的对象所组成的集合
 	 * @return false or true
 	 */
-	public <T> boolean deleteBatchByList(List<T> list);
+	<T> boolean deleteBatchByList(List<T> list);
 	
 	/**
 	 * 批量保存-集合模式
 	 * @param list 要操作的对象所组成的集合
 	 * @return false or true
 	 */
-	public <T> boolean insertBatchByList(List<T> list);
+	<T> boolean insertBatchByList(List<T> list);
 	
 	/**
 	 * 批量更新-集合模式
 	 * @param list 要操作的对象所组成的集合
 	 * @return false or true
 	 */
-	public <T> boolean updateBatchByList(List<T> list);
+	<T> boolean updateBatchByList(List<T> list);
 
 }

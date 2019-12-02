@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
-import com.lucky.jacklamb.annotation.db.Alias;
 import com.lucky.jacklamb.annotation.db.AutoId;
 import com.lucky.jacklamb.annotation.db.Change;
 import com.lucky.jacklamb.annotation.db.Delete;
@@ -240,20 +239,23 @@ public class LuckyMapperProxy {
 		}else {
 			String sql = sel.value();
 			if ("".equals(sql)) {
-				if ("".equals(sel.columns())) {
+				if (sel.sResults().length==0&&sel.hResults().length==0) {
 					if (c.isAssignableFrom(List.class)) {
 						return sqlCore.getList(args[0]);
 					} else {
 						return sqlCore.getObject(args[0]);
 					}
 				} else {// 有指定列的标注
+					if(sel.hResults().length!=0&&sel.sResults().length!=0)
+						throw new RuntimeException("@Select注解的\"hResults\"属性和\"sResults\"属性不可以同时使用！");
 					Parameter[] parameters = method.getParameters();
 					QueryBuilder query=new QueryBuilder();
-					for(int i=0;i<parameters.length;i++)
-						query.addObject(args[i], getAlias(parameters[i]));
+					query.addObject(args);
 					query.setJoin(JOIN.INNER_JOIN);
-					for(String coum:sel.columns())
-						query.addResult(coum);
+					if(sel.sResults().length!=0)
+						query.addResult(sel.sResults());
+					if(sel.hResults().length!=0)
+						query.hiddenResult(sel.hResults());
 					if (c.isAssignableFrom(List.class)) {
 						Class<?> listGeneric = getListGeneric(method);
 						return sqlCore.query(query,listGeneric);
@@ -427,7 +429,7 @@ public class LuckyMapperProxy {
 				queryBuilder.addSort(fs[0],Sort.DESC);
 		}
 		for(int i=0;i<end;i++)
-			queryBuilder.addObject(args[i], getAlias(parameters[i]));
+			queryBuilder.addObject(args[i]);
 		queryBuilder.setJoin(query.join());
 		String[] fields = query.value();
 		for(String field:fields)
@@ -540,13 +542,7 @@ public class LuckyMapperProxy {
 		enhancer.setCallback(interceptor);
 		return (T) enhancer.create();
 	}
-	
-	public String getAlias(Parameter param) {
-		if(param.isAnnotationPresent(Alias.class))
-			return param.getAnnotation(Alias.class).value();
-		return "";
-	}
-	
+
 	private void pageParam(Method method,Object[] args) {
 		Parameter[] parameters = method.getParameters();
 		for(int i=0;i<parameters.length;i++) {

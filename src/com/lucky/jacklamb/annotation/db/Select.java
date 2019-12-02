@@ -9,7 +9,9 @@ import java.lang.annotation.Target;
 /**
  * ORM的Mapper接口中使用，定义一个查询的数据库操作
  * 	value：设置预编译的SQL (eg: SELECT * FROM book WHERE bid=?)
- * 	columns:设置所要查询的字段
+ * 	sResults:(showResults)设置所要查询的字段
+ * 	hResults:(hiddenResults)设置要隐藏的字段
+ * 	注：sResults、hResults不可同时是使用
  * @author fk-7075
  *
  */
@@ -18,6 +20,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Select {
 	String value() default "";
-	String[] columns() default {};
+	String[] sResults() default {};
+	String[] hResults() default {};
 	boolean byid() default false;
 }

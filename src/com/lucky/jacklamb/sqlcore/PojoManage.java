@@ -1,19 +1,15 @@
 package com.lucky.jacklamb.sqlcore;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-
 import com.lucky.jacklamb.annotation.db.Column;
 import com.lucky.jacklamb.annotation.db.Id;
 import com.lucky.jacklamb.annotation.db.Key;
 import com.lucky.jacklamb.annotation.db.Table;
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.exception.NotFindFlieException;
+
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * 实体类管理工具
@@ -322,5 +318,31 @@ public class PojoManage {
 		}else {
 			return new String[0];
 		}
+	}
+
+	/**
+	 * 得到表的别名，在连接操作时使用
+	 * @param pojoClass
+	 * @return
+	 */
+	public static String tableAlias(Class<?> pojoClass){
+		if(pojoClass.isAnnotationPresent(Table.class)){
+			String alias=pojoClass.getAnnotation(Table.class).alias();
+			if(!"".equals(alias))
+				return alias;
+			return getTable(pojoClass);
+		}
+		return getTable(pojoClass);
+	}
+
+	/**
+	 * 别名，From语句后使用
+	 * @param pojoClass
+	 * @return
+	 */
+	public static String selectFromTableAlias(Class<?> pojoClass){
+		if(tableAlias(pojoClass).equals(getTable(pojoClass)))
+			return getTable(pojoClass);
+		return getTable(pojoClass)+" "+tableAlias(pojoClass);
 	}
 }

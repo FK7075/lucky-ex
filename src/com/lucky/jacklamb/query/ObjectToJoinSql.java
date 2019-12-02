@@ -3,28 +3,47 @@ package com.lucky.jacklamb.query;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import com.lucky.jacklamb.sqlcore.PojoManage;
+import com.lucky.jacklamb.sqlcore.databaseimpl.sqldebris.SqlGroup;
 
 public class ObjectToJoinSql{
-	
+
+	/**
+	 * 连接查询的连接方式
+	 */
 	private String join;
+
+	/**
+	 * 需要操作的对象
+	 */
 	private Object[] obj;
-	private Map<Class<?>,String> classAliasMap;
-	private String result="*";
+
+	/**
+	 * 返回列
+	 */
+	private String result;
+
+	/**
+	 * 排序条件
+	 */
 	private String sort;
-	private String limit;
+
+	/**
+	 * 模糊条件
+	 */
+	private String like;
+
+	private SqlGroup sqlGroup;
 
 	public ObjectToJoinSql(QueryBuilder query) {
 		this.join = query.getJoin().getJoin();
 		this.obj = query.getObjectArray();
-		this.classAliasMap=query.getClassAliasMap();
 		this.sort=query.getSort();
-		this.limit=query.getLimit();
-		if(!"".equals(query.getResult()))
-			result=query.getResult();
+        this.like=query.getLike();
+        this.sqlGroup=query.getWheresql();
+        this.result=query.getResult();
 	}
 
 	/**
@@ -44,20 +63,18 @@ public class ObjectToJoinSql{
 					fk = fields[j].get(obj[i]);
 					if (fk != null) {
 						if (p == 0) {
-							sql += " WHERE " + getName(clzz,false) + "." + PojoManage.getTableField(fields[j])
+							sql += " WHERE " + PojoManage.tableAlias(clzz) + "." + PojoManage.getTableField(fields[j])
 									+ "=?";
 							p++;
 						} else {
-							sql += " AND " + getName(clzz,false) + "." + PojoManage.getTableField(fields[j])
+							sql += " AND " + PojoManage.tableAlias(clzz) + "." + PojoManage.getTableField(fields[j])
 									+ "=?";
 
 						}
 					}
 				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -82,10 +99,8 @@ public class ObjectToJoinSql{
 					}
 				}
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -98,7 +113,10 @@ public class ObjectToJoinSql{
 	 * @return
 	 */
 	public String getJoinSql(String...expression) {
-		return "SELECT "+result+" FROM " + getOnSql(expression) + andFragment()+sort+limit;
+	    String where=andFragment();
+	    if(!"".equals(where)&&!"".equals(like))
+	        like=" AND "+like;
+	    return sqlGroup.sqlGroup(result, getOnSql(expression), andFragment(), like, sort);
 	}
 
 
@@ -124,9 +142,9 @@ public class ObjectToJoinSql{
 		List<ClassControl> parsExpression = parsExpression(expre);
 		for(int i=0;i<parsExpression.size();i++) {
 			if(i==0) {
-				onsql+=getName(parsExpression.get(0).getClzz(),true);
+				onsql+=PojoManage.selectFromTableAlias(parsExpression.get(0).getClzz());
 			}else {
-				onsql+=" "+join+" "+getName(parsExpression.get(i).getClzz(),true)+" ON "+getEquation(parsExpression.get(i).getClzz(),parsExpression.get(i-1-parsExpression.get(i).getSite()).getClzz());
+				onsql+=" "+join+" "+PojoManage.selectFromTableAlias(parsExpression.get(0).getClzz())+" ON "+getEquation(parsExpression.get(i).getClzz(),parsExpression.get(i-1-parsExpression.get(i).getSite()).getClzz());
 			}
 		}
 		return onsql;
@@ -143,12 +161,10 @@ public class ObjectToJoinSql{
 		try {
 			List<Class<?>> claxKeyClasss = (List<Class<?>>) PojoManage.getKeyFields(clax, false);
 			if(claxKeyClasss.contains(clay))
-				return getName(clax,false)+"."+PojoManage.getTableField(PojoManage.classToField(clax, clay))+"="+getName(clay,false)+"."+PojoManage.getIdString(clay);
-			return getName(clay,false)+"."+PojoManage.getTableField(PojoManage.classToField(clay, clax))+"="+getName(clax,false)+"."+PojoManage.getIdString(clax);			
+				return PojoManage.tableAlias(clax)+"."+PojoManage.getTableField(PojoManage.classToField(clax, clay))+"="+PojoManage.tableAlias(clay)+"."+PojoManage.getIdString(clay);
+			return PojoManage.tableAlias(clay)+"."+PojoManage.getTableField(PojoManage.classToField(clay, clax))+"="+PojoManage.tableAlias(clax)+"."+PojoManage.getIdString(clax);
 		}catch(Exception e) {
-			System.err.println("xfl_fk :"+clax.getName()+" 与  "+clay.getName()+"不存在'主外键关系',请检查您的相关配置(@Key,@Id，连接查询表达式['->' '--' '<?>'] )....");
-			e.printStackTrace();
-			return null;
+			throw new RuntimeException(clax.getName()+" 与  "+clay.getName()+"不存在'主外键关系',请检查您的相关配置(@Key,@Id，连接查询表达式['->' '--' '<?>'] )....",e);
 		}
 	}
 	
@@ -187,19 +203,6 @@ public class ObjectToJoinSql{
 			return Integer.parseInt(symbol);
 		}else {
 			return -2;
-		}
-		
-	}
-	
-	public String getName(Class<?> clzz,boolean isTableName) {
-		String table=PojoManage.getTable(clzz);
-		String alias=classAliasMap.get(clzz);
-		if(table.equals(alias)) {
-			return table;
-		}else if(isTableName) {
-			return table+" "+alias;
-		}else {
-			return alias;
 		}
 		
 	}

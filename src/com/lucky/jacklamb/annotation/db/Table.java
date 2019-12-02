@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 /**
  * ORM操作中重要的注解
  * 	value 表名映射
+ * 	alias 别名,只在使用SqlCore的query()方法时有效
  * 	primary 添加主键索引
  *  index 添加普通索引
  *  unique 添加唯一值索引
@@ -22,6 +23,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Table {
 	String value() default "";
+	String alias() default "";
 	String primary() default "";
 	String[] index() default {};
 	String[] unique() default {};

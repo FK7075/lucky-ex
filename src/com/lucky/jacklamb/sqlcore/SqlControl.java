@@ -83,7 +83,6 @@ public class SqlControl implements SqlCore {
 
 	/**
 	 * 根据实体类创建数据库表
-	 * @param name DataSourceName
 	 */
 	public void createTable() {
 		CreateTable ct = new CreateTable(dbname);
@@ -224,10 +223,7 @@ public class SqlControl implements SqlCore {
 	/**
 	 * 查询数据
 	 * 
-	 * @param c
-	 *            包含查询信息的包装类的对象
-	 * @param t
-	 *            对象
+	 * @param t  对象
 	 * @return
 	 */
 	public <T> List<T> getList(T t) {
@@ -496,10 +492,8 @@ public class SqlControl implements SqlCore {
 		try {
 			obj = mapperProxy.getMapperProxyObject(clazz);
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return (T) obj;

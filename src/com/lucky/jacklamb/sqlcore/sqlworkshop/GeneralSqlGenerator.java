@@ -70,7 +70,7 @@ public class GeneralSqlGenerator {
 	 */
 	public PrecompileSqlAndObject singleCount(Object pojo) {
 		StringBuilder sql=new StringBuilder("SELECT COUNT(");
-		sql.append(PojoManage.getIdString(pojo.getClass())).append(")");
+		sql.append(PojoManage.getIdString(pojo.getClass())).append(")").append(" FROM ").append(PojoManage.getTable(pojo.getClass()));
 		PrecompileSqlAndObject psaq=singleWhere(pojo);
 		psaq.setPrecompileSql(sql.append(psaq.getPrecompileSql()).toString());
 		return psaq;

@@ -1,140 +1,154 @@
 package com.lucky.jacklamb.query;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import com.lucky.jacklamb.enums.JOIN;
 import com.lucky.jacklamb.enums.Sort;
-import com.lucky.jacklamb.sqlcore.PojoManage;
+import com.lucky.jacklamb.sqlcore.databaseimpl.sqldebris.SqlGroup;
 
 public class QueryBuilder {
-	
-	/**
-	 * 连接操作的连接方式
-	 */
-	private JOIN join=JOIN.INNER_JOIN;
-	
-	/**
-	 * 对象以及别名集合
-	 */
-	private List<ObjectAlias> objAndAlias;
-	
-	/**
-	 * 需要返回的列
-	 */
-	private String result="";
-	
-	/**
-	 * 分页信息
-	 */
-	private String limit="";
-	
-	/**
-	 * 排序信息
-	 */
-	private String sort="";
-	
 
-	/**
-	 * 返回查询对象的数组
-	 * @return
-	 */
-	public Object[] getObjectArray() {
-		List<Object> list=new ArrayList<>();
-		objAndAlias.stream().forEach(oa->list.add(oa.getEntity()));
-		return list.toArray();
-	}
-	
-	/**
-	 * 返回Class与Class对应别名所组成的Map
-	 * @return
-	 */
-	public Map<Class<?>,String> getClassAliasMap(){
-		Map<Class<?>,String> map=new HashMap<>();
-		objAndAlias.stream().forEach(oa->map.put(oa.getEntity().getClass(), oa.getAlias()));
-		return map;
-	}
+    /**
+     * 连接操作的连接方式
+     */
+    private JOIN join = JOIN.INNER_JOIN;
 
-	public List<ObjectAlias> getObjAndAlias() {
-		return objAndAlias;
-	}
+    /**
+     * 需要操作的对象
+     */
+    private List<Object> objects;
 
-	public void setObjAndAlias(List<ObjectAlias> objAndAlias) {
-		this.objAndAlias = objAndAlias;
-	}
-	
-	/**
-	 * 设置要查询的实体类信息以及别名
-	 * @param obj 封装查询信息的实体类对象
-	 * @param alias 别名
-	 * @return
-	 */
-	public QueryBuilder addObject(Object obj,String...alias) {
-		if(objAndAlias==null)
-			objAndAlias=new ArrayList<>();
-		ObjectAlias oa=new ObjectAlias();
-		oa.setEntity(obj);
-		if(alias.length!=0&&!"".equals(alias[0]))
-			oa.setAlias(alias[0]);
-		else
-			oa.setAlias(PojoManage.getTable(obj.getClass()));
-		objAndAlias.add(oa);
-		return this;
-	}
+    /**
+     * 设置查询返回列
+     */
+    private QFilter qFilter;
 
-	/**
-	 * 得到查询指定需要返回的列
-	 * @return
-	 */
-	public String getResult() {
-		if("".equals(result))
-			return result;
-		return result.substring(0,result.length()-1);
-	}
+    /**
+     * 排序信息
+     */
+    private List<SortSet> sortSets ;
 
-	/**
-	 * 设置查询指定返回列
-	 * @param result
-	 * @return
-	 */
-	public QueryBuilder addResult(String column) {
-		this.result+= column+",";
-		return this;
-	}
+    /**
+     * 模糊查询信息
+     */
+    private String like="";
 
-	public JOIN getJoin() {
-		return join;
-	}
+    private Integer page;
 
-	public void setJoin(JOIN join) {
-		this.join = join;
-	}
+    private Integer rows;
 
-	
-	public String getSort() {
-		if("".equals(sort))
-			return "";
-		return sort.substring(0,sort.length()-1);
-	}
+    private SqlGroup sqlGroup;
 
-	public QueryBuilder addSort(String field,Sort sortenum) {
-		if("".equals(this.sort))
-			this.sort+=" ORDER BY ";
-		this.sort+=field+" "+sortenum.getSort()+",";
-		return this;
-	}
+    public QueryBuilder(){
+        objects=new ArrayList<>();
+        sortSets=new ArrayList<>();
+    }
 
-	public String getLimit() {
-		return limit;
-	}
+    public SqlGroup getWheresql() {
+        return sqlGroup;
+    }
 
-	public void limit(int page,int rows) {
-		this.limit +=" LIMIT "+((page-1)*rows)+","+rows;
-	}
+    public void setWheresql(SqlGroup sqlGroup) {
+        this.sqlGroup = sqlGroup;
+        this.sqlGroup.setPage(page);
+        this.sqlGroup.setRows(rows);
+    }
+
+    public Integer getPage() {
+        return page;
+    }
+
+    public void setPage(Integer page) {
+        this.page = page;
+    }
+
+    public Integer getRows() {
+        return rows;
+    }
+
+    public void setRows(Integer rows) {
+        this.rows = rows;
+    }
+
+    public String getLike() {
+        return this.like;
+    }
+
+    public void addLike(String...likeFile) {
+        this.like=qFilter.like(likeFile);
+    }
+
+    /**
+     * 返回查询对象的数组
+     *
+     * @return
+     */
+    public Object[] getObjectArray() {
+        return objects.toArray();
+    }
+
+    /**
+     * 添加需要操作实体类对象
+     * @param obj
+     * @return
+     */
+    public void addObject(Object...obj){
+        objects.addAll(Arrays.asList(obj));
+        qFilter=new QFilter(obj);
+    }
+
+    /**
+     * 得到查询指定需要返回的列
+     * @return
+     */
+    public String getResult() {
+        return qFilter.lines();
+    }
+
+    /**
+     * 设置查询指定返回列，不可与hiddenResult()方法同时使用
+     * @param column
+     * @return
+     */
+    public void addResult(String...column) {
+        for(String col:column)
+            qFilter.show(col);
+    }
+
+    /**
+     * 设置查询指定隐藏的返回列,不可与addResult()方法同时使用
+     * @param column
+     * @return
+     */
+    public void hiddenResult(String...column) {
+        for(String col:column)
+            qFilter.hidden(col);
+    }
+
+    public JOIN getJoin() {
+        return join;
+    }
+
+    public void setJoin(JOIN join) {
+        this.join = join;
+    }
 
 
+    public String getSort() {
+        return qFilter.sort(sortSets);
+    }
+
+    public QueryBuilder addSort(String field, Sort sortenum) {
+        sortSets.add(new SortSet(field,sortenum));
+        return this;
+    }
+
+    public void limit( int page, int rows) {
+        this.page=page;
+        this.rows=rows;
+    }
 
 
 }

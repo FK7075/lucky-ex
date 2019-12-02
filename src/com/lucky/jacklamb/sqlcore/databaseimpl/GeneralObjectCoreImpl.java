@@ -1,7 +1,5 @@
 package com.lucky.jacklamb.sqlcore.databaseimpl;
 
-import java.util.List;
-
 import com.lucky.jacklamb.cache.BatchInsert;
 import com.lucky.jacklamb.cache.CreateSql;
 import com.lucky.jacklamb.cache.LuckyCache;
@@ -10,9 +8,10 @@ import com.lucky.jacklamb.sqlcore.DataSource;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.GeneralObjectCore;
 import com.lucky.jacklamb.sqlcore.sqlworkshop.GeneralSqlGenerator;
 
+import java.util.List;
+
 @SuppressWarnings("unchecked")
 public final class GeneralObjectCoreImpl implements GeneralObjectCore {
-	
 	
 	private LuckyCache cache;
 	
@@ -39,7 +38,6 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 	
 
 	
-	@Override
 	public <T> T getOne(Class<T> c, Object id) {
 		String ysql = gcg.getOneSql(c);
 		cache(c,ysql,id);
@@ -48,7 +46,6 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 		return (T) results.get(0);
 	}
 
-	@Override
 	public <T> T getObject(T t) {
 		PrecompileSqlAndObject select = gcg.singleSelect(t);
 		String ysql = select.getPrecompileSql();
@@ -59,7 +56,6 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 		return (T) results.get(0);
 	}
 
-	@Override
 	public <T> List<T> getList(T t) {
 		PrecompileSqlAndObject select = gcg.singleSelect(t);
 		String ysql = select.getPrecompileSql();
@@ -68,18 +64,16 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 		return (List<T>) results;
 	}
 
-	@Override
 	public <T> int count(T t) {
 		PrecompileSqlAndObject select = gcg.singleCount(t);
 		String ysql = select.getPrecompileSql();
 		Object[] objects=select.getObjects().toArray();
-		cache(t.getClass(),ysql,objects);
+		cache(int.class,ysql,objects);
 		if(results==null||results.isEmpty())
 			return 0;
 		return (int) results.get(0);
 	}
 
-	@Override
 	public <T> boolean delete(T t) {
 		PrecompileSqlAndObject delete = gcg.singleDelete(t);
 		if(isCache)
@@ -87,7 +81,6 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 		return autopackage.update(delete.getPrecompileSql(), delete.getObjects().toArray());
 	}
 
-	@Override
 	public <T> boolean update(T t,String...conditions) {
 		PrecompileSqlAndObject update = gcg.singleUpdate(t,conditions);
 		if(isCache)
@@ -95,28 +88,24 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 		return autopackage.update(update.getPrecompileSql(), update.getObjects().toArray());
 	}
 
-	@Override
 	public boolean deleteBatchByArray(Object... obj) {
 		for(Object o:obj)
 			delete(o);
 		return true;
 	}
 
-	@Override
 	public boolean updateBatchByArray(Object... obj) {
 		for(Object o:obj)
 			update(o);
 		return true;
 	}
 
-	@Override
 	public <T> boolean deleteBatchByList(List<T> list) {
 		for(T o:list)
 			delete(o);
 		return true;
 	}
 
-	@Override
 	public <T> boolean insertBatchByList(List<T> list) {
 		if(isCache)
 			cache.empty(dbname);
@@ -124,14 +113,12 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 		return autopackage.update(bbi.getInsertSql(), bbi.getInsertObject());
 	}
 
-	@Override
 	public <T> boolean updateBatchByList(List<T> list) {
 		for(Object o:list)
 			update(o);
 		return true;
 	}
 
-	@Override
 	public boolean delete(Class<?> clazz, Object id) {
 		String ysql = gcg.deleteOneSql(clazz);
 		if(isCache)
@@ -139,7 +126,6 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 		return autopackage.update(ysql, id);
 	}
 
-	@Override
 	public boolean deleteBatchByID(Class<?> clazz, Object... ids) {
 		String ysql =gcg.deleteIn(clazz, ids);
 		if(isCache)
@@ -153,11 +139,11 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 			if(cache.contains(dbname, wsql)) {
 				results=cache.get(dbname, wsql);
 			}else {
-				results=autopackage.autoPackageToList(t.getClass(), ysql, objects);
+				results=autopackage.autoPackageToList(t, ysql, objects);
 				cache.add(dbname, wsql, results);
 			}
 		}else {
-			results=autopackage.autoPackageToList(t.getClass(), ysql, objects);
+			results=autopackage.autoPackageToList(t, ysql, objects);
 		}
 	}
 

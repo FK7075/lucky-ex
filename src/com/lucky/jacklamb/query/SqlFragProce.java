@@ -12,8 +12,8 @@ import java.util.List;
 public class SqlFragProce {
 	
 	private static SqlFragProce sqlfp;
-	
-	private SqlFragProce() {};
+
+	private SqlFragProce() {}
 	
 	public static SqlFragProce getSqlFP() {
 		if(sqlfp==null)
