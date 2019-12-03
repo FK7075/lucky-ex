@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucky.jacklamb.sqlcore.PojoManage;
-import com.lucky.jacklamb.sqlcore.SqlOperation;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
+import com.lucky.jacklamb.sqlcore.c3p0.SqlOperation;
 import com.lucky.jacklamb.utils.LuckyManager;
 
 public class DeleteKeySql {

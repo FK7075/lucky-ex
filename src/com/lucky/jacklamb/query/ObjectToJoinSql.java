@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.lucky.jacklamb.sqlcore.PojoManage;
-import com.lucky.jacklamb.sqlcore.databaseimpl.sqldebris.SqlGroup;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlGroup;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
 
 public class ObjectToJoinSql{
 

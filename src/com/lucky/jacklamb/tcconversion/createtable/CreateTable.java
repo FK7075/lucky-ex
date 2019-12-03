@@ -3,8 +3,8 @@ package com.lucky.jacklamb.tcconversion.createtable;
 import java.util.List;
 
 import com.lucky.jacklamb.exception.NoDataSourceException;
-import com.lucky.jacklamb.sqlcore.ReadProperties;
-import com.lucky.jacklamb.sqlcore.SqlOperation;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
+import com.lucky.jacklamb.sqlcore.c3p0.SqlOperation;
 import com.lucky.jacklamb.utils.LuckyManager;
 
 public class CreateTable {

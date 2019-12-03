@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.List;
 
 import com.lucky.jacklamb.exception.NoDataSourceException;
-import com.lucky.jacklamb.sqlcore.DataSource;
-import com.lucky.jacklamb.sqlcore.ReadProperties;
+import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
 
 /**
  * 负责将数据库中的表转化为对应的JavaBean

@@ -10,7 +10,7 @@ import com.lucky.jacklamb.annotation.ioc.Controller;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.ioc.config.WebConfig;
 import com.lucky.jacklamb.servlet.Model;
-import com.lucky.jacklamb.sqlcore.DataSource;
+import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 import com.lucky.jacklamb.utils.Jacklabm;
 import com.lucky.jacklamb.utils.LuckyUtils;
 

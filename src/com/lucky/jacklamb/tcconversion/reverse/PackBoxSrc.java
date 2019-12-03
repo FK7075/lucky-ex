@@ -2,7 +2,7 @@ package com.lucky.jacklamb.tcconversion.reverse;
 
 import java.util.List;
 
-import com.lucky.jacklamb.sqlcore.ReadProperties;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**

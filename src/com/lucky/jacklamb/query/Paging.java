@@ -5,10 +5,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucky.jacklamb.annotation.db.Page;
+import com.lucky.jacklamb.annotation.orm.mapper.Page;
 import com.lucky.jacklamb.enums.JOIN;
-import com.lucky.jacklamb.sqlcore.SqlCore;
-import com.lucky.jacklamb.sqlcore.SqlCoreFactory;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlCore;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.util.SqlCoreFactory;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class Paging <T>{

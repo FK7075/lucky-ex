@@ -20,16 +20,17 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
-import com.lucky.jacklamb.annotation.db.AutoId;
-import com.lucky.jacklamb.annotation.db.Change;
-import com.lucky.jacklamb.annotation.db.Delete;
-import com.lucky.jacklamb.annotation.db.Id;
-import com.lucky.jacklamb.annotation.db.Insert;
-import com.lucky.jacklamb.annotation.db.Mapper;
-import com.lucky.jacklamb.annotation.db.Page;
-import com.lucky.jacklamb.annotation.db.Query;
-import com.lucky.jacklamb.annotation.db.Select;
-import com.lucky.jacklamb.annotation.db.Update;
+import com.lucky.jacklamb.annotation.orm.Id;
+import com.lucky.jacklamb.annotation.orm.mapper.AutoId;
+import com.lucky.jacklamb.annotation.orm.mapper.Change;
+import com.lucky.jacklamb.annotation.orm.mapper.Count;
+import com.lucky.jacklamb.annotation.orm.mapper.Delete;
+import com.lucky.jacklamb.annotation.orm.mapper.Insert;
+import com.lucky.jacklamb.annotation.orm.mapper.Mapper;
+import com.lucky.jacklamb.annotation.orm.mapper.Page;
+import com.lucky.jacklamb.annotation.orm.mapper.Query;
+import com.lucky.jacklamb.annotation.orm.mapper.Select;
+import com.lucky.jacklamb.annotation.orm.mapper.Update;
 import com.lucky.jacklamb.enums.JOIN;
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.enums.Sort;
@@ -37,8 +38,8 @@ import com.lucky.jacklamb.exception.NotFindFlieException;
 import com.lucky.jacklamb.query.QueryBuilder;
 import com.lucky.jacklamb.query.SqlAndObject;
 import com.lucky.jacklamb.query.SqlFragProce;
-import com.lucky.jacklamb.sqlcore.PojoManage;
-import com.lucky.jacklamb.sqlcore.SqlCore;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlCore;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -48,16 +49,10 @@ import net.sf.cglib.proxy.MethodInterceptor;
 public class LuckyMapperProxy {
 
 	private SqlCore sqlCore;
-	private com.lucky.jacklamb.sqlcore.abstractionlayer.SqlCore s;
 	private Map<String,String> sqlMap;
 
 	public LuckyMapperProxy(SqlCore sql) {
 		sqlCore = sql;
-		sqlMap=new HashMap<>();
-	}
-	
-	public LuckyMapperProxy(com.lucky.jacklamb.sqlcore.abstractionlayer.SqlCore sql) {
-		s = sql;
 		sqlMap=new HashMap<>();
 	}
 	
@@ -116,7 +111,7 @@ public class LuckyMapperProxy {
 			for(Method method:methods) {
 				if(!method.isAnnotationPresent(Select.class)&&!method.isAnnotationPresent(Insert.class)
 				   &&!method.isAnnotationPresent(Update.class)&&!method.isAnnotationPresent(Delete.class)	
-				   &&!method.isAnnotationPresent(Query.class)) {
+				   &&!method.isAnnotationPresent(Query.class) &&!method.isAnnotationPresent(Count.class)) {
 					String key=method.getName();
 					String value=p.getProperty(key);
 					if(value!=null)
@@ -396,9 +391,9 @@ public class LuckyMapperProxy {
 		String sql = ins.value();
 		if ("".equals(sql)) {
 			if(ins.batch()) {
-				return sqlCore.saveListBatch((List<T>) args[0]);
+				return sqlCore.insertBatchByList((List<T>) args[0]);
 			}else {
-				return sqlCore.save(args[0],ins.setautoId());
+				return sqlCore.insert(args[0],ins.setautoId());
 			}
 		} else {
 			return updateSql(method,args,sql_fp,sql);
@@ -413,8 +408,14 @@ public class LuckyMapperProxy {
 	 */
 	private Object join(Method method, Object[] args){
 		Query query= method.getAnnotation(Query.class);
+		if(query.hResults().length!=0&&query.sResults().length!=0)
+			throw new RuntimeException("@Query注解的\"hResults\"属性和\"sResults\"属性不可以同时使用！");
 		Parameter[] parameters = method.getParameters();
 		QueryBuilder queryBuilder=new QueryBuilder();
+		if(query.sResults().length!=0)
+			queryBuilder.addResult(query.sResults());
+		if(query.hResults().length!=0)
+			queryBuilder.hiddenResult(query.hResults());
 		int end=parameters.length;
 		if(query.limit()) {
 			queryBuilder.limit((int)args[end-2], (int)args[end-1]);
@@ -504,7 +505,7 @@ public class LuckyMapperProxy {
 					sqlStr=sqlStr.substring(2,sqlStr.length());
 					return dynamicUpdateSql(sql_fp,sqlStr,args);
 				}else {
-					return sqlCore.delete(sqlStr,args);
+					return sqlCore.update(sqlStr,args);
 				}
 			}
 		}else {
@@ -536,11 +537,22 @@ public class LuckyMapperProxy {
 				return insert(method,params,sql_fp);
 			else if (method.isAnnotationPresent(Query.class))
 				return join(method,params);
+			else if (method.isAnnotationPresent(Count.class))
+				return count(params);
 			else 
 				return notHave(method,params,sql_fp);
 		};
 		enhancer.setCallback(interceptor);
 		return (T) enhancer.create();
+	}
+
+	/**
+	 * Count操作
+	 * @param params
+	 * @return
+	 */
+	private Object count(Object[] params) {
+		return sqlCore.count(params[0]);
 	}
 
 	private void pageParam(Method method,Object[] args) {

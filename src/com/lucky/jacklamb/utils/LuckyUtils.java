@@ -9,9 +9,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.lucky.jacklamb.enums.PrimaryType;
-import com.lucky.jacklamb.sqlcore.PojoManage;
-import com.lucky.jacklamb.sqlcore.ReadProperties;
-import com.lucky.jacklamb.sqlcore.SqlOperation;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
+import com.lucky.jacklamb.sqlcore.c3p0.SqlOperation;
 
 /**
  * Lucky的工具类

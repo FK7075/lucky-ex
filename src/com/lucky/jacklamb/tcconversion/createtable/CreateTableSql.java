@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lucky.jacklamb.enums.PrimaryType;
-import com.lucky.jacklamb.sqlcore.PojoManage;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
 import com.lucky.jacklamb.tcconversion.typechange.JDChangeFactory;
 import com.lucky.jacklamb.tcconversion.typechange.TypeConversion;
 

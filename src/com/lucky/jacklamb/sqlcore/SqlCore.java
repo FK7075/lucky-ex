@@ -3,6 +3,7 @@ package com.lucky.jacklamb.sqlcore;
 import java.util.List;
 
 import com.lucky.jacklamb.query.QueryBuilder;
+import com.lucky.jacklamb.sqlcore.c3p0.Transaction;
 
 public interface SqlCore {
 	/**

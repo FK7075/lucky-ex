@@ -1,7 +1,7 @@
 package com.lucky.jacklamb.tcconversion.typechange;
 
 import com.lucky.jacklamb.exception.NotSupportDataBasesException;
-import com.lucky.jacklamb.sqlcore.ReadProperties;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
 
 public class JDChangeFactory {
 	
