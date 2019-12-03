@@ -36,7 +36,6 @@ import com.lucky.jacklamb.enums.JOIN;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Query {
-	String[] value() default {};
 	String expression() default "";
 	JOIN join() default JOIN.INNER_JOIN;
 	boolean limit() default false;

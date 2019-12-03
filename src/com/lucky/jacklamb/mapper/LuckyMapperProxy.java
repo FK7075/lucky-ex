@@ -26,6 +26,7 @@ import com.lucky.jacklamb.annotation.orm.mapper.Change;
 import com.lucky.jacklamb.annotation.orm.mapper.Count;
 import com.lucky.jacklamb.annotation.orm.mapper.Delete;
 import com.lucky.jacklamb.annotation.orm.mapper.Insert;
+import com.lucky.jacklamb.annotation.orm.mapper.Like;
 import com.lucky.jacklamb.annotation.orm.mapper.Mapper;
 import com.lucky.jacklamb.annotation.orm.mapper.Page;
 import com.lucky.jacklamb.annotation.orm.mapper.Query;
@@ -412,6 +413,8 @@ public class LuckyMapperProxy {
 			throw new RuntimeException("@Query注解的\"hResults\"属性和\"sResults\"属性不可以同时使用！");
 		Parameter[] parameters = method.getParameters();
 		QueryBuilder queryBuilder=new QueryBuilder();
+		queryBuilder.addObject(args[0]);
+		likeField(method, args, queryBuilder);
 		if(query.sResults().length!=0)
 			queryBuilder.addResult(query.sResults());
 		if(query.hResults().length!=0)
@@ -429,12 +432,7 @@ public class LuckyMapperProxy {
 			if(parseInt==-1)
 				queryBuilder.addSort(fs[0],Sort.DESC);
 		}
-		for(int i=0;i<end;i++)
-			queryBuilder.addObject(args[i]);
 		queryBuilder.setJoin(query.join());
-		String[] fields = query.value();
-		for(String field:fields)
-			queryBuilder.addResult(field);
 		ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
 		Type[] entry = type.getActualTypeArguments();
 		Class<?> cla = (Class<?>) entry[0];
@@ -538,22 +536,34 @@ public class LuckyMapperProxy {
 			else if (method.isAnnotationPresent(Query.class))
 				return join(method,params);
 			else if (method.isAnnotationPresent(Count.class))
-				return count(params);
+				return sqlCore.count(params[0]);
 			else 
 				return notHave(method,params,sql_fp);
 		};
 		enhancer.setCallback(interceptor);
 		return (T) enhancer.create();
 	}
-
-	/**
-	 * Count操作
-	 * @param params
-	 * @return
-	 */
-	private Object count(Object[] params) {
-		return sqlCore.count(params[0]);
+	
+	private void likeField(Method method,Object[] args,QueryBuilder query) {
+		List<String> likelist=new ArrayList<>();
+		String[] array;
+		Parameter[] parameters = method.getParameters();
+		for(int i=0;i<parameters.length;i++) {
+			if(parameters[i].isAnnotationPresent(Like.class)) {
+				if(List.class.isAssignableFrom(parameters[i].getType())) {
+					likelist.addAll((List<String>)args[i]);
+				}else if(String.class.isAssignableFrom(parameters[i].getType())) {
+					likelist.add((String)args[i]);
+				}else {
+					throw new RuntimeException("意外的标注类型"+parameters[i].getType().getName()+"!@Like注解只能标注String和List类型的参数.");
+				}
+			}
+		}
+		array=new String[likelist.size()];
+		likelist.toArray(array);
+		query.addLike((String[]) array);
 	}
+
 
 	private void pageParam(Method method,Object[] args) {
 		Parameter[] parameters = method.getParameters();
