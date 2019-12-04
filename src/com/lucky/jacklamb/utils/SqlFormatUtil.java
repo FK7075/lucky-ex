@@ -154,8 +154,14 @@ public class SqlFormatUtil {
  
 		private void commaAfterByOrFromOrSelect() {
 			out();
-//			if()
-			newline();
+			String str=this.result.toString().replaceAll(" ", "");
+			str=str.substring(str.length()-2,str.length()-1);
+			try {
+				Integer.parseInt(str);
+			}catch(Exception e) {
+				if(!"?".equals(str))
+					newline();
+			}
 		}
  
 		private void logical() {
