@@ -32,6 +32,7 @@ import com.lucky.jacklamb.annotation.orm.mapper.Page;
 import com.lucky.jacklamb.annotation.orm.mapper.Query;
 import com.lucky.jacklamb.annotation.orm.mapper.Select;
 import com.lucky.jacklamb.annotation.orm.mapper.Update;
+import com.lucky.jacklamb.annotation.orm.mapper.X;
 import com.lucky.jacklamb.enums.JOIN;
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.enums.Sort;
@@ -120,11 +121,11 @@ public class LuckyMapperProxy {
 				}
 			}
 		} catch (UnsupportedEncodingException e) {
-			throw new NotFindFlieException("找不到文件:"+propertyPath+"，无法加载SQL....");
+			throw new NotFindFlieException("找不到文件:"+propertyPath+"，无法加载SQL.... 错误位置(Mapper):"+clzz.getName());
 		} catch (FileNotFoundException e) {
-			throw new NotFindFlieException("找不到文件:"+propertyPath+"，无法加载SQL....");
+			throw new NotFindFlieException("找不到文件:"+propertyPath+"，无法加载SQL.... 错误位置(Mapper):"+clzz.getName());
 		} catch (IOException e) {
-			throw new NotFindFlieException("找不到文件:"+propertyPath+"，无法加载SQL....");
+			throw new NotFindFlieException("找不到文件:"+propertyPath+"，无法加载SQL.... 错误位置(Mapper):"+clzz.getName());
 		}
 
 		
@@ -243,7 +244,7 @@ public class LuckyMapperProxy {
 					}
 				} else {// 有指定列的标注
 					if(sel.hResults().length!=0&&sel.sResults().length!=0)
-						throw new RuntimeException("@Select注解的\"hResults\"属性和\"sResults\"属性不可以同时使用！");
+						throw new RuntimeException("@Select注解的\"hResults\"属性和\"sResults\"属性不可以同时使用！错误位置："+method);
 					Parameter[] parameters = method.getParameters();
 					QueryBuilder query=new QueryBuilder();
 					query.addObject(args);
@@ -345,9 +346,30 @@ public class LuckyMapperProxy {
 	private boolean update(Method method, Object[] args,SqlFragProce sql_fp) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		Update upd = method.getAnnotation(Update.class);
 		String sql = upd.value();
-		if ("".equals(sql)) 
-			return sqlCore.update(args[0]);
-		else 
+		if ("".equals(sql)) {
+			List<String> list=new ArrayList<>();
+			String[] array;
+			Object pojo = null;
+			Parameter[] parameters = method.getParameters();
+			for(int i=0;i<parameters.length;i++) {
+				if(parameters[i].isAnnotationPresent(X.class)) {
+					if(List.class.isAssignableFrom(parameters[i].getType())) {
+						list.addAll((List<String>)args[i]);
+					}else if(String.class.isAssignableFrom(parameters[i].getType())) {
+						list.add((String)args[i]);
+					}else {
+						throw new RuntimeException("@Update更新操作中意外的标注类型："+parameters[i].getType().getName()+"!@X注解只能标注String和List<String>类型的参数.错误位置："+method);
+					}
+				}else {
+					pojo=args[i];
+				}
+			}
+			array=new String[list.size()];
+			list.toArray(array);
+			if(pojo==null)
+				throw new RuntimeException("@Update更新操作异常：没有找到用于更新操作的实体类对象!错误位置："+method);
+			return sqlCore.update(pojo,array);          
+		}else 
 			return updateSql(method,args,sql_fp,sql);
 	}
 	
@@ -409,33 +431,19 @@ public class LuckyMapperProxy {
 	 */
 	private Object join(Method method, Object[] args){
 		Query query= method.getAnnotation(Query.class);
-		if(query.hResults().length!=0&&query.sResults().length!=0)
-			throw new RuntimeException("@Query注解的\"hResults\"属性和\"sResults\"属性不可以同时使用！");
 		Parameter[] parameters = method.getParameters();
-		QueryBuilder queryBuilder=new QueryBuilder();
-		queryBuilder.addObject(args[0]);
-		likeField(method, args, queryBuilder);
-		if(query.sResults().length!=0)
-			queryBuilder.addResult(query.sResults());
-		if(query.hResults().length!=0)
-			queryBuilder.hiddenResult(query.hResults());
-		int end=parameters.length;
-		if(query.limit()) {
-			queryBuilder.limit((int)args[end-2], (int)args[end-1]);
-			end-=2;
-		}
-		for(String sort:query.sort()) {
-			String[] fs=sort.replaceAll(" ", "").split(":");
-			int parseInt = Integer.parseInt(fs[1]);
-			if(parseInt==1)
-				queryBuilder.addSort(fs[0],Sort.ASC);
-			if(parseInt==-1)
-				queryBuilder.addSort(fs[0],Sort.DESC);
-		}
-		queryBuilder.setJoin(query.join());
 		ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
 		Type[] entry = type.getActualTypeArguments();
 		Class<?> cla = (Class<?>) entry[0];
+		if(query.queryBuilder()) {
+			if(parameters.length!=1)
+				throw new RuntimeException("@Query参数数量溢出异常  size:"+parameters.length+"！@Query注解的\"queryBuilder\"模式下的参数只能是唯一，而且类型必须是 com.lucky.jacklamb.query.QueryBuilder！错误位置："+method);
+			if(!QueryBuilder.class.isAssignableFrom(parameters[0].getType()))
+				throw new RuntimeException("@Query参数类型异常  错误类型:"+parameters[0].getType().getName()+"！@Query注解的\"queryBuilder\"模式下的参数只能是唯一，而且类型必须是 com.lucky.jacklamb.query.QueryBuilder！错误位置："+method);
+			return sqlCore.query((QueryBuilder)args[0], cla, query.expression());
+		}
+		QueryBuilder queryBuilder=new QueryBuilder();
+		setQueryBuilder(query,parameters,method,args,queryBuilder);
 		return sqlCore.query(queryBuilder, cla, query.expression());
 	}
 
@@ -544,24 +552,113 @@ public class LuckyMapperProxy {
 		return (T) enhancer.create();
 	}
 	
-	private void likeField(Method method,Object[] args,QueryBuilder query) {
+	/**
+	 * 根据配置设置QueryBuilder对象
+	 * @param query Query注解对象
+	 * @param parameters 参数类型数组
+	 * @param args 参数值数组
+	 * @param queryBuilder QueryBuilder对象
+	 */
+	private void setQueryBuilder(Query query,Parameter[] parameters,Method method,Object[] args,QueryBuilder queryBuilder) {
+		/*
+		 * queryBuilder对象的设置有一定的顺序，addObjects()方法必须优先执行，
+		 * 所以必须先找到接口中用于查询的对象，之后才能设置查询的细节
+		 */
+		queryBuilder.setJoin(query.join());
+		int end=parameters.length;//用于记录非模糊查询参数的索引
+		List<Integer> indexs=new ArrayList<>();
+		List<Object> objectlist=new ArrayList<>();
+		Object[] objectarray;
+		if(query.limit()) {//分页模式，优先过滤掉两个分页参数
+			if(parameters.length<3)
+				throw new RuntimeException("@Query参数缺失异常！@Query注解的\"Like\"模式下的参数至少为3个，而且最后两个参数必须为int类型的分页参数(page,rows)！错误位置："+method.getName());
+			indexs.add(end-1);indexs.add(end-2);
+			for(int i=0;i<end-2;i++) {
+				if(!parameters[i].isAnnotationPresent(Like.class)) {
+					objectlist.add(args[i]);
+					indexs.add(i);
+				}
+			}
+			objectarray=new Object[objectlist.size()];
+			objectlist.toArray(objectarray);
+			queryBuilder.addObject(objectarray);
+			queryBuilder.limit((int)args[end-2], (int)args[end-1]);
+			setLike(parameters,queryBuilder,method,args,indexs,end-2);
+			setSort(query,queryBuilder);
+			setResults(method,query,queryBuilder);
+		} else {//非分页模式
+			for(int i=0;i<end;i++) {
+				if(!parameters[i].isAnnotationPresent(Like.class)) {
+					objectlist.add(args[i]);
+					indexs.add(i);
+				}
+			}
+			objectarray=new Object[objectlist.size()];
+			objectlist.toArray(objectarray);
+			queryBuilder.addObject(objectarray);
+			queryBuilder.limit((int)args[end-2], (int)args[end-1]);
+			setLike(parameters,queryBuilder,method,args,indexs,end);
+			setSort(query,queryBuilder);
+			setResults(method,query,queryBuilder);
+		}
+
+	}
+	
+	/**
+	 * 为queryBuilder对象设置Like参数
+	 * @param parameters
+	 * @param queryBuilder
+	 * @param args
+	 * @param indexs
+	 * @param end
+	 */
+	private void setLike(Parameter[] parameters,QueryBuilder queryBuilder,Method method,Object[] args,List<Integer> indexs,int end) {
 		List<String> likelist=new ArrayList<>();
 		String[] array;
-		Parameter[] parameters = method.getParameters();
-		for(int i=0;i<parameters.length;i++) {
-			if(parameters[i].isAnnotationPresent(Like.class)) {
+		for(int i=0;i<end;i++) {
+			if(!indexs.contains(i)) {
 				if(List.class.isAssignableFrom(parameters[i].getType())) {
 					likelist.addAll((List<String>)args[i]);
 				}else if(String.class.isAssignableFrom(parameters[i].getType())) {
 					likelist.add((String)args[i]);
 				}else {
-					throw new RuntimeException("意外的标注类型"+parameters[i].getType().getName()+"!@Like注解只能标注String和List类型的参数.");
+					throw new RuntimeException("@Query模糊查询模式中意外的标注类型："+parameters[i].getType().getName()+"!@Like注解只能标注String和List<String>类型的参数.错误位置："+method.getName());
 				}
 			}
+			array=new String[likelist.size()];
+			likelist.toArray(array);
+			queryBuilder.addLike((String[]) array);
 		}
-		array=new String[likelist.size()];
-		likelist.toArray(array);
-		query.addLike((String[]) array);
+	}
+	
+	/**
+	 * 为queryBuilder对象设置Sort参数
+	 * @param query
+	 * @param queryBuilder
+	 */
+	private void setSort(Query query,QueryBuilder queryBuilder) {
+		for(String sort:query.sort()) {
+			String[] fs=sort.replaceAll(" ", "").split(":");
+			int parseInt = Integer.parseInt(fs[1]);
+			if(parseInt==1)
+				queryBuilder.addSort(fs[0],Sort.ASC);
+			if(parseInt==-1)
+				queryBuilder.addSort(fs[0],Sort.DESC);
+		}
+	}
+	
+	/**
+	 * 为queryBuilder对象设置Results参数
+	 * @param query
+	 * @param queryBuilder
+	 */
+	private void setResults(Method method,Query query,QueryBuilder queryBuilder) {
+		if(query.hResults().length!=0&&query.sResults().length!=0)
+			throw new RuntimeException("@Query注解的\"hResults\"属性和\"sResults\"属性不可以同时使用！错误位置："+method.getName());
+		if(query.sResults().length!=0)
+			queryBuilder.addResult(query.sResults());
+		if(query.hResults().length!=0)
+			queryBuilder.hiddenResult(query.hResults());
 	}
 
 

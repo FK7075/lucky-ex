@@ -1,6 +1,7 @@
 package com.lucky.jacklamb.sqlcore.c3p0;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.lucky.jacklamb.ioc.PackageScan;
@@ -39,6 +40,8 @@ public class DataSource {
 
 	private boolean cache;
 	
+	private boolean formatSqlLog;
+	
 	private int checkoutTimeout;
 
 	private String reversePack;
@@ -49,6 +52,16 @@ public class DataSource {
 	
 	private List<String> otherproperties;
 	
+	
+	public boolean isFormatSqlLog() {
+		return formatSqlLog;
+	}
+
+	public void setFormatSqlLog(boolean formatSqlLog) {
+		this.formatSqlLog = formatSqlLog;
+		this.log=formatSqlLog;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -239,6 +252,16 @@ public class DataSource {
 	public void setCaeateTable(List<String> caeateTable) {
 		this.caeateTable = caeateTable;
 	}
+	
+	public void addCaeateTable(String... pojoClassStr) {
+		if(caeateTable==null) {
+			caeateTable=new ArrayList<>();
+			caeateTable.addAll(Arrays.asList(pojoClassStr));
+		}else{
+			caeateTable.clear();
+			caeateTable.addAll(Arrays.asList(pojoClassStr));
+		}
+	}
 
 	public List<String> getOtherproperties() {
 		return otherproperties;
@@ -263,6 +286,7 @@ public class DataSource {
 		caeateTable=PackageScan.getPackageScan().loadComponent(suffixlist);
 		log=false;
 		cache=false;
+		formatSqlLog=false;
 		otherproperties=new ArrayList<>();
 	}
 

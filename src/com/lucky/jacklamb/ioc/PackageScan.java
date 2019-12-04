@@ -30,10 +30,6 @@ public class PackageScan {
 	
 	/**
 	 * 找到所有Ioc组件所在文件夹的包路径，并存入到的集合中
-	 * @param components 普通Ioc组件
-	 */
-	/**
-	 * 找到所有Ioc组件所在文件夹的包路径，并存入到的集合中
 	 * @param components
 	 * @param suffix
 	 */
@@ -45,7 +41,7 @@ public class PackageScan {
 	
 	/**
 	 * 找到所有Ioc组件所在文件夹的包路径，并存入到的集合中
-	 * @param suffix
+	 * @param suffix 自定义的包后缀名集合
 	 * @return
 	 */
 	public List<String> loadComponent(List<String> suffixlist) {
@@ -57,6 +53,7 @@ public class PackageScan {
 		addClassPath(components,clist);
 		return components.stream().map(entry->entry.substring(0, entry.length()-6)).collect(Collectors.toList());
 	}
+	
 	
 	/**
 	 * 找到所有Mapper组件所在文件夹的绝对路径，并存入到的集合中

@@ -96,6 +96,9 @@ class MySqlGroup extends SqlGroup{
 
 	@Override
 	public String sqlGroup(String res, String onsql, String andsql, String like, String sort) {
+		if(!andsql.contains("WHERE")&&!"".equals(like)) {
+			like=" WHERE "+like;
+		}
 		if(page==null&&rows==null) {
 			return "SELECT "+res+" FROM " + onsql + andsql+like+sort;
 		}else {

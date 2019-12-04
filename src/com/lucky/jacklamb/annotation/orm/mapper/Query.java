@@ -11,12 +11,13 @@ import com.lucky.jacklamb.enums.JOIN;
 /**
  * 
  * 对象方式的万能查询(单表查询、多表的连接查询、分页、排序、模糊、指定返回列和隐藏返回列...)<br>
- * value() 指定返回的列<br>
- * join() 连接方式<br>
+ * queryBuilder() 是否使用queryBuilder模式(默认不使用)
+ * join() 连接方式<br><br>
  * limit() 是否开启分页查询，开启后会默认参数列表中的最后两个int参数作为分页条件<br>
  * sort() 设置排序格式为：   {"field:1","field2:-1"},1为升序-1为降序<br>
- * 	sResults:(showResults)设置所要查询的字段<br>
- * 	hResults:(hiddenResults)设置要隐藏的字段<br>注：sResults、hResults不可同时是使用
+ * sResults:(showResults)设置所要查询的字段<br>
+ * hResults:(hiddenResults)设置要隐藏的字段<br>注：sResults、hResults不可同时是使用
+ * 模糊查询：模糊查询的字段参数需要手动传入，参数类型限定为String和List[Strirng],并且使用时需要@Like的标记
  * expression() 连接表达式，解释如下<br>
  * 	1.强链接  最前面的两个表之间必须使用强连接<br>
  * 		tab1-->tab2 [-->]   
@@ -36,6 +37,7 @@ import com.lucky.jacklamb.enums.JOIN;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Query {
+	boolean queryBuilder() default false;
 	String expression() default "";
 	JOIN join() default JOIN.INNER_JOIN;
 	boolean limit() default false;

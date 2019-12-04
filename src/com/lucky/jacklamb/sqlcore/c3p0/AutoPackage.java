@@ -97,7 +97,7 @@ public class AutoPackage {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				throw new AutoPackageException("表类映射错误，无法自动包装查询结果！请检查检查映射配置。错误位置：Class:"+c.getName()+"SQl:"+sql);
+				throw new AutoPackageException("表类映射错误，无法自动包装查询结果！请检查检查映射配置。包装类：Class:"+c.getName()+"   SQl:"+sql);
 			}finally {
 				sqloperation.close();
 			}

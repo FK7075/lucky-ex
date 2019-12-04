@@ -144,7 +144,7 @@ public class ObjectToJoinSql{
 			if(i==0) {
 				onsql+=PojoManage.selectFromTableAlias(parsExpression.get(0).getClzz());
 			}else {
-				onsql+=" "+join+" "+PojoManage.selectFromTableAlias(parsExpression.get(0).getClzz())+" ON "+getEquation(parsExpression.get(i).getClzz(),parsExpression.get(i-1-parsExpression.get(i).getSite()).getClzz());
+				onsql+=" "+join+" "+PojoManage.selectFromTableAlias(parsExpression.get(i).getClzz())+" ON "+getEquation(parsExpression.get(i).getClzz(),parsExpression.get(i-1-parsExpression.get(i).getSite()).getClzz());
 			}
 		}
 		return onsql;

@@ -52,6 +52,7 @@ public interface UniqueSqlCore {
 	 * @return
 	 */
 	<T> List<T> getPageList(T t, int page, int size) ;
+	
 
 	/**
 	 * Ìí¼ÓÊı¾İ

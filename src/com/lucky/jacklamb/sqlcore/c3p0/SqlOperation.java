@@ -108,7 +108,7 @@ public class SqlOperation {
 			}
 			rs = ps.executeQuery();
 		} catch (SQLException e) {
-			return null;
+			throw new RuntimeException("SQLÓï·¨´íÎó£¡´íÎóµÄSQL:"+sql,e);
 		}
 		return rs;
 	}

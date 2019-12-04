@@ -64,7 +64,7 @@ public class ReadProperties {
 			e.printStackTrace();
 		}
 		String name, driverClass, jdbcUrl, user, password, acquireIncrement, initialPoolSize, maxPoolSize, minPoolSize,
-				maxidleTime, maxConnectionAge, maxStatements,checkoutTimeout, maxStatementsPerConnection, reversePckage, log, cache,
+				maxidleTime, maxConnectionAge, maxStatements,checkoutTimeout, maxStatementsPerConnection, reversePckage, log, formatSqlLog, cache,
 				srcpath, createTable, otherproperties;
 		name = property.getProperty("name");
 		driverClass = property.getProperty("driverClass");
@@ -82,6 +82,7 @@ public class ReadProperties {
 		maxStatementsPerConnection = property.getProperty("maxStatementsPerConnection");
 		reversePckage = property.getProperty("reverse.pckage");
 		log = property.getProperty("log");
+		formatSqlLog=property.getProperty("formatSqlLog");
 		cache = property.getProperty("cache");
 		srcpath = property.getProperty("srcpath");
 		createTable = property.getProperty("create.table");
@@ -105,6 +106,8 @@ public class ReadProperties {
 				dataSource.setPassword(defaultData.getPassword());
 			if (log == null || log == "")
 				dataSource.setLog(defaultData.isLog());
+			if (formatSqlLog == null || formatSqlLog == "")
+				dataSource.setFormatSqlLog(defaultData.isFormatSqlLog());
 			if(cache==null||cache=="")
 				dataSource.setCache(defaultData.isCache());
 			if(reversePckage==null||reversePckage=="")
@@ -139,6 +142,8 @@ public class ReadProperties {
 			dataSource.setMaxStatementsPerConnection(Integer.parseInt(maxStatementsPerConnection));
 		if (log != null && log != "")
 			dataSource.setLog(Boolean.parseBoolean(log));
+		if (formatSqlLog == null || formatSqlLog == "")
+			dataSource.setFormatSqlLog(Boolean.parseBoolean(formatSqlLog));
 		if (cache != null && cache != "")
 			dataSource.setCache(Boolean.parseBoolean(cache));
 		if (reversePckage != null && reversePckage != "")

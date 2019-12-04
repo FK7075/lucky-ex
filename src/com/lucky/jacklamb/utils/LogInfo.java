@@ -1,6 +1,8 @@
 package com.lucky.jacklamb.utils;
 
-import static com.lucky.jacklamb.utils.LuckyUtils.*;
+import static com.lucky.jacklamb.utils.LuckyUtils.getDatabaseName;
+import static com.lucky.jacklamb.utils.LuckyUtils.getDatabaseType;
+import static com.lucky.jacklamb.utils.LuckyUtils.showtime;
 
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
@@ -17,12 +19,14 @@ public class LogInfo {
 	private DataSource dataSource;
 	private String dataName;
 	private String dataType;
+	private SqlFormatUtil sqlFormatUtil;
 	
 	public LogInfo(String dbname) {
 		dataSource=ReadProperties.getDataSource(dbname);
 		log=dataSource.isLog();
 		dataName=getDatabaseName(dataSource.getName());
 		dataType=getDatabaseType(dbname);
+		sqlFormatUtil=new SqlFormatUtil();
 	}
 	
 	public void isShowLog(String sql, Object[] obj) {
@@ -42,7 +46,7 @@ public class LogInfo {
 	
 	
 	private void log(String sql, Object[] obj) {
-		System.out.println(showtime()+"[##"+dataType+":"+dataName+"##] SQL: " + sql);
+		System.out.println(showtime()+"\n[##"+dataType+":"+dataName+"##] SQL: " + formatSql(sql));
 		if (obj == null)
 			System.out.println(showtime()+"Parameters    : { }");
 		else {
@@ -61,7 +65,7 @@ public class LogInfo {
 	 * @param obj
 	 */
 	private void logBatch(String sql,Object obj[][]) {
-		System.out.println(showtime()+"[##"+dataType+":"+dataName+"##] SQL: " + sql);
+		System.out.println(showtime()+"\n[##"+dataType+":"+dataName+"##] SQL: " + formatSql(sql));
 		if(obj==null||obj.length==0)
 			System.out.println(showtime()+"Parameters    : { }");
 		else {
@@ -75,5 +79,12 @@ public class LogInfo {
 				System.out.println(out.toString());
 			}
 		}
+	}
+	
+	private String formatSql(String sql) {
+		if(dataSource.isFormatSqlLog())
+			return "\n"+sqlFormatUtil.format(sql);
+		return sql;
+		
 	}
 }

@@ -175,4 +175,9 @@ public class LuckyUtils {
 		return clzz!=null&&clzz.getClassLoader()==null;
 	}
 	
+	public static void main(String[] args) {
+		System.out.println(new SqlFormatUtil().format(
+				"SELECT litigant.c_tysah,litigant.c_sscyr FROM litigant WHERE litigant.c_xb=? ORDER BY litigant.uuid ASC LIMIT 10,10"));
+	}
+	
 }

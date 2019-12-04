@@ -8,6 +8,12 @@ import com.lucky.jacklamb.enums.JOIN;
 import com.lucky.jacklamb.enums.Sort;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlGroup;
 
+/**
+ * 查询条件对象
+ * 注：queryBuilder对象的参数设置有一定的顺序，addObjects()方法必须优先执行
+ * @author DELL
+ *
+ */
 public class QueryBuilder {
 
     /**
