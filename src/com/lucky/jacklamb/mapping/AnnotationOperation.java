@@ -282,7 +282,7 @@ public class AnnotationOperation {
 				RestParam rp = parameters[i].getAnnotation(RestParam.class);
 				String restKey = rp.value();
 				if (!model.restMapContainsKey(restKey))
-					throw new NotFindRequestException("缺少请求参数：" + restKey);
+					throw new NotFindRequestException("缺少请求参数：" + restKey+",错误位置："+method);
 				args[i] = JavaConversion.strToBasic(model.getRestMap().get(restKey), parameters[i].getType());
 
 			} else {
@@ -382,6 +382,12 @@ public class AnnotationOperation {
 		}
 	}
 	
+	/**
+	 * 判断本次请求的url参数是否可以赋值给该pojoClass对应对象的属性
+	 * @param pojoClass
+	 * @param model
+	 * @return
+	 */
 	private boolean canInjection(Class<?> pojoClass,Model model) {
 		Field[] pojoFields=pojoClass.getDeclaredFields();
 		for(Field field:pojoFields) {

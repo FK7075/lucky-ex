@@ -85,9 +85,8 @@ public class LuckyUtils {
 		return nosql;
 	}
 	
-	private static List<String> list=new ArrayList<>();
-	
 	public static List<String> getSqlField(String nosql){
+		List<String> list=new ArrayList<>();
 		while(nosql.contains("#{")) {
 			int start=nosql.indexOf("#{")+2;
 			int end=nosql.indexOf("}");
@@ -143,7 +142,7 @@ public class LuckyUtils {
 		Class<?> clzz=pojo.getClass();
 		if(PojoManage.getIdType(clzz)==PrimaryType.AUTO_INT) {
 			String sql="SELECT auto_increment as nextID FROM information_schema.`TABLES` WHERE table_name=? AND TABLE_SCHEMA=?";
-			ResultSet resultSet = getResultSet(sql,PojoManage.getTable(clzz),getDatabaseName(dbname));
+			ResultSet resultSet = getResultSet(dbname,sql,PojoManage.getTable(clzz),getDatabaseName(dbname));
 			try {
 				while(resultSet.next()) {
 					String nextID= resultSet.getString("nextID");
@@ -173,11 +172,6 @@ public class LuckyUtils {
 	 */
 	public static boolean isJavaClass(Class<?> clzz) {
 		return clzz!=null&&clzz.getClassLoader()==null;
-	}
-	
-	public static void main(String[] args) {
-		System.out.println(new SqlFormatUtil().format(
-				"SELECT litigant.c_tysah,litigant.c_sscyr FROM litigant WHERE litigant.c_xb=? ORDER BY litigant.uuid ASC LIMIT 10,10"));
 	}
 	
 }
