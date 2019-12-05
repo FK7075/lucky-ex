@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.lucky.jacklamb.enums.Logo;
 import com.lucky.jacklamb.ioc.PackageScan;
 
 /**
@@ -45,6 +46,10 @@ public class ScanConfig {
 	 * 实体类所在包的后缀
 	 */
 	private List<String> pojoPackSuffix;
+	
+	private Logo logo;
+	
+	private String customLogo;
 
 	private ScanConfig() {
 		controllerPackSuffix = new ArrayList<>();
@@ -53,6 +58,30 @@ public class ScanConfig {
 		agentPackSuffix = new ArrayList<>();
 		componentPackSuffix = new ArrayList<>();
 		pojoPackSuffix = new ArrayList<>();
+	}
+
+	public String getCustomLogo() {
+		return customLogo;
+	}
+
+	/**
+	 * 设置一个自定义Logo
+	 * @param customLogo
+	 */
+	public void setCustomLogo(String customLogo) {
+		this.customLogo = customLogo;
+	}
+
+	public Logo getLogo() {
+		return logo;
+	}
+
+	/**
+	 * 在Lucky中选择一个Logo
+	 * @param logo
+	 */
+	public void setLogo(Logo logo) {
+		this.logo = logo;
 	}
 
 	public List<String> getControllerPackSuffix() {
@@ -218,14 +247,16 @@ public class ScanConfig {
 	}
 
 	private static ScanConfig defaultScanConfig() {
-		if(scanfig==null)
+		if(scanfig==null) {
 			scanfig = new ScanConfig();
-		scanfig.addControllerPackSuffix("controller");
-		scanfig.addServicePackSuffix("service");
-		scanfig.addRepositoryPackSuffix("dao", "repository","mapper");
-		scanfig.addComponentPackSuffix("component","bean");
-		scanfig.addAgentPackSuffix("agent");
-		scanfig.addPojoPackSuffix("pojo", "entity");
+			scanfig.addControllerPackSuffix("controller");
+			scanfig.addServicePackSuffix("service");
+			scanfig.addRepositoryPackSuffix("dao", "repository","mapper");
+			scanfig.addComponentPackSuffix("component","bean");
+			scanfig.addAgentPackSuffix("agent");
+			scanfig.addPojoPackSuffix("pojo", "entity");
+			scanfig.setLogo(Logo.MOUSELET);
+		}
 		return scanfig;
 	}
 

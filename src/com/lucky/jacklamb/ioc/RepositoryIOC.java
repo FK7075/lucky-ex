@@ -64,7 +64,7 @@ public class RepositoryIOC {
 
 	public void addRepositoryMap(String daoId, Object daoObj) {
 		if(containId(daoId))
-			throw new NotAddIOCComponent("Repository(ioc)容器中已存在ID为--"+daoId+"--的组件，无法重复添加......");
+			throw new NotAddIOCComponent("Repository(ioc)容器中已存在ID为--"+daoId+"--的组件，无法重复添加（您可能配置了同名的@Repository组件，这将会导致异常的发生！）......");
 		repositoryMap.put(daoId, daoObj);
 		addRepositoryIDS(daoId);
 	}

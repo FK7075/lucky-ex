@@ -45,6 +45,11 @@ public class ControllerIOC {
 	public void setHanderMap(Map<String, ControllerAndMethod> handerMap) {
 		this.handerMap = handerMap;
 	}
+	public void addHanderMap(String url,ControllerAndMethod coam) {
+		if(this.handerMap.containsKey(url))
+			throw new NotAddIOCComponent("URL-ControllerMethod(url映射)容器中已存在URL为--" + url + "--的映射，无法重复添加（您可能在同一个Controller中配置了'value'值相同的@RequestMapping，这将会导致异常的发生！）......");
+		this.handerMap.put(url, coam);
+	}
 
 	public ControllerIOC() {
 		controllerMap = new HashMap<>();
@@ -83,7 +88,7 @@ public class ControllerIOC {
 
 	public void addControllerMap(String id, Object object) {
 		if (containId(id))
-			throw new NotAddIOCComponent("Controller(ioc)容器中已存在ID为--" + id + "--的组件，无法重复添加......");
+			throw new NotAddIOCComponent("Controller(ioc)容器中已存在ID为--" + id + "--的组件，无法重复添加（您可能配置了同名的@Controller组件，这将会导致异常的发生！）......");
 		controllerMap.put(id, object);
 		addControllerIDS(id);
 	}
@@ -166,7 +171,7 @@ public class ControllerIOC {
 					}
 					come.setMethod(method);
 					come.setRequestMethods(getMappingRequestMethod(method));
-					handerMap.put(url_c + url_m, come);
+					addHanderMap(url_c + url_m, come);
 					mapping.put(url_c + url_m, clzz.getName()+"."+method.getName()+"(x,x,x)");
 				} else {
 					continue;

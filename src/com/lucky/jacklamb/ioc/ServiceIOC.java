@@ -41,7 +41,7 @@ public class ServiceIOC {
 
 	public void addServiceMap(String id, Object object) {
 		if(containId(id))
-			throw new NotAddIOCComponent("Service(ioc)容器中已存在ID为--"+id+"--的组件，无法重复添加......");
+			throw new NotAddIOCComponent("Service(ioc)容器中已存在ID为--"+id+"--的组件，无法重复添加（您可能配置了同名的@Service组件，这将会导致异常的发生！）......");
 		serviceMap.put(id, object);
 		addServiceIDS(id);
 	}

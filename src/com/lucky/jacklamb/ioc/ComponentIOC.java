@@ -52,7 +52,7 @@ public class ComponentIOC {
 
 	public void addAppMap(String id, Object object) {
 		if(containId(id))
-			throw new NotAddIOCComponent("Component(ioc)容器中已存在ID为--"+id+"--的组件，无法重复添加......");
+			throw new NotAddIOCComponent("Component(ioc)容器中已存在ID为--"+id+"--的组件，无法重复添加（您可能配置了同名的@Component组件，这将会导致异常的发生！）......");
 		appMap.put(id, object);
 		addAppIDS(id);
 	}
