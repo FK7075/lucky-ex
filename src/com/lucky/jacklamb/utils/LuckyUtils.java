@@ -1,16 +1,11 @@
 package com.lucky.jacklamb.utils;
 
-import java.lang.reflect.Field;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.lucky.jacklamb.enums.PrimaryType;
-import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
-import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
 import com.lucky.jacklamb.sqlcore.c3p0.SqlOperation;
 
 /**
@@ -107,63 +102,40 @@ public class LuckyUtils {
 	     return id;
 	}
 	
-	//获得当前数据库的名称
-	public static String getDatabaseName(String dbname) {
-		String url = ReadProperties.getDataSource(dbname).getJdbcUrl();
-		String databasename=url.substring((url.lastIndexOf("/")+1),url.length());
-		if(databasename.contains("?")) {
-			databasename=databasename.substring(0, databasename.indexOf("?"));
-		}
-		return databasename;
-	}
 	
-	public static String getDatabaseType(String dbname) {
-		String jdbcDriver=ReadProperties.getDataSource(dbname).getDriverClass();
-		if(jdbcDriver.contains("mysql"))
-			return "MySql";
-		if(jdbcDriver.contains("db2"))
-			return "DB2";
-		if(jdbcDriver.contains("oracle"))
-			return "Oracle";
-		if(jdbcDriver.contains("postgresql"))
-			return "PostgreSql";
-		if(jdbcDriver.contains("sqlserver"))
-			return "Sql Server";
-		if(jdbcDriver.contains("sybase"))
-			return "Sybase";
-		if(jdbcDriver.contains("access"))
-			return "Access";
-		return null;
-	}
 	
-	//获得当前数据库的类型
-	public static void pojoSetId(String dbname,Object pojo) {
-		int next_id=0;
-		Class<?> clzz=pojo.getClass();
-		if(PojoManage.getIdType(clzz)==PrimaryType.AUTO_INT) {
-			String sql="SELECT auto_increment as nextID FROM information_schema.`TABLES` WHERE table_name=? AND TABLE_SCHEMA=?";
-			ResultSet resultSet = getResultSet(dbname,sql,PojoManage.getTable(clzz),getDatabaseName(dbname));
-			try {
-				while(resultSet.next()) {
-					String nextID= resultSet.getString("nextID");
-					next_id=Integer.parseInt(nextID);
-				}
-				Field field=PojoManage.getIdField(clzz);
-				field.setAccessible(true);
-				field.set(pojo, next_id-1);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-	}
+//	/**
+//	 * 给pojo对象设置主键-Mysql
+//	 * @param dbname
+//	 * @param pojo
+//	 */
+//	public static void pojoSetId(String dbname,Object pojo) {
+//		int next_id=0;
+//		Class<?> clzz=pojo.getClass();
+//		if(PojoManage.getIdType(clzz)==PrimaryType.AUTO_INT) {
+//			String sql="SELECT auto_increment as nextID FROM information_schema.`TABLES` WHERE table_name=? AND TABLE_SCHEMA=?";
+//			ResultSet resultSet = getResultSet(dbname,sql,PojoManage.getTable(clzz),getDatabaseName(dbname));
+//			try {
+//				while(resultSet.next()) {
+//					String nextID= resultSet.getString("nextID");
+//					next_id=Integer.parseInt(nextID);
+//				}
+//				Field field=PojoManage.getIdField(clzz);
+//				field.setAccessible(true);
+//				field.set(pojo, next_id-1);
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (IllegalArgumentException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (IllegalAccessException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//	}
 	
 	/**
 	 * 判断该类型是否为java类型

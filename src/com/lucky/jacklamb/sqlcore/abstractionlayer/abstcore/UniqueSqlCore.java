@@ -53,11 +53,10 @@ public interface UniqueSqlCore {
 	 */
 	<T> List<T> getPageList(T t, int page, int size) ;
 	
-
 	/**
 	 * 添加数据
-	 * @param t
-	 * 包含添加信息的包装类的对象
+	 * @param t 包含添加信息的包装类的对象
+	 * @param addId 是否为每个对象设置自增主键(缺省表示不添加)
 	 * @return
 	 */
 	<T> boolean insert(T t,boolean...addId);
@@ -69,13 +68,16 @@ public interface UniqueSqlCore {
 	 */
 	<T> boolean insertBatchByList(List<T> list);
 	
+
 	/**
 	 * 批量保存-数组模式
-	 * @param obj
-	 * 包含保存信息的对象数组
+	 * @param addId 是否为每个对象设置自增主键
+	 * @param obj 需要添加到数据库的实体类对象
 	 * @return
 	 */
 	boolean insertBatchByArray(boolean addId,Object...obj);
+	
+	void setNextId(Object pojo);
 	
 	/**
 	 * 对象方式的多表连接操作<br>

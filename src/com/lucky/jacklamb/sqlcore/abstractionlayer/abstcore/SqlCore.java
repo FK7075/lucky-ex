@@ -16,6 +16,8 @@ import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
  */
 public abstract class SqlCore implements UniqueSqlCore {
 	
+	protected String dbname;
+	
 	protected DataSource dataSource;
 
 	protected StatementCore statementCore;
@@ -24,6 +26,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	
 	
 	public SqlCore(String dbname) {
+		this.dbname=dbname;
 		this.dataSource=ReadProperties.getDataSource(dbname);
 		this.statementCore=new StatementCoreImpl(dataSource);
 		this.generalObjectCore=new GeneralObjectCoreImpl(this.statementCore);
@@ -233,5 +236,23 @@ public abstract class SqlCore implements UniqueSqlCore {
 		}
 		return (T) obj;
 	}
+
+	@Override
+	public <T> boolean insert(T t, boolean... addId) {
+		generalObjectCore.insert(t);
+		if(addId.length!=0&&addId[0])
+			setNextId(t);
+		return true;
+	}
+
+	@Override
+	public boolean insertBatchByArray(boolean addId, Object... obj) {
+		for(Object pojo:obj) {
+			insert(pojo,addId);
+		}
+		return true;
+	}
+	
+	
 
 }

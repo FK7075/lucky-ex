@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.sqlcore.abstractionlayer.dynamiccoreImpl;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import com.lucky.jacklamb.query.ObjectToJoinSql;
@@ -7,20 +8,17 @@ import com.lucky.jacklamb.query.QueryBuilder;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlCore;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlGroup;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.util.BatchInsert;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
 import com.lucky.jacklamb.tcconversion.createtable.CreateTable;
 import com.lucky.jacklamb.tcconversion.reverse.TableToJava;
-import com.lucky.jacklamb.utils.LuckyUtils;
 
 @SuppressWarnings("unchecked")
 public final class MySqlCore extends SqlCore {
-	
-	private String dbname;
 	
 	private TableToJava tableToJava;
 
 	public MySqlCore(String dbname) {
 		super(dbname);
-		dbname=super.dataSource.getName();	
 		tableToJava=new TableToJava(dbname);
 	}
 
@@ -71,24 +69,29 @@ public final class MySqlCore extends SqlCore {
 	}
 
 	@Override
-	public <T> boolean insert(T t, boolean... addId) {
-		if(addId!=null&&addId.length!=0&&addId[0])
-			LuckyUtils.pojoSetId(dbname,t);
-		return generalObjectCore.insert(t);
-	}
-
-	@Override
-	public boolean insertBatchByArray(boolean addId, Object... obj) {
-		for(Object pojo:obj) {
-			insert(pojo,addId);
-		}
-		return true;
-	}
-
-	@Override
 	public <T> boolean insertBatchByList(List<T> list) {
 		BatchInsert bbi=new BatchInsert(list);
 		return statementCore.update(bbi.getInsertSql(), bbi.getInsertObject());
+	}
+
+	/**
+	 * 设置自增主键
+	 * @param pojo
+	 */
+	@Override
+	public void setNextId(Object pojo) {
+		Class<?> pojoClass=pojo.getClass();
+		String sql="SELECT auto_increment FROM information_schema.`TABLES` WHERE TABLE_SCHEMA=? AND table_name=?";
+		int nextid= statementCore.getObject(int.class, sql, PojoManage.getDatabaseName(dbname),PojoManage.getTable(pojoClass))-1;
+		Field idf=PojoManage.getIdField(pojoClass);
+		idf.setAccessible(true);
+		try {
+			idf.set(pojo, nextid);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 }
 

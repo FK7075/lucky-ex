@@ -13,6 +13,7 @@ import com.lucky.jacklamb.annotation.orm.Key;
 import com.lucky.jacklamb.annotation.orm.Table;
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.exception.NotFindFlieException;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
 
 /**
  * 实体类管理工具
@@ -20,7 +21,44 @@ import com.lucky.jacklamb.exception.NotFindFlieException;
  *
  */
 public class PojoManage {
-
+	
+	/**
+	 * 获取当前数据源对应数据库的类型
+	 * @param dbname
+	 * @return
+	 */
+	public static String getDatabaseType(String dbname) {
+		String jdbcDriver=ReadProperties.getDataSource(dbname).getDriverClass();
+		if(jdbcDriver.contains("mysql"))
+			return "MySql";
+		if(jdbcDriver.contains("db2"))
+			return "DB2";
+		if(jdbcDriver.contains("oracle"))
+			return "Oracle";
+		if(jdbcDriver.contains("postgresql"))
+			return "PostgreSql";
+		if(jdbcDriver.contains("sqlserver"))
+			return "Sql Server";
+		if(jdbcDriver.contains("sybase"))
+			return "Sybase";
+		if(jdbcDriver.contains("access"))
+			return "Access";
+		return null;
+	}
+	
+	/**
+	 * 获取当前数据源对应数据库的名字
+	 * @param dbname
+	 * @return
+	 */
+	public static String getDatabaseName(String dbname) {
+		String url = ReadProperties.getDataSource(dbname).getJdbcUrl();
+		String databasename=url.substring((url.lastIndexOf("/")+1),url.length());
+		if(databasename.contains("?")) {
+			databasename=databasename.substring(0, databasename.indexOf("?"));
+		}
+		return databasename;
+	}
 	
 	/**
 	 * 得到该实体类属性对应的数据库映射

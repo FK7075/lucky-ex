@@ -63,24 +63,17 @@ public final class OracleCore extends SqlCore {
 		Object[] obj = join.getJoinObject();
 		return getList(resultClass, sql, obj);
 	}
-	
-
-	@Override
-	public <T> boolean insert(T t, boolean... addId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean insertBatchByArray(boolean addId, Object... obj) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 	@Override
 	public <T> boolean insertBatchByList(List<T> list) {
 		BatchInsert bbi=new BatchInsert(list);
 		return statementCore.update(bbi.OrcaleInsetSql(), bbi.getInsertObject());
+	}
+
+	@Override
+	public void setNextId(Object pojo) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

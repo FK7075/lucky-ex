@@ -47,19 +47,6 @@ public final class AccessSqlCore extends SqlCore {
 		return null;
 	}
 
-
-	@Override
-	public <T> boolean insert(T t, boolean... addId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean insertBatchByArray(boolean addId, Object... obj) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	@Override
 	public <T> List<T> query(QueryBuilder queryBuilder, Class<T> resultClass, String... expression) {
 		// TODO Auto-generated method stub
@@ -70,6 +57,12 @@ public final class AccessSqlCore extends SqlCore {
 	public <T> boolean insertBatchByList(List<T> list) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void setNextId(Object pojo) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

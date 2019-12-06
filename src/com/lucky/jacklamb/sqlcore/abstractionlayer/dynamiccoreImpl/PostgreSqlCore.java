@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.sqlcore.abstractionlayer.dynamiccoreImpl;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import com.lucky.jacklamb.query.ObjectToJoinSql;
@@ -7,6 +8,7 @@ import com.lucky.jacklamb.query.QueryBuilder;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlCore;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlGroup;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.util.BatchInsert;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
 
 @SuppressWarnings("unchecked")
 public final class PostgreSqlCore extends SqlCore {
@@ -64,24 +66,28 @@ public final class PostgreSqlCore extends SqlCore {
 		return getList(resultClass, sql, obj);
 	}
 
-
-
-	@Override
-	public <T> boolean insert(T t, boolean... addId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean insertBatchByArray(boolean addId, Object... obj) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	@Override
 	public <T> boolean insertBatchByList(List<T> list) {
 		BatchInsert bbi=new BatchInsert(list);
 		return statementCore.update(bbi.getInsertSql(), bbi.getInsertObject());
+	}
+
+	@Override
+	public void setNextId(Object pojo) {
+		Class<?> pojoClass=pojo.getClass();
+		String sql="SELECT last_value FROM "+PojoManage.getTable(pojoClass)+"_"+PojoManage.getIdString(pojoClass)+"_seq";
+		int nextid= statementCore.getObject(int.class, sql);
+		Field idf=PojoManage.getIdField(pojoClass);
+		idf.setAccessible(true);
+		try {
+			idf.set(pojo, nextid);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

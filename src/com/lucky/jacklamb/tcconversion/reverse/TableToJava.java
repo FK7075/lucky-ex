@@ -21,7 +21,8 @@ public class TableToJava {
 	private String dbname;
 	
 	public TableToJava(String dbname) {
-		data=ReadProperties.getDataSource(dbname);
+		this.data=ReadProperties.getDataSource(dbname);
+		this.dbname=dbname; 
 	}
 	/**
 	 * 创建JavaBean(配置方式url)

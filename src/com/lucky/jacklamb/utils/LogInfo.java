@@ -1,11 +1,9 @@
 package com.lucky.jacklamb.utils;
 
-import static com.lucky.jacklamb.utils.LuckyUtils.getDatabaseName;
-import static com.lucky.jacklamb.utils.LuckyUtils.getDatabaseType;
-import static com.lucky.jacklamb.utils.LuckyUtils.showtime;
-
+import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
+import static com.lucky.jacklamb.utils.LuckyUtils.*;
 
 /**
  * 日志管理类
@@ -24,8 +22,8 @@ public class LogInfo {
 	public LogInfo(String dbname) {
 		dataSource=ReadProperties.getDataSource(dbname);
 		log=dataSource.isLog();
-		dataName=getDatabaseName(dataSource.getName());
-		dataType=getDatabaseType(dbname);
+		dataName=PojoManage.getDatabaseName(dataSource.getName());
+		dataType=PojoManage.getDatabaseType(dbname);
 		sqlFormatUtil=new SqlFormatUtil();
 	}
 	

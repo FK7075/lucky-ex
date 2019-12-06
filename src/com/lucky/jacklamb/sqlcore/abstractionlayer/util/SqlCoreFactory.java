@@ -10,7 +10,6 @@ import com.lucky.jacklamb.sqlcore.abstractionlayer.dynamiccoreImpl.PostgreSqlCor
 import com.lucky.jacklamb.sqlcore.abstractionlayer.dynamiccoreImpl.SqlServerCore;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.dynamiccoreImpl.SybaseCore;
 import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
-import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class SqlCoreFactory {
 	
@@ -19,7 +18,7 @@ public class SqlCoreFactory {
 	}
 	
 	public static SqlCore createSqlCore(String dbname) {
-		String dbType=LuckyUtils.getDatabaseType(dbname);
+		String dbType=PojoManage.getDatabaseType(dbname);
 		switch (dbType) {
 		case "MySql":
 			return new MySqlCore(dbname);
