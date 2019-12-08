@@ -47,10 +47,21 @@ public class ScanConfig {
 	 */
 	private List<String> pojoPackSuffix;
 	
+	/**
+	 * 设置Lucky运行时的Logo
+	 */
 	private Logo logo;
 	
+	/**
+	 * 设置自定义的Logo
+	 */
 	private String customLogo;
-
+	
+	/**
+	 * dataSource的默认读取路径(class:db.properties)
+	 */
+	private String defaultDB;
+	
 	private ScanConfig() {
 		controllerPackSuffix = new ArrayList<>();
 		servicePackSuffix = new ArrayList<>();
@@ -58,6 +69,18 @@ public class ScanConfig {
 		agentPackSuffix = new ArrayList<>();
 		componentPackSuffix = new ArrayList<>();
 		pojoPackSuffix = new ArrayList<>();
+	}
+	
+	public String getDefaultDB() {
+		return defaultDB;
+	}
+
+	/**
+	 * 重置dataSource的默认读取路径(默认class:db.properties)
+	 * @param defaultDB
+	 */
+	public void setDefaultDB(String defaultDB) {
+		this.defaultDB = defaultDB;
 	}
 
 	public String getCustomLogo() {
@@ -256,6 +279,7 @@ public class ScanConfig {
 			scanfig.addAgentPackSuffix("agent");
 			scanfig.addPojoPackSuffix("pojo", "entity");
 			scanfig.setLogo(Logo.MOUSELET);
+			scanfig.setDefaultDB("db.properties");
 		}
 		return scanfig;
 	}

@@ -15,23 +15,27 @@ import java.util.Properties;
 import com.lucky.jacklamb.exception.NoDataSourceException;
 import com.lucky.jacklamb.exception.NotFindBeanPropertyException;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
+import com.lucky.jacklamb.ioc.config.ScanConfig;
 
 public class ReadProperties {
 
 	private static List<DataSource> allDataSource;
-
+	
+	private final static String defaultDB=ScanConfig.getScanConfig().getDefaultDB();
+	
 	public static List<DataSource> getAllDataSource() {
 		allDataSources();
 		return allDataSource;
 	}
 
 	public static List<DataSource> readList() {
+		
 		List<DataSource> dataList = new ArrayList<>();
-		URL url = DataSource.class.getClassLoader().getResource("db.properties");
+		URL url = DataSource.class.getClassLoader().getResource(defaultDB);
 		if (url == null)
 			return null;
 		DataSource db;
-		db = read("db.properties");
+		db = read(defaultDB);
 		dataList.add(db);
 		for (String other : db.getOtherproperties())
 			dataList.add(read(other));
@@ -87,13 +91,13 @@ public class ReadProperties {
 		srcpath = property.getProperty("srcpath");
 		createTable = property.getProperty("create.table");
 		otherproperties = property.getProperty("otherproperties");
-		if ("db.properties".equals(propertiesPath)) {
+		if (defaultDB.equals(propertiesPath)) {
 			name="defaultDB";
 			if (driverClass == null || jdbcUrl == null || user == null || password == null || driverClass == ""
 					|| jdbcUrl == "" || user == "" || password == "")
-				throw new NotFindBeanPropertyException("在calsspath:db.properties配置文件中找不到必须属性\"driverClass\",\"jdbcUrl\",\"user\",\"password\"");
+				throw new NotFindBeanPropertyException("在calsspath:"+defaultDB+"配置文件中找不到必须属性\"driverClass\",\"jdbcUrl\",\"user\",\"password\"");
 		} else {
-			DataSource defaultData = read("db.properties");
+			DataSource defaultData = read(defaultDB);
 			if(name==null||name=="")
 				throw new NotFindBeanPropertyException("在calsspath:"+propertiesPath+"配置文件中找不到必须属性\"name\"");
 			if (jdbcUrl == null||jdbcUrl=="")
