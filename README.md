@@ -4,7 +4,7 @@ Lucky是一款开源免费的Java MVC框架，Lucky使用可自定义的 ***特�
 
 1.下载地址
 
-​	https://www.github.com/FK7075/Lucky
+​	https://github.com/FK7075/lucky-ex/tree/noxml/lib
 
 2.Lucky如何安装
 
