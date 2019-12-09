@@ -132,7 +132,6 @@ public class ControllerIOC {
 
 	/**
 	 * URL-ControllerMethod的映射解析
-	 * 
 	 * @return
 	 */
 	public void methodHanderSetting() {
@@ -180,6 +179,11 @@ public class ControllerIOC {
 		}
 	}
 	
+	/**
+	 * 判断当前请求的请求方法
+	 * @param method
+	 * @return
+	 */
 	private boolean haveMapping(Method method) {
 		if(method.isAnnotationPresent(RequestMapping.class)||method.isAnnotationPresent(GetMapping.class)
 				||method.isAnnotationPresent(PostMapping.class)||method.isAnnotationPresent(PutMapping.class)
@@ -188,6 +192,11 @@ public class ControllerIOC {
 		return false;
 	}
 	
+	/**
+	 * 得到当前请求的请求映射
+	 * @param method
+	 * @return
+	 */
 	public String getMappingValue(Method method) {
 		if(method.isAnnotationPresent(RequestMapping.class))
 			return method.getAnnotation(RequestMapping.class).value();
