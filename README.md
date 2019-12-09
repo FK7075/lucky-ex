@@ -1,4 +1,4 @@
-<img src="https://github.com/FK7075/lucky-ex/blob/noxml/image/images.jpg" width=50%>
+<img src="https://github.com/FK7075/lucky-ex/blob/noxml/image/images.jpg" width=15%>
 
 ## 一.Lucky NoXml的简介
 
