@@ -146,7 +146,7 @@ public class ReadProperties {
 			dataSource.setMaxStatementsPerConnection(Integer.parseInt(maxStatementsPerConnection));
 		if (log != null && log != "")
 			dataSource.setLog(Boolean.parseBoolean(log));
-		if (formatSqlLog == null || formatSqlLog == "")
+		if (formatSqlLog != null || formatSqlLog != "")
 			dataSource.setFormatSqlLog(Boolean.parseBoolean(formatSqlLog));
 		if (cache != null && cache != "")
 			dataSource.setCache(Boolean.parseBoolean(cache));

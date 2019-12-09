@@ -9,7 +9,6 @@ import com.lucky.jacklamb.ioc.config.ScanConfig;
 
 public class DataSource {
 
-	
 	private String name;
 	
 	private String driverClass;

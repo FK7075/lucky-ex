@@ -1,10 +1,14 @@
 package com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.UUID;
 
+import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.mapper.LuckyMapperProxy;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.fixedcoreImpl.GeneralObjectCoreImpl;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.fixedcoreImpl.StatementCoreImpl;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
 
@@ -240,8 +244,12 @@ public abstract class SqlCore implements UniqueSqlCore {
 	@Override
 	public <T> boolean insert(T t, boolean... addId) {
 		generalObjectCore.insert(t);
-		if(addId.length!=0&&addId[0])
-			setNextId(t);
+		if(addId.length!=0&&addId[0]) {
+			if(PojoManage.getIdType(t.getClass())==PrimaryType.AUTO_INT)
+				setNextId(t);
+			else if(PojoManage.getIdType(t.getClass())==PrimaryType.AUTO_UUID)
+				setNextUUID(t);
+		}
 		return true;
 	}
 
@@ -253,6 +261,18 @@ public abstract class SqlCore implements UniqueSqlCore {
 		return true;
 	}
 	
-	
+	public void setNextUUID(Object pojo) {
+		Field idField=PojoManage.getIdField(pojo.getClass());
+		idField.setAccessible(true);
+		try {
+			idField.set(pojo, UUID.randomUUID().toString().replaceAll("-", ""));
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }
