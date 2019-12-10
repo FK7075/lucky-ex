@@ -1,4 +1,4 @@
-<img src="https://github.com/FK7075/lucky-ex/blob/noxml/image/images.jpg" width=15%>
+<img src="/image/images.jpg" width=15%>
 
 ## 一.Lucky 的简介
 
