@@ -1,4 +1,4 @@
-<img src="/image/images.jpg" width=15%>
+<div align=center><img src="/image/images.jpg" width="150"/></div>
 
 ## 一.Lucky 的简介
 
