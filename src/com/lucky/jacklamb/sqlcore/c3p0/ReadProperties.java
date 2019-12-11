@@ -27,7 +27,8 @@ public class ReadProperties {
 		allDataSources();
 		return allDataSource;
 	}
-
+ 
+	
 	public static List<DataSource> readList() {
 		
 		List<DataSource> dataList = new ArrayList<>();
