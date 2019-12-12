@@ -17,5 +17,13 @@ public abstract class ApplicationConfig {
 	public void webConfig(WebConfig web) {
 		
 	}
+	
+	/**
+	 * 内嵌toncat服务器的配置
+	 * @param server
+	 */
+	public void serverConfig(ServerConfig server) {
+		
+	}
 
 }

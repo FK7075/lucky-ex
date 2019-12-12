@@ -14,7 +14,7 @@ import com.lucky.jacklamb.ioc.PackageScan;
  *
  */
 public class ScanConfig {
-	
+
 	private static ScanConfig scanfig;
 
 	/**
@@ -46,22 +46,22 @@ public class ScanConfig {
 	 * 实体类所在包的后缀
 	 */
 	private List<String> pojoPackSuffix;
-	
+
 	/**
 	 * 设置Lucky运行时的Logo
 	 */
 	private Logo logo;
-	
+
 	/**
 	 * 设置自定义的Logo
 	 */
 	private String customLogo;
-	
+
 	/**
 	 * dataSource的默认读取路径(class:db.properties)
 	 */
 	private String defaultDB;
-	
+
 	private ScanConfig() {
 		controllerPackSuffix = new ArrayList<>();
 		servicePackSuffix = new ArrayList<>();
@@ -70,13 +70,14 @@ public class ScanConfig {
 		componentPackSuffix = new ArrayList<>();
 		pojoPackSuffix = new ArrayList<>();
 	}
-	
+
 	public String getDefaultDB() {
 		return defaultDB;
 	}
 
 	/**
 	 * 重置dataSource的默认读取路径(默认class:db.properties)
+	 * 
 	 * @param defaultDB
 	 */
 	public void setDefaultDB(String defaultDB) {
@@ -89,6 +90,7 @@ public class ScanConfig {
 
 	/**
 	 * 设置一个自定义Logo
+	 * 
 	 * @param customLogo
 	 */
 	public void setCustomLogo(String customLogo) {
@@ -101,6 +103,7 @@ public class ScanConfig {
 
 	/**
 	 * 在Lucky中选择一个Logo
+	 * 
 	 * @param logo
 	 */
 	public void setLogo(Logo logo) {
@@ -270,12 +273,12 @@ public class ScanConfig {
 	}
 
 	private static ScanConfig defaultScanConfig() {
-		if(scanfig==null) {
+		if (scanfig == null) {
 			scanfig = new ScanConfig();
 			scanfig.addControllerPackSuffix("controller");
 			scanfig.addServicePackSuffix("service");
-			scanfig.addRepositoryPackSuffix("dao", "repository","mapper");
-			scanfig.addComponentPackSuffix("component","bean");
+			scanfig.addRepositoryPackSuffix("dao", "repository", "mapper");
+			scanfig.addComponentPackSuffix("component", "bean");
 			scanfig.addAgentPackSuffix("agent");
 			scanfig.addPojoPackSuffix("pojo", "entity");
 			scanfig.setLogo(Logo.MOUSELET);
@@ -295,8 +298,8 @@ public class ScanConfig {
 		List<String> cfgsuffix = new ArrayList<>();
 		cfgsuffix.add("appconfig");
 		List<String> cfgClass = ps.loadComponent(cfgsuffix);
-		for (String clzz : cfgClass) {
-			try {
+		try {
+			for (String clzz : cfgClass) {
 				Class<?> cfg = Class.forName(clzz);
 				if (ApplicationConfig.class.isAssignableFrom(cfg)) {
 					ApplicationConfig cfConfig = (ApplicationConfig) cfg.newInstance();
@@ -305,13 +308,13 @@ public class ScanConfig {
 				} else {
 					continue;
 				}
-			} catch (ClassNotFoundException e) {
-				continue;
-			} catch (InstantiationException e) {
-				continue;
-			} catch (IllegalAccessException e) {
-				continue;
 			}
+		} catch (ClassNotFoundException e) {
+
+		} catch (InstantiationException e) {
+
+		} catch (IllegalAccessException e) {
+
 		}
 		return defaultScanConfig;
 	}
