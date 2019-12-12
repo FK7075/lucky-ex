@@ -17,14 +17,14 @@ public class LuckyJUnit4ClassRunner extends BlockJUnit4ClassRunner{
 	}
 
 	@Override
-	protected Object createTest() throws Exception {
+	protected final Object createTest() throws Exception {
 		Object createTest = super.createTest();
 		applicationBeans=ApplicationBeans.createApplicationBeans();
 		applicationBeans.printBeans();
 		return createTestObject(applicationBeans,createTest);
 	}
 	
-	private final Object createTestObject(ApplicationBeans applicationBeans,Object testObject) throws InstantiationException, IllegalAccessException {
+	private Object createTestObject(ApplicationBeans applicationBeans,Object testObject) throws InstantiationException, IllegalAccessException {
 		Field[] allFields = testObject.getClass().getDeclaredFields();
 		for(int i=0, l=allFields.length;i<l;i++) {
 			if(allFields[i].isAnnotationPresent(Autowired.class)) {
