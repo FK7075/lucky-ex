@@ -6,12 +6,14 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 
+import com.lucky.jacklamb.ioc.ApplicationBeans;
+import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.ServerConfig;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class LuckyApplication {
 	
-	private static ServerConfig serverCfg=ServerConfig.getServerConfig();
+	private static ServerConfig serverCfg=Configuration.getServerConfig();
 	
 	public static void run() {
 		long start= System.currentTimeMillis();
@@ -31,7 +33,8 @@ public class LuckyApplication {
 			tomcat.init();
 			tomcat.start();
 			long end= System.currentTimeMillis();
-			System.out.println(LuckyUtils.showtime()+" Embedded Tomcat启动成功，用时:"+(end-start)+"ms!");
+			ApplicationBeans.createApplicationBeans();
+			System.err.println(LuckyUtils.showtime()+" Embedded Tomcat启动成功，用时:"+(end-start)+"ms!");
 			tomcat.getServer().await();
 		} catch (LifecycleException e) {
 			e.printStackTrace();

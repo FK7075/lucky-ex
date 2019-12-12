@@ -6,7 +6,6 @@ import java.util.List;
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
 
-import com.lucky.jacklamb.ioc.PackageScan;
 import com.lucky.jacklamb.servlet.LuckyDispatherServlet;
 import com.lucky.jacklamb.start.FilterMapping;
 import com.lucky.jacklamb.start.ServletMapping;
@@ -76,38 +75,11 @@ public class ServerConfig {
 		if(serverConfig==null) {
 			serverConfig=new ServerConfig();
 			serverConfig.setPort(8080);
-			serverConfig.setContextPath("src/main/webapp/");
+			serverConfig.setContextPath("");
+			serverConfig.setWebapp("src/main/webapp/");
 			serverConfig.addServlet("lucky", "/", new LuckyDispatherServlet());
 		}
 		return serverConfig;
-	}
-	
-	public static ServerConfig getServerConfig() {
-		ServerConfig server=defaultServerConfig();
-		PackageScan ps = PackageScan.getPackageScan();
-		List<String> cfgsuffix = new ArrayList<>();
-		cfgsuffix.add("appconfig");
-		List<String> cfgClass = ps.loadComponent(cfgsuffix);
-		try {
-			for (String clzz : cfgClass) {
-				Class<?> cfg = Class.forName(clzz);
-				if (ApplicationConfig.class.isAssignableFrom(cfg)) {
-					ApplicationConfig cfConfig = (ApplicationConfig) cfg.newInstance();
-					cfConfig.serverConfig(server);
-					break;
-				} else {
-					continue;
-				}
-			}
-		} catch (ClassNotFoundException e) {
-
-		} catch (InstantiationException e) {
-
-		} catch (IllegalAccessException e) {
-
-		}
-		return server;
-		
 	}
 }
 	

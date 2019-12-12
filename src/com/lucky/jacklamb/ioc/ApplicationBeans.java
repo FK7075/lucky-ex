@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import com.lucky.jacklamb.annotation.ioc.Controller;
 import com.lucky.jacklamb.exception.NotFindBeanException;
-import com.lucky.jacklamb.ioc.config.WebConfig;
+import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.servlet.Model;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 import com.lucky.jacklamb.utils.Jacklabm;
@@ -29,6 +29,7 @@ public class ApplicationBeans {
 	public static ApplicationBeans createApplicationBeans() {
 		if(applicationBean==null) {
 			applicationBean=new ApplicationBeans();
+			applicationBean.printBeans();
 		}
 		return applicationBean;
 	}
@@ -288,7 +289,7 @@ public class ApplicationBeans {
 			}
 		}
 		Controller cont=come.getController().getClass().getAnnotation(Controller.class);
-		List<String> globalprefixAndSuffix=WebConfig.getWebConfig().getHanderPrefixAndSuffix();
+		List<String> globalprefixAndSuffix=Configuration.getWebConfig().getHanderPrefixAndSuffix();
  		come.setPrefix(globalprefixAndSuffix.get(0));
 		come.setSuffix(globalprefixAndSuffix.get(1));
 		if(!"".equals(cont.prefix()))

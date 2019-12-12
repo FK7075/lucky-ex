@@ -18,6 +18,7 @@ import com.lucky.jacklamb.annotation.ioc.Autowired;
 import com.lucky.jacklamb.annotation.ioc.Value;
 import com.lucky.jacklamb.aop.defaultexpand.CacheExpand;
 import com.lucky.jacklamb.exception.InjectionPropertiesException;
+import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.ScanConfig;
 import com.lucky.jacklamb.servlet.Model;
 import com.lucky.jacklamb.tcconversion.typechange.JavaConversion;
@@ -143,7 +144,7 @@ public class IOCContainers {
 	 * 得到有关包扫描的配置信息
 	 */
 	public void scanConfigToComponentIOC() {
-		scanConfig=ScanConfig.getScanConfig();
+		scanConfig=Configuration.getScanConfig();
 	}
 	
 	public void initComponentIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {

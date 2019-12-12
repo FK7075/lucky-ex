@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.lucky.jacklamb.enums.Logo;
-import com.lucky.jacklamb.ioc.PackageScan;
 
 /**
  * IOC组件的默认位置后缀配置
@@ -271,8 +270,8 @@ public class ScanConfig {
 		pojoPackSuffix.clear();
 		pojoPackSuffix.addAll(Arrays.asList(suffix));
 	}
-
-	private static ScanConfig defaultScanConfig() {
+	
+	public static ScanConfig defaultScanConfig() {
 		if (scanfig == null) {
 			scanfig = new ScanConfig();
 			scanfig.addControllerPackSuffix("controller");
@@ -287,36 +286,5 @@ public class ScanConfig {
 		return scanfig;
 	}
 
-	/**
-	 * 得到有关包扫描的配置信息
-	 * 
-	 * @return
-	 */
-	public static ScanConfig getScanConfig() {
-		ScanConfig defaultScanConfig = defaultScanConfig();
-		PackageScan ps = PackageScan.getPackageScan();
-		List<String> cfgsuffix = new ArrayList<>();
-		cfgsuffix.add("appconfig");
-		List<String> cfgClass = ps.loadComponent(cfgsuffix);
-		try {
-			for (String clzz : cfgClass) {
-				Class<?> cfg = Class.forName(clzz);
-				if (ApplicationConfig.class.isAssignableFrom(cfg)) {
-					ApplicationConfig cfConfig = (ApplicationConfig) cfg.newInstance();
-					cfConfig.scanPackConfig(defaultScanConfig);
-					break;
-				} else {
-					continue;
-				}
-			}
-		} catch (ClassNotFoundException e) {
-
-		} catch (InstantiationException e) {
-
-		} catch (IllegalAccessException e) {
-
-		}
-		return defaultScanConfig;
-	}
 
 }

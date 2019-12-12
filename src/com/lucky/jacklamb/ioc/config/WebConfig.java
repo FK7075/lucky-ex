@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.lucky.jacklamb.ioc.PackageScan;
-
 public class WebConfig {
 	
 	private static WebConfig webConfig;
@@ -23,6 +21,12 @@ public class WebConfig {
 		handerPrefixAndSuffix=new ArrayList<>();;
 		handerPrefixAndSuffix.add("");handerPrefixAndSuffix.add("");
 		staticHander=new HashMap<>();
+	}
+	
+	public static WebConfig defauleWebConfig() {
+		if(webConfig==null)
+			webConfig=new WebConfig();
+		return webConfig;
 	}
 
 	public String getEncoding() {
@@ -65,37 +69,5 @@ public class WebConfig {
 		handerPrefixAndSuffix.clear();
 		handerPrefixAndSuffix.add(prefix);handerPrefixAndSuffix.add(suffix);
 	}
-	
-	public static WebConfig getWebConfig() {
-		if(webConfig==null)
-			webConfig=new WebConfig();
-		PackageScan ps = PackageScan.getPackageScan();
-		List<String> cfgsuffix = new ArrayList<>();
-		cfgsuffix.add("appconfig");
-		List<String> cfgClass = ps.loadComponent(cfgsuffix);
-		for (String clzz : cfgClass) {
-			try {
-				Class<?> cfg = Class.forName(clzz);
-				if (ApplicationConfig.class.isAssignableFrom(cfg)) {
-					ApplicationConfig cfConfig = (ApplicationConfig) cfg.newInstance();
-					cfConfig.webConfig(webConfig);
-					break;
-				} else {
-					continue;
-				}
-			} catch (ClassNotFoundException e) {
-				continue;
-			} catch (InstantiationException e) {
-				continue;
-			} catch (IllegalAccessException e) {
-				continue;
-			}
-		}
-		return webConfig;
-	}
-	
-	
-	
-	
 	
 }

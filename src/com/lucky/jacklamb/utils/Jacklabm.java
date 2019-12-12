@@ -1,6 +1,7 @@
 package com.lucky.jacklamb.utils;
 
 import com.lucky.jacklamb.enums.Logo;
+import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.ScanConfig;
 
 public class Jacklabm {
@@ -13,7 +14,7 @@ public class Jacklabm {
 		if(!first)
 			return;
 		String d;
-		sc=ScanConfig.getScanConfig();
+		sc=Configuration.getScanConfig();
 		if(sc.getCustomLogo()!=null) {
 			first=false;
 			d=sc.getCustomLogo();

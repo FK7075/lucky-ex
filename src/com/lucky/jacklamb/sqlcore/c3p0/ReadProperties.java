@@ -15,13 +15,13 @@ import java.util.Properties;
 import com.lucky.jacklamb.exception.NoDataSourceException;
 import com.lucky.jacklamb.exception.NotFindBeanPropertyException;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
-import com.lucky.jacklamb.ioc.config.ScanConfig;
+import com.lucky.jacklamb.ioc.config.Configuration;
 
 public class ReadProperties {
 
 	private static List<DataSource> allDataSource;
 	
-	private final static String defaultDB=ScanConfig.getScanConfig().getDefaultDB();
+	private final static String defaultDB=Configuration.getScanConfig().getDefaultDB();
 	
 	public static List<DataSource> getAllDataSource() {
 		allDataSources();

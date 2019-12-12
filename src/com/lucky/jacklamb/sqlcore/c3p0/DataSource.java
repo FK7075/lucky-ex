@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.lucky.jacklamb.ioc.PackageScan;
-import com.lucky.jacklamb.ioc.config.ScanConfig;
+import com.lucky.jacklamb.ioc.config.Configuration;
 
 public class DataSource {
 
@@ -281,7 +281,7 @@ public class DataSource {
 		maxStatements=0;
 		maxStatementsPerConnection=0;
 		List<String> suffixlist = new ArrayList<>();
-		suffixlist.addAll(ScanConfig.getScanConfig().getPojoPackSuffix());
+		suffixlist.addAll(Configuration.getScanConfig().getPojoPackSuffix());
 		caeateTable=PackageScan.getPackageScan().loadComponent(suffixlist);
 		log=false;
 		cache=false;
