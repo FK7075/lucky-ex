@@ -11,7 +11,7 @@ import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class LuckyApplication {
 	
-	public static ServerConfig serverCfg=ServerConfig.getServerConfig();
+	private static ServerConfig serverCfg=ServerConfig.getServerConfig();
 	
 	public static void run() {
 		long start= System.currentTimeMillis();

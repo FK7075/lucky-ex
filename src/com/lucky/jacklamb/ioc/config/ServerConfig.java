@@ -74,6 +74,7 @@ public class ServerConfig {
 	
 	public static ServerConfig defaultServerConfig() {
 		if(serverConfig==null) {
+			serverConfig=new ServerConfig();
 			serverConfig.setPort(8080);
 			serverConfig.setContextPath("src/main/webapp/");
 			serverConfig.addServlet("lucky", "/", new LuckyDispatherServlet());
