@@ -33,8 +33,8 @@ public class LuckyApplication {
 			tomcat.init();
 			tomcat.start();
 			long end= System.currentTimeMillis();
+			System.err.println(LuckyUtils.showtime()+"[START-OK]->Embedded Tomcat启动成功,用时"+(end-start)+"ms!");
 			ApplicationBeans.createApplicationBeans();
-			System.err.println(LuckyUtils.showtime()+" Embedded Tomcat启动成功，用时:"+(end-start)+"ms!");
 			tomcat.getServer().await();
 		} catch (LifecycleException e) {
 			e.printStackTrace();

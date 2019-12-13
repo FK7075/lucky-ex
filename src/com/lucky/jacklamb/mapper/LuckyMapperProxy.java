@@ -368,7 +368,7 @@ public class LuckyMapperProxy {
 			list.toArray(array);
 			if(pojo==null)
 				throw new RuntimeException("@Update更新操作异常：没有找到用于更新操作的实体类对象!错误位置："+method);
-			return sqlCore.update(pojo,array);          
+			return sqlCore.updateByPojo(pojo,array);          
 		}else 
 			return updateSql(method,args,sql_fp,sql);
 	}

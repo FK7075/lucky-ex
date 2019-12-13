@@ -76,7 +76,7 @@ public class ServerConfig {
 			serverConfig=new ServerConfig();
 			serverConfig.setPort(8080);
 			serverConfig.setContextPath("");
-			serverConfig.setWebapp("src/main/webapp/");
+			serverConfig.setWebapp("/WebContent/");
 			serverConfig.addServlet("lucky", "/", new LuckyDispatherServlet());
 		}
 		return serverConfig;

@@ -199,6 +199,8 @@ public class IOCContainers {
 	 */
 	private void injection(Map<String,Object> componentMap) throws IllegalArgumentException, IllegalAccessException {
 		ApplicationBeans beans=ApplicationBeans.createApplicationBeans();
+		Autowired auto;
+		Value value;
 		for(Entry<String,Object> entry:componentMap.entrySet()) {
 			Object component=entry.getValue();
 			Class<?> componentClass=component.getClass();
@@ -207,14 +209,14 @@ public class IOCContainers {
 				field.setAccessible(true);
 				Class<?> fieldClass=field.getType();
 				if(field.isAnnotationPresent(Autowired.class)) {
-					Autowired auto=field.getAnnotation(Autowired.class);
+					auto=field.getAnnotation(Autowired.class);
 					if("".equals(auto.value())) {
 						field.set(component, beans.getBean(fieldClass));
 					}else {
 						field.set(component, beans.getBean(auto.value()));
 					}
 				}else if(field.isAnnotationPresent(Value.class)) {
-					Value value=field.getAnnotation(Value.class);
+					value=field.getAnnotation(Value.class);
 					String[] val = value.value();
 					if(fieldClass.isArray()) {
 						field.set(component,ArrayCast.strArrayChange(val, fieldClass));

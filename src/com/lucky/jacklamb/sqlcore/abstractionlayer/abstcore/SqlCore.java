@@ -92,7 +92,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @param conditions 作为更新条件的字段(支持多值，缺省默认使用Id字段作为更新条件)
 	 * @return
 	 */
-	public <T> boolean update(T pojo,String...conditions) {
+	public <T> boolean updateByPojo(T pojo,String...conditions) {
 		return generalObjectCore.update(pojo,conditions);
 	}
 	
