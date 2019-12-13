@@ -1,30 +1,32 @@
 package com.lucky.jacklamb.start;
 
+import java.util.Set;
+
 import javax.servlet.Filter;
 
 public class FilterMapping {
 	
-	private String requestMapping;
+	private Set<String> requestMapping;
 	
 	private String filterName;
 	
 	private Filter filter;
 	
 	
-	public FilterMapping(String requestMapping, String filterName, Filter filter) {
+	public FilterMapping(Set<String> requestMapping, String filterName, Filter filter) {
 		this.requestMapping = requestMapping;
 		this.filterName = filterName;
 		this.filter = filter;
 	}
 	
-	public String getRequestMapping() {
+	public Set<String> getRequestMapping() {
 		return requestMapping;
 	}
-	
-	public void setRequestMapping(String requestMapping) {
+
+	public void setRequestMapping(Set<String> requestMapping) {
 		this.requestMapping = requestMapping;
 	}
-	
+
 	public String getFilterName() {
 		return filterName;
 	}

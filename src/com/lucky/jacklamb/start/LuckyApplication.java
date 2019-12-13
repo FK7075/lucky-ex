@@ -27,7 +27,8 @@ public class LuckyApplication {
         List<ServletMapping> servletlist = serverCfg.getServletlist();
         for(ServletMapping sm:servletlist) {
             tomcat.addServlet(serverCfg.getContextPath(),sm.getServletName(),sm.getServlet());
-            context.addServletMappingDecoded(sm.getRequestMapping(),sm.getServletName());
+            for(String map:sm.getRequestMapping())
+            	context.addServletMappingDecoded(map,sm.getServletName());
         }
 		try {
 			tomcat.init();

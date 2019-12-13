@@ -1,7 +1,10 @@
 package com.lucky.jacklamb.ioc.config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
@@ -9,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import com.lucky.jacklamb.servlet.LuckyDispatherServlet;
 import com.lucky.jacklamb.start.FilterMapping;
 import com.lucky.jacklamb.start.ServletMapping;
+import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class ServerConfig {
 	
@@ -23,6 +27,7 @@ public class ServerConfig {
 	private List<ServletMapping> servletlist;
 	
 	private List<FilterMapping> filterlist;
+	
 	
 	public ServerConfig() {
 		servletlist=new ArrayList<>();
@@ -56,18 +61,33 @@ public class ServerConfig {
 	public List<ServletMapping> getServletlist() {
 		return servletlist;
 	}
-
-	public void addServlet(String servletName,String requestMapping,HttpServlet servlet) {
-		ServletMapping servletMapping=new ServletMapping(requestMapping,servletName,servlet);
+	
+	public void addServlet(HttpServlet servlet,String...mappings) {
+		String servletName=LuckyUtils.TableToClass1(servlet.getClass().getSimpleName());
+		Set<String> maps;
+		if(mappings.length==0) {
+			maps=new HashSet<>();
+			maps.add("/"+servletName);
+		}else {
+			maps=new HashSet<>(Arrays.asList(mappings));
+		}
+		ServletMapping servletMapping=new ServletMapping(maps,servletName,servlet);
 		servletlist.add(servletMapping);
 	}
-	
 	public List<FilterMapping> getFilterlist() {
 		return filterlist;
 	}
 
-	public void addFilterlist(String filtertName,String requestMapping,Filter filter) {
-		FilterMapping filterMapping=new FilterMapping(requestMapping,filtertName,filter);
+	public void addFilterlist(Filter filter,String...mappings) {
+		String filterName=LuckyUtils.TableToClass1(filter.getClass().getSimpleName());
+		Set<String> maps;
+		if(mappings.length==0) {
+			maps=new HashSet<>();
+			maps.add("/"+filterName);
+		}else {
+			maps=new HashSet<>(Arrays.asList(mappings));
+		}
+		FilterMapping filterMapping=new FilterMapping(maps,filterName,filter);
 		filterlist.add(filterMapping);
 	}
 	
@@ -77,7 +97,7 @@ public class ServerConfig {
 			serverConfig.setPort(8080);
 			serverConfig.setContextPath("");
 			serverConfig.setWebapp("/WebContent/");
-			serverConfig.addServlet("lucky", "/", new LuckyDispatherServlet());
+			serverConfig.addServlet(new LuckyDispatherServlet(), "/");
 		}
 		return serverConfig;
 	}

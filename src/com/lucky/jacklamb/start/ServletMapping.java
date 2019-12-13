@@ -1,29 +1,31 @@
 package com.lucky.jacklamb.start;
 
+import java.util.Set;
+
 import javax.servlet.http.HttpServlet;
 
 public class ServletMapping {
 	
-	private String requestMapping;
+	private Set<String> requestMapping;
 	
 	private String servletName;
 	
 	private HttpServlet servlet;
 	
-	public ServletMapping(String requestMapping, String servletName, HttpServlet servlet) {
+	public ServletMapping(Set<String> requestMapping, String servletName, HttpServlet servlet) {
 		this.requestMapping = requestMapping;
 		this.servletName = servletName;
 		this.servlet = servlet;
 	}
 	
-	public String getRequestMapping() {
+	public Set<String> getRequestMapping() {
 		return requestMapping;
 	}
-	
-	public void setRequestMapping(String requestMapping) {
+
+	public void setRequestMapping(Set<String> requestMapping) {
 		this.requestMapping = requestMapping;
 	}
-	
+
 	public String getServletName() {
 		return servletName;
 	}
