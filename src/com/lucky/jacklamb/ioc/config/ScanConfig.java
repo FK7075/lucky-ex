@@ -61,21 +61,11 @@ public class ScanConfig {
 	 */
 	private String defaultDB;
 	
-	private Class<?> application;
-	
 	public static ScanConfig getScanfig() {
 		return scanfig;
 	}
 	public static void setScanfig(ScanConfig scanfig) {
 		ScanConfig.scanfig = scanfig;
-	}
-
-	public Class<?> getApplication() {
-		return application;
-	}
-
-	public void setApplication(Class<?> application) {
-		this.application = application;
 	}
 
 	private ScanConfig() {

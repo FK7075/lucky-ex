@@ -8,7 +8,6 @@ import org.apache.catalina.startup.Tomcat;
 
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.config.Configuration;
-import com.lucky.jacklamb.ioc.config.ScanConfig;
 import com.lucky.jacklamb.ioc.config.ServerConfig;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
@@ -35,7 +34,6 @@ public class LuckyApplication {
 			tomcat.start();
 			long end= System.currentTimeMillis();
 			System.err.println(LuckyUtils.showtime()+"[START-OK]->Embedded Tomcat启动成功,用时"+(end-start)+"ms!");
-			ScanConfig.defaultScanConfig().setApplication(applicationClass);
 			System.out.println(Configuration.getScanConfig());
 			ApplicationBeans.createApplicationBeans();
 			tomcat.getServer().await();

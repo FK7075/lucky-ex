@@ -159,7 +159,6 @@ public class IOCContainers {
 	
 	public void initServiceIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		serviceIOC=new ServiceIOC();
-		System.out.println("######"+ScacFactory.createScan().loadComponent(scanConfig.getServicePackSuffix()));
 		serviceIOC.initServiceIOC(ScacFactory.createScan().loadComponent(scanConfig.getServicePackSuffix()));
 	}
 	public void initRepositoryIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {

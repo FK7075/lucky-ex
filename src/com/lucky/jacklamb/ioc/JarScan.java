@@ -42,7 +42,7 @@ public class JarScan implements Scan {
 				cpath=name.substring(0,name.lastIndexOf("/"));
 				for(String suf:suffixs) {
 					if(cpath.endsWith(suf)) {
-						className.add(name.replaceAll("\\\\", "\\."));
+						className.add(name.replaceAll("/", "\\."));
 						break;
 					}
 				}
@@ -55,7 +55,7 @@ public class JarScan implements Scan {
 	public static void main(String[] args) {
 		String allname=JarScan.class.getName();
 		String simpleName=JarScan.class.getSimpleName();
-		String prefix=allname.substring(0, allname.length()-simpleName.length()).replaceAll("\\.", "/");
+		String prefix=allname.substring(0, allname.length()-simpleName.length()).replaceAll("/", "\\.");
 		System.out.println(prefix);
 	}
 
