@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Sun Dec 15 05:20:01 CST 2019
+onejar.license.required=false
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=lucky-custom.jar
+manifest.mergeall=true
+manifest.mainclass=
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=
