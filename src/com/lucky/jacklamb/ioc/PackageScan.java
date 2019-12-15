@@ -11,22 +11,22 @@ import java.util.stream.Collectors;
  * @author fk-7075
  *
  */
-public class PackageScan {
+public class PackageScan implements Scan {
 
 	private String projectPath;
 	
-	private static PackageScan packageScan;
+//	private static PackageScan packageScan;
 	
-	private PackageScan() {
+	public PackageScan() {
 		projectPath=this.getClass().getClassLoader().getResource("").getPath();
 		projectPath=projectPath.replaceAll("\\\\", "/").substring(1,projectPath.length()-1);
 	}
 	
-	public static PackageScan getPackageScan() {
-		if(packageScan==null)
-			packageScan=new PackageScan();
-		return packageScan;
-	}
+//	public static PackageScan getPackageScan() {
+//		if(packageScan==null)
+//			packageScan=new PackageScan();
+//		return packageScan;
+//	}
 	
 	/**
 	 * 找到所有Ioc组件所在文件夹的包路径，并存入到的集合中

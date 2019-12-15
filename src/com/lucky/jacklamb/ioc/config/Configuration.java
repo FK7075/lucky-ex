@@ -3,7 +3,8 @@ package com.lucky.jacklamb.ioc.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucky.jacklamb.ioc.PackageScan;
+import com.lucky.jacklamb.ioc.ScacFactory;
+import com.lucky.jacklamb.ioc.Scan;
 
 public class Configuration {
 	
@@ -17,7 +18,7 @@ public class Configuration {
 		scancfg = ScanConfig.defaultScanConfig();
 		webcfg=WebConfig.defauleWebConfig();
 		servercfg=ServerConfig.defaultServerConfig();
-		PackageScan ps = PackageScan.getPackageScan();
+		Scan ps = ScacFactory.createScan();
 		List<String> cfgsuffix = new ArrayList<>();
 		cfgsuffix.add("appconfig");
 		List<String> cfgClass = ps.loadComponent(cfgsuffix);

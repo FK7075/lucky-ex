@@ -60,6 +60,23 @@ public class ScanConfig {
 	 * dataSource的默认读取路径(class:db.properties)
 	 */
 	private String defaultDB;
+	
+	private Class<?> application;
+	
+	public static ScanConfig getScanfig() {
+		return scanfig;
+	}
+	public static void setScanfig(ScanConfig scanfig) {
+		ScanConfig.scanfig = scanfig;
+	}
+
+	public Class<?> getApplication() {
+		return application;
+	}
+
+	public void setApplication(Class<?> application) {
+		this.application = application;
+	}
 
 	private ScanConfig() {
 		controllerPackSuffix = new ArrayList<>();

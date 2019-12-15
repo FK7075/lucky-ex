@@ -149,21 +149,22 @@ public class IOCContainers {
 	
 	public void initComponentIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		appIOC=new ComponentIOC();
-		appIOC.initComponentIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getComponentPackSuffix()));
+		appIOC.initComponentIOC(ScacFactory.createScan().loadComponent(scanConfig.getComponentPackSuffix()));
 	}
 	
 	public void initControllerIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		controllerIOC=new ControllerIOC();
-		controllerIOC.initControllerIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getControllerPackSuffix())).methodHanderSetting();
+		controllerIOC.initControllerIOC(ScacFactory.createScan().loadComponent(scanConfig.getControllerPackSuffix())).methodHanderSetting();
 	}
 	
 	public void initServiceIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		serviceIOC=new ServiceIOC();
-		serviceIOC.initServiceIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getServicePackSuffix()));
+		System.out.println("######"+ScacFactory.createScan().loadComponent(scanConfig.getServicePackSuffix()));
+		serviceIOC.initServiceIOC(ScacFactory.createScan().loadComponent(scanConfig.getServicePackSuffix()));
 	}
 	public void initRepositoryIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		repositoryIOC=new RepositoryIOC();
-		repositoryIOC.initRepositoryIOC(PackageScan.getPackageScan().loadComponent(scanConfig.getRepositoryPackSuffix()));
+		repositoryIOC.initRepositoryIOC(ScacFactory.createScan().loadComponent(scanConfig.getRepositoryPackSuffix()));
 	}
 	
 	/**

@@ -1,9 +1,10 @@
 package com.lucky.jacklamb.utils;
 
+import static com.lucky.jacklamb.utils.LuckyUtils.*;
+
 import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
-import static com.lucky.jacklamb.utils.LuckyUtils.*;
 
 /**
  * 日志管理类
