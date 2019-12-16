@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -89,11 +90,10 @@ public class LuckyMapperProxy {
 			String[] propertys=mapper.properties();
 			String coding=mapper.codedformat();
 			for(String path:propertys) {
-				URL resource = this.getClass().getClassLoader().getResource(path);
+				InputStream resource = this.getClass().getResourceAsStream("/"+path);
 				if(resource==null)
 					throw new RuntimeException("找不到"+clzz.getName()+"的Sql配置文件"+path+"!请检查@Mapper注解上的properties配置信息！");
-				String propertyPath=resource.getPath();
-				loadProperty(clzz,propertyPath,coding);
+				loadProperty(clzz,resource,coding);
 
 			}
 		}
@@ -105,10 +105,10 @@ public class LuckyMapperProxy {
 	 * @param propertyPath
 	 * @param coding
 	 */
-	private void loadProperty(Class<?> clzz,String propertyPath,String coding){
+	private void loadProperty(Class<?> clzz,InputStream propertyPath,String coding){
 		try{
 			Properties p=new Properties();
-			p.load(new BufferedReader(new InputStreamReader(new FileInputStream(propertyPath),coding)));
+			p.load(new BufferedReader(new InputStreamReader(propertyPath,coding)));
 			Method[] methods=clzz.getDeclaredMethods();
 			for(Method method:methods) {
 				if(!method.isAnnotationPresent(Select.class)&&!method.isAnnotationPresent(Insert.class)

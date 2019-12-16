@@ -41,6 +41,28 @@ public enum Logo {
 	/**
 	 * 佛祖
 	 */
-	BUDDHA
+	BUDDHA,
+	
+	/**
+	 * 书本
+	 */
+	BOOK,
+	
+	/**
+	 * 安妮
+	 */
+	ANNE,
+	
+	/**
+	 * 朱迪
+	 */
+	JUDY,
+	
+	/**
+	 * 危险信号
+	 */
+	DANGER_SIGNALS
+	
+	
 
 }

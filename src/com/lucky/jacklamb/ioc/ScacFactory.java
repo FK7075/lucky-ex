@@ -11,7 +11,7 @@ public class ScacFactory {
 	public static Scan createScan() {
 		if(PackageScan.class.getClassLoader().getResource("")==null) {
 			if(jar==null)
-				jar= new JarScan();//Configuration.getScanConfig().getApplication()
+				jar= new JarScan(Configuration.applicationClass);
 			return jar;	
 		}else {
 			if(pack==null)

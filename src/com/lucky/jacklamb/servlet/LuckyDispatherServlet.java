@@ -35,7 +35,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 	public void init(ServletConfig config) {
 		beans=ApplicationBeans.createApplicationBeans();
 		anop = new AnnotationOperation();
-		webCfg=Configuration.getWebConfig();
+		webCfg=Configuration.getConfiguration().getWebConfig();
 		urlParsMap=new UrlParsMap();
 		responseControl=new ResponseControl();
 	}
@@ -79,11 +79,11 @@ public class LuckyDispatherServlet extends HttpServlet {
 			}else {
 				ControllerAndMethod controllerAndMethod = beans.getCurrControllerAndMethod(path);
 				if(controllerAndMethod==null) {
-					resp.getWriter().print(Jacklabm.exception("HTTP Status 404 �?? Not Found", "不正确的url�??"+req.getRequestURI(), "找不与请求相匹配的映射资�??,请检查您的URL是否正确."));
+					resp.getWriter().print(Jacklabm.exception("HTTP Status 404 Not Found", "不正确的url"+req.getRequestURI(), "找不与请求相匹配的映射资,请检查您的URL是否正确！"));
 					return;
 				}
 				if(!controllerAndMethod.requestMethodISCorrect(this.method)) {
-					resp.getWriter().print(Jacklabm.exception("HTTP Status 500 �?? Internal Server Error","不正确的请求类型�??"+this.method,"您的请求类型�??"+this.method+",当前方法并不支持�??"));
+					resp.getWriter().print(Jacklabm.exception("HTTP Status 500 Internal Server Error","不正确的请求类型"+this.method,"您的请求类型"+this.method+",当前方法并不支持！"));
 					return;
 				}else {
 					model.setRestMap(controllerAndMethod.getRestKV());

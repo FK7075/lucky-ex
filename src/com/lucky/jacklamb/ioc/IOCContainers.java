@@ -144,7 +144,7 @@ public class IOCContainers {
 	 * 得到有关包扫描的配置信息
 	 */
 	public void scanConfigToComponentIOC() {
-		scanConfig=Configuration.getScanConfig();
+		scanConfig=Configuration.getConfiguration().getScanConfig();
 	}
 	
 	public void initComponentIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {

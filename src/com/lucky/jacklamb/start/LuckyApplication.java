@@ -13,8 +13,22 @@ import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class LuckyApplication {
 	
+	/**
+	 * 在使用java -jar运行jar包时，Lucky会使用JarFile的方法去遍历并筛选classpath下所有的.class文件来寻找组件。
+	 * 效率较高，但是规定applicationClass类必须写在最外层的包下
+	 * @param applicationClass
+	 */
 	public static void run(Class<?> applicationClass) {
-		ServerConfig serverCfg=Configuration.getServerConfig();
+		Configuration.applicationClass=applicationClass;
+		run();
+	}
+	
+	/**
+	 * 在使用java -jar运行jar包时，Lucky会使用JarFile的方法去遍历classpath下所有的.class文件来寻找组件
+	 * 效率较低，applicationClass类的位置没有限制
+	 */
+	public static void run() {
+		ServerConfig serverCfg=Configuration.getConfiguration().getServerConfig();
 		long start= System.currentTimeMillis();
 		Tomcat tomcat = new Tomcat();
 		tomcat.setPort(serverCfg.getPort());
@@ -34,13 +48,11 @@ public class LuckyApplication {
 			tomcat.start();
 			long end= System.currentTimeMillis();
 			System.err.println(LuckyUtils.showtime()+"[START-OK]->Embedded Tomcat启动成功,用时"+(end-start)+"ms!");
-			System.out.println(Configuration.getScanConfig());
 			ApplicationBeans.createApplicationBeans();
 			tomcat.getServer().await();
 		} catch (LifecycleException e) {
 			e.printStackTrace();
 		}
-		
 	}
 
 }

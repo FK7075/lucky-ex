@@ -8,13 +8,17 @@ import com.lucky.jacklamb.ioc.Scan;
 
 public class Configuration {
 	
-	private static ScanConfig scancfg;
+	private static Configuration configuration;
 	
-	private static WebConfig webcfg;
+	private ScanConfig scancfg;
 	
-	private static ServerConfig servercfg;
+	private WebConfig webcfg;
 	
-	static {
+	private ServerConfig servercfg;
+	
+	public static Class<?> applicationClass;
+	
+	private Configuration() {
 		scancfg = ScanConfig.defaultScanConfig();
 		webcfg=WebConfig.defauleWebConfig();
 		servercfg=ServerConfig.defaultServerConfig();
@@ -44,15 +48,21 @@ public class Configuration {
 		}
 	}
 	
-	public static ScanConfig getScanConfig() {
+	public static Configuration getConfiguration() {
+		if(configuration==null)
+			configuration=new Configuration();
+		return configuration;
+	}
+	
+	public ScanConfig getScanConfig() {
 		return scancfg;
 	}
 	
-	public static WebConfig getWebConfig() {
+	public WebConfig getWebConfig() {
 		return webcfg;
 	}
 	
-	public static ServerConfig getServerConfig() {
+	public ServerConfig getServerConfig() {
 		return servercfg;
 	}
 

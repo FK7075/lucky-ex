@@ -289,7 +289,7 @@ public class ApplicationBeans {
 			}
 		}
 		Controller cont=come.getController().getClass().getAnnotation(Controller.class);
-		List<String> globalprefixAndSuffix=Configuration.getWebConfig().getHanderPrefixAndSuffix();
+		List<String> globalprefixAndSuffix=Configuration.getConfiguration().getWebConfig().getHanderPrefixAndSuffix();
  		come.setPrefix(globalprefixAndSuffix.get(0));
 		come.setSuffix(globalprefixAndSuffix.get(1));
 		if(!"".equals(cont.prefix()))

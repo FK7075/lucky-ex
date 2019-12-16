@@ -11,5 +11,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Agent {
 	String classname() default "";
+
 	String methodname() default "";
 }

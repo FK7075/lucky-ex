@@ -1,13 +1,10 @@
 package com.lucky.jacklamb.sqlcore.c3p0;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -21,7 +18,7 @@ public class ReadProperties {
 
 	private static List<DataSource> allDataSource;
 	
-	private final static String defaultDB=Configuration.getScanConfig().getDefaultDB();
+	private final static String defaultDB=Configuration.getConfiguration().getScanConfig().getDefaultDB();
 	
 	public static List<DataSource> getAllDataSource() {
 		allDataSources();
@@ -29,9 +26,8 @@ public class ReadProperties {
 	}
  
 	public static List<DataSource> readList() {
-		
 		List<DataSource> dataList = new ArrayList<>();
-		URL url = DataSource.class.getClassLoader().getResource(defaultDB);
+		InputStream url = DataSource.class.getResourceAsStream("/"+defaultDB);
 		if (url == null)
 			return null;
 		DataSource db;
@@ -44,19 +40,13 @@ public class ReadProperties {
 
 	public static DataSource read(String propertiesPath) {
 		DataSource dataSource = new DataSource();
-		URL url = DataSource.class.getClassLoader().getResource(propertiesPath);
+		InputStream url = DataSource.class.getResourceAsStream("/"+propertiesPath);
 		if(url==null)
 			throw new NoDataSourceException("\"找不到外部db配置文件classpath:\""+propertiesPath);
 		Properties property = new Properties();
-		InputStream fileInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(url.getPath());
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
 		BufferedReader bf = null;
 		try {
-			bf = new BufferedReader(new InputStreamReader(fileInputStream, "UTF-8"));
+			bf = new BufferedReader(new InputStreamReader(url, "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
