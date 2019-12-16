@@ -1,10 +1,13 @@
 package com.lucky.jacklamb.start;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.tomcat.util.descriptor.web.FilterDef;
+import org.apache.tomcat.util.descriptor.web.FilterMap;
 
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.config.Configuration;
@@ -42,6 +45,21 @@ public class LuckyApplication {
             tomcat.addServlet(serverCfg.getContextPath(),sm.getServletName(),sm.getServlet());
             for(String map:sm.getRequestMapping())
             	context.addServletMappingDecoded(map,sm.getServletName());
+        }
+        FilterDef filterDef;
+        FilterMap filterMap;
+        List<FilterMapping> filterlist = serverCfg.getFilterlist();
+        for(FilterMapping fm:filterlist) {
+        	filterDef=new FilterDef();
+        	filterMap=new FilterMap();
+        	filterDef.setFilter(fm.getFilter());
+        	filterDef.setFilterName(fm.getFilterName());
+        	filterMap.setFilterName(fm.getFilterName());
+        	for(String filterurl:fm.getRequestMapping())
+        		filterMap.addURLPatternDecoded(filterurl);
+        	 filterMap.setCharset(Charset.forName("UTF-8"));
+        	 context.addFilterDef(filterDef);
+        	 context.addFilterMap(filterMap);
         }
 		try {
 			tomcat.init();
