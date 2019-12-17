@@ -74,28 +74,6 @@ public class UrlParsMap {
 		}
 	}
 
-//	/**
-//	 * 判断当前请求是否符合Controller方法的限定请求
-//	 * 
-//	 * @param method
-//	 *            响应当前的请求的方法对象
-//	 * @param reqMet
-//	 *            当前请求的类型
-//	 * @return
-//	 */
-//	public boolean isExistRequestMethod(Method method, RequestMethod reqMet) {
-//		if (method.isAnnotationPresent(RequestMapping.class)) {
-//			RequestMapping mapping = method.getAnnotation(RequestMapping.class);
-//			RequestMethod[] rms = mapping.method();
-//			for (RequestMethod me : rms) {
-//				if (reqMet.equals(me)) {
-//					return true;
-//				}
-//			}
-//		}
-//		return false;
-//	}
-
 	/**
 	 * 根据POST请求参数"_method"的值改变请求的类型
 	 * 

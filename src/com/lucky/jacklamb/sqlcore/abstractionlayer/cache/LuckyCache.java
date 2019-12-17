@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.lucky.jacklamb.exception.NoDataSourceException;
-
 
 /**
  * Lucky查询缓存处理类(DL)
@@ -32,7 +30,7 @@ public class LuckyCache {
 	public Map<String,List<?>> getMapByDbName(String dbname){
 		if(containsDbname(dbname))
 			return cacheMap.get(dbname);
-		throw new NoDataSourceException("找不到名字为"+dbname+"的数据源！");
+		return null;
 	}
 	
 	/**
@@ -41,6 +39,8 @@ public class LuckyCache {
 	 * @return
 	 */
 	public boolean contains(String dbname,String sql) {
+		if(getMapByDbName(dbname)==null)
+			return false;
 		return getMapByDbName(dbname).containsKey(sql);
 	}
 

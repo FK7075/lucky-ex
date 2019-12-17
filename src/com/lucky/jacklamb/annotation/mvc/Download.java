@@ -18,5 +18,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Download {
 	String name() default "";
-	String filePath() default "";
+	String path() default "";
+	String folder() default "";
 }

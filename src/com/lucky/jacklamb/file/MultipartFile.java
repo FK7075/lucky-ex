@@ -15,7 +15,7 @@ import javax.servlet.http.Part;
 
 public class MultipartFile {
 	
-	private FileInputStream originalFileInpueStream;//用户上传的文件对应的输入流
+	private InputStream originalFileInpueStream;//用户上传的文件对应的输入流
 	private String uploadFileName;//文件上传到服务器后的文件名
 	private String disposition;//上传文件的协议信息
 	private String projectPath;//项目的路径
@@ -32,12 +32,16 @@ public class MultipartFile {
 		}
 	}
 	
+	public MultipartFile(InputStream originalFileInpueStream,String projectPath) {
+		this.originalFileInpueStream=originalFileInpueStream;
+	}
+	
 	/**
 	 * 获得上传文件的类型
 	 * @return
 	 */
 	public String getFileType() {
-		String type=disposition.substring(disposition.lastIndexOf("."), disposition.length()-1);
+		String type=disposition.substring(disposition.lastIndexOf("."));
 		return type;
 	}
 	

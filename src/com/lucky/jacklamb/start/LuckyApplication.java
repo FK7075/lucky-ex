@@ -38,13 +38,15 @@ public class LuckyApplication {
 		tomcat.getHost().setAutoDeploy(false);
         StandardContext context = new StandardContext();
         context.setPath(serverCfg.getContextPath());
+        context.setDocBase(serverCfg.getDocBase());
         context.addLifecycleListener(new Tomcat.FixContextListener());
         tomcat.getHost().addChild(context);
         List<ServletMapping> servletlist = serverCfg.getServletlist();
         for(ServletMapping sm:servletlist) {
             tomcat.addServlet(serverCfg.getContextPath(),sm.getServletName(),sm.getServlet());
-            for(String map:sm.getRequestMapping())
+            for(String map:sm.getRequestMapping()) {
             	context.addServletMappingDecoded(map,sm.getServletName());
+            }
         }
         FilterDef filterDef;
         FilterMap filterMap;

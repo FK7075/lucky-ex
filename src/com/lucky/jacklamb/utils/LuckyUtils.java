@@ -103,40 +103,6 @@ public class LuckyUtils {
 	}
 	
 	
-	
-//	/**
-//	 * 给pojo对象设置主键-Mysql
-//	 * @param dbname
-//	 * @param pojo
-//	 */
-//	public static void pojoSetId(String dbname,Object pojo) {
-//		int next_id=0;
-//		Class<?> clzz=pojo.getClass();
-//		if(PojoManage.getIdType(clzz)==PrimaryType.AUTO_INT) {
-//			String sql="SELECT auto_increment as nextID FROM information_schema.`TABLES` WHERE table_name=? AND TABLE_SCHEMA=?";
-//			ResultSet resultSet = getResultSet(dbname,sql,PojoManage.getTable(clzz),getDatabaseName(dbname));
-//			try {
-//				while(resultSet.next()) {
-//					String nextID= resultSet.getString("nextID");
-//					next_id=Integer.parseInt(nextID);
-//				}
-//				Field field=PojoManage.getIdField(clzz);
-//				field.setAccessible(true);
-//				field.set(pojo, next_id-1);
-//			} catch (SQLException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IllegalArgumentException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IllegalAccessException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		
-//	}
-	
 	/**
 	 * 判断该类型是否为java类型
 	 * @param clzz

@@ -8,9 +8,11 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Date;
+import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -18,6 +20,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.lucky.jacklamb.annotation.mvc.Download;
 import com.lucky.jacklamb.annotation.mvc.RequestParam;
@@ -35,10 +41,8 @@ public class AnnotationOperation {
 	/**
 	 * 根据参数得到具体的MultipartFile
 	 * 
-	 * @param model
-	 *            Model对象
-	 * @param formName
-	 *            formName 表单上<input type="file">的"name"属性值
+	 * @param model  Model对象
+	 * @param formName  formName 表单上<input type="file">的"name"属性值
 	 * @return 返回MultipartFile对象
 	 * @throws IOException
 	 * @throws ServletException
@@ -52,10 +56,8 @@ public class AnnotationOperation {
 	/**
 	 * 基于MultipartFile的多文件上传
 	 * 
-	 * @param model
-	 *            Model对象
-	 * @param method
-	 *            将要执行的Controller方法
+	 * @param model Model对象
+	 * @param method 将要执行的Controller方法
 	 * @return 由Controller方法参数名和其对应的值所组成的Map(针对MultipartFile)
 	 * @throws IOException
 	 * @throws ServletException
@@ -73,18 +75,13 @@ public class AnnotationOperation {
 	}
 
 	/**
-	 * 执行文件上传操作(将上传的文件写入服务器的具体位置)
+	 * --@Upload注解方式的多文件上传-基于Servlet3的Part对象和@MultipartConfig注解的实现
 	 * 
-	 * @param model
-	 *            Model对象
-	 * @param formName
-	 *            表单上<input type="file">的"name"属性值
-	 * @param path
-	 *            要上传到服务器的哪个文件夹？
-	 * @param type
-	 *            允许上传的文件类型
-	 * @param maxSize
-	 *            允许上传文件的最大大小
+	 * @param model  Model对象
+	 * @param formName 表单上[input type="file"]的"name"属性值
+	 * @param path 要上传到服务器的哪个文件夹？
+	 * @param type 允许上传的文件类型
+	 * @param maxSize 允许上传文件的最大大小
 	 * @return 上传后服务器上的文件名
 	 * @throws IOException
 	 * @throws ServletException
@@ -93,18 +90,15 @@ public class AnnotationOperation {
 			throws IOException, ServletException {
 		Part part = model.getRequest().getPart(formName);
 		String disposition = part.getHeader("Content-Disposition");
-		if (disposition.indexOf(".") != -1) {
+		if (disposition.contains(".")) {
 			// 获得文件后缀名
-			String suffix = disposition.substring(disposition.lastIndexOf("."), disposition.length() - 1);
+			String suffix = disposition.substring(disposition.lastIndexOf("."));
 			if (!"".equals(type)) {
 				if (!type.toLowerCase().contains(suffix.toLowerCase())) {
 					throw new RuntimeException("上传的文件格式" + suffix + "不合法！合法的文件格式为：" + type);
 				}
 			}
-			// 随机的生成文件名（时间+随机数）
-			long time = new Date().getTime();
-			int ran = (int) (Math.random() * (9999 - 1000) + 1000);
-			String filename = time + "" + ran + suffix;
+			String filename = UUID.randomUUID().toString().replaceAll("-", "")+ suffix;
 			// 获取上传的文件名
 			InputStream is = part.getInputStream();
 			FileInputStream fis = (FileInputStream) is;
@@ -131,17 +125,15 @@ public class AnnotationOperation {
 			is.close();
 			return filename;
 		} else {
-			return null;
+			throw new RuntimeException("上传的文件格式不正确，系统无法识别！file："+disposition);
 		}
 	}
 
 	/**
 	 * 批量文件上传@Upload注解方式
 	 * 
-	 * @param model
-	 *            Model对象
-	 * @param method
-	 *            将要执行的Controller方法
+	 * @param model  Model对象
+	 * @param method 将要执行的Controller方法
 	 * @return 上传后的文件名与表单name属性所组成的Map
 	 * @throws IOException
 	 * @throws ServletException
@@ -154,18 +146,100 @@ public class AnnotationOperation {
 			String[] savePaths = upload.filePath();
 			String types = upload.type();
 			int maxSize = upload.maxSize();
-			if (savePaths.length == 1) {
-				for (String str : files) {
-					fileMap.put(str, upload(model, str, savePaths[0], types, maxSize));
+			try {
+				if (savePaths.length == 1) {
+					for (String str : files) {
+						fileMap.put(str, upload(model, str, savePaths[0], types, maxSize));
+					}
+				} else {
+					int x = 0;
+					for (String str : files) {
+						fileMap.put(str, upload(model, str, savePaths[x++], types, maxSize));
+					}
+				}	
+			}catch(NullPointerException e) {
+				Map<String, String> fieldAndFolder=new HashMap<>();
+				if(savePaths.length == 1) {
+					for(String file:files)
+						fieldAndFolder.put(file, savePaths[0]);
+				}else {
+					for(int i=0;i<savePaths.length;i++)
+						fieldAndFolder.put(files[i], savePaths[i]);
 				}
-			} else {
-				int x = 0;
-				for (String str : files) {
-					fileMap.put(str, upload(model, str, savePaths[x++], types, maxSize));
-				}
+				upload(model,fileMap,fieldAndFolder,types,maxSize);
 			}
+
 		}
 		return fileMap;
+	}
+	
+	/**
+	 * --@Upload注解方式的多文件上传-基于Apache [commons-fileupload-1.3.1.jar  commons-io-2.4.jar]
+	 * 适配内嵌tomcat的文件上传与下载操作
+	 * @param model  Model对象
+	 * @param resultsMap 文件名与表单name属性所组成的Map
+	 * @param fieldAndFolder name与folder组成的Map
+	 * @param type 允许上传的文件类型
+	 * @param maxSize 允许上传文件的最大大小
+	 */
+	public void upload(Model model,Map<String, String> resultsMap,Map<String,String> fieldAndFolder,String type, int maxSize) {
+		String savePath = model.getRealPath("/");
+		try{
+			DiskFileItemFactory factory = new DiskFileItemFactory();
+			ServletFileUpload upload = new ServletFileUpload(factory);
+			upload.setHeaderEncoding("UTF-8"); 
+			if(!ServletFileUpload.isMultipartContent(model.getRequest())){
+				return;
+			}
+			@SuppressWarnings("unchecked")
+			List<FileItem> list = upload.parseRequest(model.getRequest());
+			String field="";
+			for(FileItem item : list){
+				if(!item.isFormField()){
+					field=item.getFieldName();
+					if(fieldAndFolder.containsKey(field)) {
+						String filename = item.getName();
+						String suffix=filename.substring(filename.lastIndexOf("."));
+						if(!"".equals(type)&&!type.toLowerCase().contains(suffix.toLowerCase()))
+								throw new RuntimeException("上传的文件格式" + suffix + "不合法！合法的文件格式为：" + type);
+						String pathSave=fieldAndFolder.get(field);
+						File file = new File(savePath+pathSave);
+						filename = UUID.randomUUID().toString().replaceAll("-", "")+suffix;
+						InputStream in = item.getInputStream();
+						if (maxSize != 0) {
+							int size = in.available();
+							int filesize = size / 1024;
+							if (filesize > maxSize) {
+								throw new RuntimeException("上传文件的大小(" + filesize + "kb)超出设置的最大值" + maxSize + "kb");
+							}
+						}
+						
+						if (!file.isDirectory()) {
+							file.mkdirs();
+						}
+						
+						if(filename==null || filename.trim().equals("")){
+							continue;
+						}
+
+						FileOutputStream out = new FileOutputStream(savePath+pathSave + "/" + filename);
+						byte buffer[] = new byte[1024];
+						int len = 0;
+						while((len=in.read(buffer))>0){
+							out.write(buffer, 0, len);
+							out.flush();
+						}
+						in.close();
+						out.close();
+						item.delete();
+						resultsMap.put(field, filename);
+					}
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+
+		}
 	}
 
 	/**
@@ -224,13 +298,22 @@ public class AnnotationOperation {
 	@SuppressWarnings("resource")
 	public void download(Model model, Method method) throws IOException {
 		Download dl = method.getAnnotation(Download.class);
-		String fileName = dl.name();
-		String filePath = dl.filePath();
-		String file = model.getRequestPrarmeter(fileName); // 客户端传递的需要下载的文件名
-		String path = model.getRealPath(filePath) + file; // 默认认为文件在当前项目的根目录
-		FileInputStream fis = new FileInputStream(path);
+		String path="";
+		if(!"".equals(dl.path())) {
+			path=dl.path();
+		}else {
+			String fileName = dl.name();
+			String filePath = dl.folder();
+			String file = model.getRequestPrarmeter(fileName); // 客户端传递的需要下载的文件名
+			path = model.getRealPath(filePath) + file; // 默认认为文件在当前项目的根目录
+		}
+		File f=new File(path);
+		if(!f.exists())
+			throw new RuntimeException("找不到文件,无法完成下载操作！"+path);
+		FileInputStream fis = new FileInputStream(f);
+		String downName=UUID.randomUUID().toString().replaceAll("-", "")+path.substring(path.lastIndexOf("."));
 		model.getResponse().setCharacterEncoding("utf-8");
-		model.getResponse().setHeader("Content-Disposition", "attachment; filename=" + file);
+		model.getResponse().setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(downName,"UTF-8"));
 		ServletOutputStream out = model.getResponse().getOutputStream();
 		byte[] bt = new byte[1024];
 		int length = 0;
@@ -293,7 +376,7 @@ public class AnnotationOperation {
 						args[i] = model.getArray(reqParaName, parameters[i].getType());
 					} else {
 						if (defparam == null)
-							throw new NotFindRequestException("缺少请求参数：" + reqParaName);
+							throw new NotFindRequestException("缺少请求参数：" + reqParaName+",错误位置："+method);
 						args[i] = ApplicationBeans.createApplicationBeans().getBean(defparam);
 					}
 				} else {
@@ -303,7 +386,7 @@ public class AnnotationOperation {
 						args[i] = model.getRestParam(getParamName(parameters[i]), parameters[i].getType());
 					} else {
 						if (defparam == null)
-							throw new NotFindRequestException("缺少请求参数：" + reqParaName);
+							throw new NotFindRequestException("缺少请求参数：" + reqParaName+",错误位置："+method);
 						if (parameters[i].getType().getClassLoader() == null) {
 							args[i] = JavaConversion.strToBasic(defparam, parameters[i].getType());
 						} else {

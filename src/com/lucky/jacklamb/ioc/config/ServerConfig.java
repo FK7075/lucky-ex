@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.ioc.config;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -24,11 +25,23 @@ public class ServerConfig {
 	
 	private String webapp;
 	
+	private String docBase;
+	
 	private List<ServletMapping> servletlist;
 	
 	private List<FilterMapping> filterlist;
 	
-	
+	public String getDocBase() {
+		File doc=new File(docBase);
+		if(!doc.isDirectory())
+			doc.mkdirs();
+		return docBase;
+	}
+
+	public void setDocBase(String docBase) {
+		this.docBase = docBase;
+	}
+
 	public ServerConfig() {
 		servletlist=new ArrayList<>();
 		filterlist=new ArrayList<>();
@@ -78,7 +91,7 @@ public class ServerConfig {
 		return filterlist;
 	}
 
-	public void addFilterlist(Filter filter,String...mappings) {
+	public void addFilter(Filter filter,String...mappings) {
 		String filterName=LuckyUtils.TableToClass1(filter.getClass().getSimpleName());
 		Set<String> maps;
 		if(mappings.length==0) {
@@ -97,6 +110,7 @@ public class ServerConfig {
 			serverConfig.setPort(8080);
 			serverConfig.setContextPath("");
 			serverConfig.setWebapp("/WebContent/");
+			serverConfig.setDocBase("C:/Lucky/FK7075/Tomcat/Document/");
 			serverConfig.addServlet(new LuckyDispatherServlet(), "/");
 		}
 		return serverConfig;
