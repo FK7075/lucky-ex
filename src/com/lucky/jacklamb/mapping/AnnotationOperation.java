@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class AnnotationOperation {
 	 * 根据参数得到具体的MultipartFile
 	 * 
 	 * @param model  Model对象
-	 * @param formName  formName 表单上<input type="file">的"name"属性值
+	 * @param formName  formName 表单上<-input type="file"->的"name"属性值
 	 * @return 返回MultipartFile对象
 	 * @throws IOException
 	 * @throws ServletException
@@ -66,19 +67,63 @@ public class AnnotationOperation {
 			throws IOException, ServletException {
 		Map<String, MultipartFile> map = new HashMap<>();
 		Parameter[] parameters = method.getParameters();
-		for (Parameter par : parameters) {
-			if (MultipartFile.class.isAssignableFrom(par.getType())) {
-				map.put(getParamName(par), uploadMutipar(model, getParamName(par)));
+		try {
+			for (Parameter par : parameters) {
+				if (MultipartFile.class.isAssignableFrom(par.getType())) {
+					map.put(getParamName(par), uploadMutipar(model, getParamName(par)));
+				}
 			}
+		}catch (NullPointerException e) {
+			List<String> paramlist=new ArrayList<>();
+			for (Parameter par : parameters) {
+				if (MultipartFile.class.isAssignableFrom(par.getType())) {
+					paramlist.add(getParamName(par));
+				}
+			}
+			setMultipartFileMap(model,map,paramlist);
 		}
 		return map;
+	}
+	
+	/**
+	 * MultipartFile的多文件上传,基于Apache [commons-fileupload-1.3.1.jar  commons-io-2.4.jar]
+	 * @param model Model对象
+	 * @param resultsMap 参数名与MultipartFile对象组成的map
+	 * @param paramlist MultipartFile类型参数名组成的集合
+	 */
+	public void setMultipartFileMap(Model model,Map<String, MultipartFile> resultsMap,List<String> paramlist) {
+		try{
+			DiskFileItemFactory factory = new DiskFileItemFactory();
+			ServletFileUpload upload = new ServletFileUpload(factory);
+			upload.setHeaderEncoding("UTF-8"); 
+			if(!ServletFileUpload.isMultipartContent(model.getRequest())){
+				return;
+			}
+			@SuppressWarnings("unchecked")
+			List<FileItem> list = upload.parseRequest(model.getRequest());
+			String field="";
+			for(FileItem item : list){
+				if(!item.isFormField()){
+					field=item.getFieldName();
+					String filename=item.getName();
+					if(paramlist.contains(field)) {
+						InputStream in = item.getInputStream();
+						String suffix=filename.substring(filename.lastIndexOf("."));
+						MultipartFile mfp=new MultipartFile(in,model.getRealPath("/"),suffix);
+						resultsMap.put(field, mfp);
+					}
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	 * --@Upload注解方式的多文件上传-基于Servlet3的Part对象和@MultipartConfig注解的实现
 	 * 
 	 * @param model  Model对象
-	 * @param formName 表单上[input type="file"]的"name"属性值
+	 * @param formName 表单上<-input type="file"->的"name"属性值
 	 * @param path 要上传到服务器的哪个文件夹？
 	 * @param type 允许上传的文件类型
 	 * @param maxSize 允许上传文件的最大大小
@@ -99,7 +144,6 @@ public class AnnotationOperation {
 				}
 			}
 			String filename = UUID.randomUUID().toString().replaceAll("-", "")+ suffix;
-			// 获取上传的文件名
 			InputStream is = part.getInputStream();
 			FileInputStream fis = (FileInputStream) is;
 			if (maxSize != 0) {
@@ -109,7 +153,6 @@ public class AnnotationOperation {
 					throw new RuntimeException("上传文件的大小(" + filesize + "kb)超出设置的最大值" + maxSize + "kb");
 				}
 			}
-			// 动态获取服务器的路径
 			String serverpath = model.getRealPath(path);
 			File file = new File(serverpath);
 			if (!file.isDirectory()) {
@@ -245,12 +288,9 @@ public class AnnotationOperation {
 	/**
 	 * 返回Controller方法参数名与参数值所组成的Map(针对Pojo类型的参数)
 	 * 
-	 * @param model
-	 *            Model对象
-	 * @param method
-	 *            将要执行的Controller方法
-	 * @param uploadMap
-	 *            上传后的文件名与表单name属性所组成的Map
+	 * @param model  Model对象
+	 * @param method 将要执行的Controller方法
+	 * @param uploadMap 上传后的文件名与表单name属性所组成的Map
 	 * @return Controller方法参数名与参数值所组成的Map(针对Pojo类型的参数)
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
@@ -289,10 +329,8 @@ public class AnnotationOperation {
 	/**
 	 * 文件下载操作@Download
 	 * 
-	 * @param model
-	 *            Model对象
-	 * @param method
-	 *            将要执行的Controller方法
+	 * @param model Model对象
+	 * @param method 将要执行的Controller方法
 	 * @throws IOException
 	 */
 	@SuppressWarnings("resource")
@@ -301,21 +339,29 @@ public class AnnotationOperation {
 		String path="";
 		if(!"".equals(dl.path())) {
 			path=dl.path();
+		}else if(!"".equals(dl.docPath())){
+			path=model.getRealPath("")+dl.docPath();
 		}else {
 			String fileName = dl.name();
 			String filePath = dl.folder();
-			String file = model.getRequestPrarmeter(fileName); // 客户端传递的需要下载的文件名
+			String file;
+			if(model.parameterMapContainsKey(fileName))// 客户端传递的需要下载的文件名
+				file = model.getRequestPrarmeter(fileName);
+			else if(model.restMapContainsKey(fileName))
+				file = model.getRestParam(fileName);
+			else
+				throw new RuntimeException("找不到必要属性\""+fileName+"\"");
 			path = model.getRealPath(filePath) + file; // 默认认为文件在当前项目的根目录
 		}
 		File f=new File(path);
 		if(!f.exists())
 			throw new RuntimeException("找不到文件,无法完成下载操作！"+path);
 		FileInputStream fis = new FileInputStream(f);
-		String downName=UUID.randomUUID().toString().replaceAll("-", "")+path.substring(path.lastIndexOf("."));
+		String downName=f.getName();
 		model.getResponse().setCharacterEncoding("utf-8");
 		model.getResponse().setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(downName,"UTF-8"));
 		ServletOutputStream out = model.getResponse().getOutputStream();
-		byte[] bt = new byte[1024];
+		byte[] bt = new byte[1024*6];
 		int length = 0;
 		while ((length = fis.read(bt)) != -1) {
 			out.write(bt, 0, length);
@@ -327,10 +373,8 @@ public class AnnotationOperation {
 	/**
 	 * 得到将要执行的Controller方法的参数列表的值
 	 * 
-	 * @param model
-	 *            Model对象
-	 * @param method
-	 *            将要执行的Controller方法
+	 * @param model Model对象
+	 * @param method 将要执行的Controller方法
 	 * @return 将要执行的Controller方法的参数列表
 	 * @throws IOException
 	 * @throws ServletException
@@ -377,7 +421,10 @@ public class AnnotationOperation {
 					} else {
 						if (defparam == null)
 							throw new NotFindRequestException("缺少请求参数：" + reqParaName+",错误位置："+method);
-						args[i] = ApplicationBeans.createApplicationBeans().getBean(defparam);
+						if("null".equals(defparam))
+							args[i]=null;
+						else
+							args[i] = ApplicationBeans.createApplicationBeans().getBean(defparam);
 					}
 				} else {
 					if (model.parameterMapContainsKey(reqParaName)) {
@@ -387,7 +434,9 @@ public class AnnotationOperation {
 					} else {
 						if (defparam == null)
 							throw new NotFindRequestException("缺少请求参数：" + reqParaName+",错误位置："+method);
-						if (parameters[i].getType().getClassLoader() == null) {
+						if("null".equals(defparam)) {
+							args[i]=null;
+						}else if (parameters[i].getType().getClassLoader() == null) {
 							args[i] = JavaConversion.strToBasic(defparam, parameters[i].getType());
 						} else {
 							args[i] = ApplicationBeans.createApplicationBeans().getBean(defparam);

@@ -32,6 +32,7 @@ public class ServerConfig {
 	private List<FilterMapping> filterlist;
 	
 	public String getDocBase() {
+		docBase+="tomcat."+port+"/work/Tomcat/localhost/Lucky/";
 		File doc=new File(docBase);
 		if(!doc.isDirectory())
 			doc.mkdirs();
@@ -110,7 +111,16 @@ public class ServerConfig {
 			serverConfig.setPort(8080);
 			serverConfig.setContextPath("");
 			serverConfig.setWebapp("/WebContent/");
-			serverConfig.setDocBase("C:/Lucky/FK7075/Tomcat/Document/");
+			if(ServerConfig.class.getResource("/")!=null) {
+				String path=ServerConfig.class.getResource("/").getPath();
+				path=path.replaceAll("/bin/", "/");
+				serverConfig.setDocBase(path);
+			}else {
+				String path=ServerConfig.class.getResource("").getPath();
+				path=path.substring(6,path.indexOf(".jar!"));
+				path=path.substring(0,path.lastIndexOf("/"))+"/";
+				serverConfig.setDocBase(path);
+			}
 			serverConfig.addServlet(new LuckyDispatherServlet(), "/");
 		}
 		return serverConfig;

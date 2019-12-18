@@ -25,7 +25,7 @@ public class JarScan implements Scan {
 			prefix=allname.substring(0, allname.length()-simpleName.length()).replaceAll("\\.", "/");
 		}
 		String jarpath = JarScan.class.getResource("").getPath();
-		jarpath=jarpath.substring(6, jarpath.indexOf("!"));
+		jarpath=jarpath.substring(6, jarpath.indexOf(".jar!")+4);
 		JarFile jarFile=null;
 		
 		try {
@@ -52,4 +52,5 @@ public class JarScan implements Scan {
 		}
 		return className;
 	}
+
 }
