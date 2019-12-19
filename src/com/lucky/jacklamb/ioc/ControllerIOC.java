@@ -155,6 +155,9 @@ public class ControllerIOC {
 			for (Method method : publicMethods) {
 				if (haveMapping(method)) {
 					ControllerAndMethod come = new ControllerAndMethod();
+					String[] controllerIps=clzz.getAnnotation(Controller.class).ip();
+					String[] mappingIps=getIps(method);
+					come.addIds(controllerIps);come.addIds(mappingIps);
 					come.setController(entry.getValue());
 					String url_m;
 					String mappingValue=getMappingValue(method);
@@ -209,6 +212,20 @@ public class ControllerIOC {
 		if(method.isAnnotationPresent(DeleteMapping.class))
 			return method.getAnnotation(DeleteMapping.class).value();
 		return null;
+	}
+	
+	private String[] getIps(Method method) {
+		if(method.isAnnotationPresent(RequestMapping.class))
+			return method.getAnnotation(RequestMapping.class).ip();
+		if(method.isAnnotationPresent(GetMapping.class)) 
+			return method.getAnnotation(GetMapping.class).ip();
+		if(method.isAnnotationPresent(PostMapping.class))
+			return method.getAnnotation(PostMapping.class).ip();
+		if(method.isAnnotationPresent(PutMapping.class))
+			return method.getAnnotation(PutMapping.class).ip();
+		if(method.isAnnotationPresent(DeleteMapping.class))
+			return method.getAnnotation(DeleteMapping.class).ip();
+		return new String[0];
 	}
 	
 	private RequestMethod[] getMappingRequestMethod(Method method) {

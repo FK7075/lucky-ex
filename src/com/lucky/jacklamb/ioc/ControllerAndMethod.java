@@ -2,10 +2,11 @@ package com.lucky.jacklamb.ioc;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.lucky.jacklamb.enums.RequestMethod;
 
@@ -25,6 +26,11 @@ public class ControllerAndMethod {
 	 * 该方法支持的请求
 	 */
 	private RequestMethod[] requestMethods;
+	
+	/**
+	 * 该请求支持的ip地址
+	 */
+	private Set<String> ips;
 	
 	/**
 	 * Rest风格参数名与值的Map
@@ -72,6 +78,7 @@ public class ControllerAndMethod {
 	public ControllerAndMethod() {
 		restKV=new HashMap<>();
 		preAndSuf=new ArrayList<>();
+		ips=new HashSet<>();
 		preAndSuf.add("");
 		preAndSuf.add("");
 	}
@@ -121,11 +128,31 @@ public class ControllerAndMethod {
 		}
 		return false;
 	}
-	@Override
-	public String toString() {
-		return "ControllerAndMethod [controller=" + controller + ", requestMethods=" + Arrays.toString(requestMethods)
-				+ ", restKV=" + restKV + ", preAndSuf=" + preAndSuf + ", method=" + method + ", url=" + url + "]";
+	
+	public boolean ipISCorrect(String currip) {
+		if(ips.isEmpty())
+			return true;
+		if("localhost".equals(currip))
+			currip="127.0.0.1";
+		return ips.contains(currip);
 	}
-
+	
+	public Set<String> getIps() {
+		return ips;
+	}
+	public void setIps(Set<String> ips) {
+		this.ips = ips;
+	}
+	public void addIp(String ip) {
+		if("localhost".equals(ip))
+			ip="127.0.0.1";
+		ips.add(ip);
+	}
+	
+	public void addIds(String[] ips) {
+		for(String ip:ips) {
+			addIp(ip);
+		}
+	}
 
 }

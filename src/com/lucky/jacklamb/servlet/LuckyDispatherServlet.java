@@ -82,8 +82,12 @@ public class LuckyDispatherServlet extends HttpServlet {
 					resp.getWriter().print(Jacklabm.exception("HTTP Status 404 Not Found", "不正确的url"+req.getRequestURI(), "找不与请求相匹配的映射资,请检查您的URL是否正确！"));
 					return;
 				}
+				if(!controllerAndMethod.ipISCorrect(req.getRemoteAddr())) {
+					resp.getWriter().print(Jacklabm.exception("HTTP Status 500 Internal Server Error","不合法的请求ip："+req.getRemoteAddr(),"该ip地址没有被注册，当前方法拒绝响应！"));
+					return;
+				}
 				if(!controllerAndMethod.requestMethodISCorrect(this.method)) {
-					resp.getWriter().print(Jacklabm.exception("HTTP Status 500 Internal Server Error","不正确的请求类型"+this.method,"您的请求类型"+this.method+",当前方法并不支持！"));
+					resp.getWriter().print(Jacklabm.exception("HTTP Status 500 Internal Server Error","不合法的请求类型"+this.method,"您的请求类型"+this.method+",当前方法并不支持！"));
 					return;
 				}else {
 					model.setRestMap(controllerAndMethod.getRestKV());

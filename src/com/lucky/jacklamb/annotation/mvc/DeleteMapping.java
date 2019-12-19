@@ -33,5 +33,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface DeleteMapping {
 	String value() default "";
+	String[] ip() default {};
 	
 }

@@ -33,5 +33,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface PutMapping {
 	String value() default "";
+	String[] ip() default {};
 	
 }
