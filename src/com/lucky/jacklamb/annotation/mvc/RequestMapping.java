@@ -30,6 +30,7 @@ import com.lucky.jacklamb.enums.RequestMethod;
 public @interface RequestMapping {
 	String value() default "";
 	String[] ip() default {};
+	String ipSection() default "";
 	RequestMethod[] method() default { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE };
 
 }

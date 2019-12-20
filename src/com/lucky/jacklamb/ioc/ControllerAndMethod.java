@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.lucky.jacklamb.enums.RequestMethod;
+import com.lucky.jacklamb.utils.IpUtil;
 
 /**
  * Controller
@@ -31,6 +32,11 @@ public class ControllerAndMethod {
 	 * 该请求支持的ip地址
 	 */
 	private Set<String> ips;
+	
+	/**
+	 * 该请求支持的ip段范围
+	 */
+	private String ipSection;
 	
 	/**
 	 * Rest风格参数名与值的Map
@@ -143,16 +149,28 @@ public class ControllerAndMethod {
 	public void setIps(Set<String> ips) {
 		this.ips = ips;
 	}
+	
 	public void addIp(String ip) {
 		if("localhost".equals(ip))
 			ip="127.0.0.1";
 		ips.add(ip);
 	}
 	
+	public boolean ipExistsInRange(String ip) {
+		if(ipSection==null||"".equals(ipSection))
+			return true;
+		return IpUtil.ipExistsInRange(ip, ipSection);
+	}
 	public void addIds(String[] ips) {
 		for(String ip:ips) {
 			addIp(ip);
 		}
 	}
-
+	public String getIpSection() {
+		return ipSection;
+	}
+	public void setIpSection(String ipSection) {
+		this.ipSection = ipSection;
+	}
+	
 }

@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
 public @interface Controller {
 	String value() default "";
 	String[] ip() default {};
+	String ipSection() default "";
 	String prefix() default "";
 	String suffix() default "";
 }

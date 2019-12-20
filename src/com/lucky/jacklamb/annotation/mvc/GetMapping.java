@@ -34,5 +34,6 @@ import java.lang.annotation.Target;
 public @interface GetMapping {
 	String value() default "";
 	String[] ip() default {};
+	String ipSection() default "";
 	
 }

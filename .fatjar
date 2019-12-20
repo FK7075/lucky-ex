@@ -1,5 +1,5 @@
 #Fat Jar Configuration File
-#Sun Dec 15 05:20:01 CST 2019
+#Fri Dec 20 14:49:10 CST 2019
 onejar.license.required=false
 manifest.classpath=
 manifest.removesigners=true
@@ -10,5 +10,5 @@ manifest.mainclass=
 manifest.file=<createnew>
 jarname.isextern=false
 onejar.expand=
-excludes=
+excludes=<jar|junit.jar>;<jar|org.hamcrest.core_1.3.0.v201303031735.jar>
 includes=

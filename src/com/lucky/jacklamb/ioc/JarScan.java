@@ -19,12 +19,13 @@ public class JarScan implements Scan {
 	public List<String> loadComponent(List<String> suffixs) {
 		List<String> className=new ArrayList<>();
 		String prefix="";
+		String jarpath = JarScan.class.getResource("").getPath();
 		if(clzz!=null) {
 			String allname=clzz.getName();
 			String simpleName=clzz.getSimpleName();
 			prefix=allname.substring(0, allname.length()-simpleName.length()).replaceAll("\\.", "/");
+			jarpath=clzz.getResource("").getPath();
 		}
-		String jarpath = JarScan.class.getResource("").getPath();
 		jarpath=jarpath.substring(6, jarpath.indexOf(".jar!")+4);
 		JarFile jarFile=null;
 		
