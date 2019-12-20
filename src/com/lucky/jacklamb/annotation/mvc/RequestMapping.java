@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.lucky.jacklamb.enums.RequestMethod;
+import com.lucky.jacklamb.enums.Rest;
 
 /**
  * 与@Controller注解一起使用配置URL映射(支持Rest风格的URL) value:标注在类上定义一层虚拟文件结构
@@ -28,9 +29,11 @@ import com.lucky.jacklamb.enums.RequestMethod;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RequestMapping {
+	
 	String value() default "";
 	String[] ip() default {};
 	String ipSection() default "";
+	Rest rest() default Rest.NO;
 	RequestMethod[] method() default { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE };
 
 }

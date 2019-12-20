@@ -13,6 +13,7 @@ import com.lucky.jacklamb.annotation.mvc.PostMapping;
 import com.lucky.jacklamb.annotation.mvc.PutMapping;
 import com.lucky.jacklamb.annotation.mvc.RequestMapping;
 import com.lucky.jacklamb.enums.RequestMethod;
+import com.lucky.jacklamb.enums.Rest;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.utils.LuckyUtils;
@@ -159,6 +160,10 @@ public class ControllerIOC {
 					String[] mappingIps=getIps(method);
 					come.addIds(controllerIps);
 					come.addIds(mappingIps);
+					if(clzz.getAnnotation(Controller.class).rest()!=Rest.NO)
+						come.setRest(clzz.getAnnotation(Controller.class).rest());
+					if(getRest(method)!=Rest.NO)
+						come.setRest(getRest(method));
 					String controllerIpSection=clzz.getAnnotation(Controller.class).ipSection();
 					String methodIpSection=getIpSection(method);
 					if(!"".equals(controllerIpSection))
@@ -219,6 +224,20 @@ public class ControllerIOC {
 		if(method.isAnnotationPresent(DeleteMapping.class))
 			return method.getAnnotation(DeleteMapping.class).value();
 		return null;
+	}
+	
+	public Rest getRest(Method method) {
+		if(method.isAnnotationPresent(RequestMapping.class))
+			return method.getAnnotation(RequestMapping.class).rest();
+		if(method.isAnnotationPresent(GetMapping.class))
+			return method.getAnnotation(GetMapping.class).rest();
+		if(method.isAnnotationPresent(PostMapping.class))
+			return method.getAnnotation(PostMapping.class).rest();
+		if(method.isAnnotationPresent(PutMapping.class))
+			return method.getAnnotation(PutMapping.class).rest();
+		if(method.isAnnotationPresent(DeleteMapping.class))
+			return method.getAnnotation(DeleteMapping.class).rest();
+		return Rest.NO;
 	}
 	
 	private String[] getIps(Method method) {

@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.lucky.jacklamb.enums.Rest;
+
 /**
  * 在MVC中此用于标识一个Controller组件
  * 	value：单独使用此注解是用来定义一个IOC组件
@@ -26,6 +28,7 @@ import java.lang.annotation.Target;
 public @interface Controller {
 	String value() default "";
 	String[] ip() default {};
+	Rest rest() default Rest.NO;
 	String ipSection() default "";
 	String prefix() default "";
 	String suffix() default "";

@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.lucky.jacklamb.enums.Rest;
+
 /**
  * 与@Controller注解一起使用配置URL映射(支持Rest风格的URL)
  * 	value:标注在类上定义一层虚拟文件结构
@@ -35,5 +37,6 @@ public @interface GetMapping {
 	String value() default "";
 	String[] ip() default {};
 	String ipSection() default "";
+	Rest rest() default Rest.NO;
 	
 }

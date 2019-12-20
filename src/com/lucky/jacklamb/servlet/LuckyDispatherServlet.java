@@ -106,6 +106,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 					obj1 = method.invoke(obj, args);
 					if (isDownload == true)//下载操作
 						anop.download(model, method);
+					
 					responseControl.jump(model,controllerAndMethod.getPreAndSuf(), method, obj1);
 				}
 			}

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.lucky.jacklamb.enums.RequestMethod;
+import com.lucky.jacklamb.enums.Rest;
 import com.lucky.jacklamb.utils.IpUtil;
 
 /**
@@ -52,6 +53,11 @@ public class ControllerAndMethod {
 	 * Controller方法
 	 */
 	private Method method;
+	
+	/**
+	 * 启用格式转换
+	 */
+	private Rest rest;
 	
 	/**
 	 * Url请求
@@ -172,5 +178,10 @@ public class ControllerAndMethod {
 	public void setIpSection(String ipSection) {
 		this.ipSection = ipSection;
 	}
-	
+	public Rest getRest() {
+		return rest;
+	}
+	public void setRest(Rest rest) {
+		this.rest = rest;
+	}
 }
