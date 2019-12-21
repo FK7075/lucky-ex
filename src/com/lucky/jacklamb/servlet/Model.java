@@ -14,7 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.lucky.jacklamb.enums.RequestMethod;
-import com.lucky.jacklamb.json.LSON;
+import com.lucky.jacklamb.rest.LSON;
+import com.lucky.jacklamb.rest.LXML;
 import com.lucky.jacklamb.tcconversion.typechange.JavaConversion;
 import com.lucky.jacklamb.utils.ArrayCast;
 
@@ -24,6 +25,8 @@ import com.lucky.jacklamb.utils.ArrayCast;
  *
  */
 public class Model {
+	
+	private final String HEAD="<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
 	/**
 	 * 解码方式
@@ -54,6 +57,8 @@ public class Model {
 	 * Rest风格的参数集合Map<String,String>
 	 */
 	private Map<String,String> restMap;
+	
+	private PrintWriter out;
 
 	/**
 	 *  Model构造器
@@ -61,14 +66,16 @@ public class Model {
 	 * @param response Response对象
 	 * @param requestMethod url请求的方法
 	 * @param encod  解码方式
+	 * @throws IOException 
 	 */
-	public Model(HttpServletRequest request,HttpServletResponse response,RequestMethod requestMethod,String encod) {
+	public Model(HttpServletRequest request,HttpServletResponse response,RequestMethod requestMethod,String encod) throws IOException {
 		this.encod=encod;
 		req =request;
 		resp =response;
 		this.requestMethod=requestMethod;
 		this.parameterMap=getRequestParameterMap();
 		restMap=new HashMap<>();
+		out=response.getWriter();
 	}
 	
 	/**
@@ -218,31 +225,55 @@ public class Model {
 	 * @param info
 	 * @throws IOException
 	 */
-	public void responsePrintIn(String info) throws IOException {
-		PrintWriter out = resp.getWriter();
+	public void responsePrintIn(String info){
 		out.println(info);
-		out.flush();
-		out.close();
 	}
 
 	/**
 	 * 使用response对象的printIn方法将对象模型写出为JSON格式数据
-	 * @param pojo  对象模型(数组，对象，List)
+	 * @param pojo(数组，对象，Collection,Map)
 	 * @throws IOException
 	 */
-	public void printJson(Object pojo) throws IOException {
+	public void printJson(Object pojo){
 		LSON lson = new LSON(pojo);
 		responsePrintIn(lson.getJsonStr());
+	}
+	
+	/**
+	 * 使用response对象的printIn方法将对象模型写出为Xml格式数据
+	 * @param pojo(数组，对象，Collection,Map)
+	 * @throws IOException
+	 */
+	public void printXml(Object pojo){
+		LXML lson = new LXML(pojo);
+		responsePrintIn(HEAD+lson.getXmlStr());
+	}
+	
+	/**
+	 * 关闭PrintWriter
+	 */
+	public void closeWriter() {
+		out.close();
 	}
 
 	/**
 	 * 使用response对象的Writer方法将对象模型写出为JSON格式数据
-	 * @param pojo(数组，对象，List)
+	 * @param pojo(数组，对象，Collection,Map)
 	 * @throws IOException
 	 */
-	public void witerJson(Object pojo) throws IOException {
+	public void witerJson(Object pojo){
 		LSON lson = new LSON(pojo);
 		responseWriter(lson.getJsonStr());
+	}
+	
+	/**
+	 * 使用response对象的Writer方法将对象模型写出为XML格式数据
+	 * @param pojo(数组，对象，Collection,Map)
+	 * @throws IOException
+	 */
+	public void witerXml(Object pojo){
+		LXML lson = new LXML(pojo);
+		responseWriter(HEAD+lson.getXmlStr());
 	}
 
 	/**
@@ -250,11 +281,8 @@ public class Model {
 	 * @param info
 	 * @throws IOException
 	 */
-	public void responseWriter(String info) throws IOException {
-		PrintWriter out = resp.getWriter();
+	public void responseWriter(String info){
 		out.write(info);
-		out.flush();
-		out.close();
 	}
 
 	/**

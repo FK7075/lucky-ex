@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * MVC中使用，定义一个业务逻辑层的组件
+ * 定义一个Service组件
  * @author fk-7075
  *
  */
@@ -15,5 +15,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Service {
+	
+	/**
+	 * 为该Service组件指定一个唯一ID，默认会使用[首字母小写类名]作为组件的唯一ID
+	 * @return
+	 */
 	String value() default "";
 }

@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.lucky.jacklamb.annotation.mvc.Download;
 import com.lucky.jacklamb.enums.RequestMethod;
-import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.ControllerAndMethod;
 import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.WebConfig;
@@ -27,13 +26,11 @@ public class LuckyDispatherServlet extends HttpServlet {
 	private RequestMethod method=RequestMethod.POST;
 	private static final long serialVersionUID = 3808567874497317419L;
 	private AnnotationOperation anop;
-	private ApplicationBeans beans;
 	private WebConfig webCfg;
 	private UrlParsMap urlParsMap;
 	private ResponseControl responseControl;
 
 	public void init(ServletConfig config) {
-		beans=ApplicationBeans.createApplicationBeans();
 		anop = new AnnotationOperation();
 		webCfg=Configuration.getConfiguration().getWebConfig();
 		urlParsMap=new UrlParsMap();
@@ -77,7 +74,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 				String forwardurl=webCfg.getHanderPrefixAndSuffix().get(0)+webCfg.getStaticHander().get(path)+webCfg.getHanderPrefixAndSuffix().get(1);
 				req.getRequestDispatcher(forwardurl).forward(req, resp);
 			}else {
-				ControllerAndMethod controllerAndMethod = beans.getCurrControllerAndMethod(path);
+				ControllerAndMethod controllerAndMethod = urlParsMap.pars(path);
 				if(controllerAndMethod==null) {
 					resp.getWriter().print(Jacklabm.exception("HTTP Status 404 Not Found", "不正确的url"+req.getRequestURI(), "找不与请求相匹配的映射资,请检查您的URL是否正确！"));
 					return;
@@ -99,15 +96,14 @@ public class LuckyDispatherServlet extends HttpServlet {
 					Method method = controllerAndMethod.getMethod();
 					boolean isDownload = method.isAnnotationPresent(Download.class);
 					Object obj = controllerAndMethod.getController();
-					beans.autowReqAdnResp(obj,model);
+					urlParsMap.autowReqAdnResp(obj,model);
 					Object[] args;
 					Object obj1 = new Object();
 					args = (Object[]) anop.getControllerMethodParam(model,method);
 					obj1 = method.invoke(obj, args);
 					if (isDownload == true)//下载操作
 						anop.download(model, method);
-					
-					responseControl.jump(model,controllerAndMethod.getPreAndSuf(), method, obj1);
+					responseControl.jump(model,controllerAndMethod, method, obj1);
 				}
 			}
 		} catch (IllegalArgumentException e) {

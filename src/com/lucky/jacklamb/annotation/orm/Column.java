@@ -7,10 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * ORM中用来确定类属性与表字段的映射关系
- * 	value:属性对应数据库中的字段名
- *  length 建表时该字段的长度
- *  allownull 建表时是否允许该字段为NULL(默认允许true)
+ * 确定类属性与表字段的映射关系
+ * 
  * @author fk-7075
  *
  */
@@ -18,7 +16,22 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Column {
+	
+	/**
+	 * 属性对应数据库中的字段名
+	 * @return
+	 */
 	String value() default "";
+	
+	/**
+	 * 建表时该字段的长度,默认35
+	 * @return
+	 */
 	int length() default 35;
+	
+	/**
+	 * 建表时是否允许该字段为NULL，默认true
+	 * @return
+	 */
 	boolean allownull() default true;
 }

@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * MVC中使用，定义一个业务逻辑层的组件
+ * 缓存
  * @author fk-7075
  *
  */

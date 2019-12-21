@@ -7,12 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 定义IOC组件的注解
- * 	优先级 id>value在两者都为默认值时，使用类名作为组件的ID
- * 	value:单独使用时定义组件的ID
- * 	id:非单独使用时定义组件的ID
- *  fields:类的属性名
- *  values：设置对应属性的值
+ * 定义一个Component组件
  * @author fk-7075
  *
  */
@@ -20,8 +15,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Component {
+	
+	/**
+	 * 为该Component组件指定一个唯一ID，默认会使用[首字母小写类名]作为组件的唯一ID
+	 * @return
+	 */
 	String value() default "";
-	String id() default "";
-	String[] fields() default {};
-	String[] values() default {};
 }

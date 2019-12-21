@@ -23,9 +23,34 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Mapper {
+	
+	/**
+	 * 为该Mapper组件指定一个唯一ID，默认会使用[首字母小写类名]作为组件的唯一ID
+	 * @return
+	 */
 	String id() default "";
+	
+	/**
+	 * Mapper接口所使用的数据源，默认defaultDB
+	 * @return
+	 */
 	String dbname() default "defaultDB";
+	
+	/**
+	 * 外部SQl配置类的Class
+	 * @return
+	 */
 	Class<?> value() default Void.class;
+	
+	/**
+	 * 外部SQl配置文件的classpth( eg : com/lucky/mapper/user.properties)
+	 * @return
+	 */
 	String[] properties() default {};
+	
+	/**
+	 * properties配置文件的编码格式(默认值为gbk)
+	 * @return
+	 */
 	String  codedformat() default "gbk";
 }

@@ -7,20 +7,25 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.lucky.jacklamb.enums.RequestMethod;
-import com.lucky.jacklamb.enums.Rest;
 
 /**
- * 与@Controller注解一起使用配置URL映射(支持Rest风格的URL) value:标注在类上定义一层虚拟文件结构
- * 标注在方法上定义一个响应方法，类上的value与方法上的value唯一标识一个响应方法 eg:
- * Rest风格的URL:http://127.0.0.1:8080/lucky/server/query/fk/12 +@Controller
- * +@RequestMapping("/server") public class Controller{
- * 
- * +@RequestMapping("/query->username,aga") public String
- * query(@RestParam("age")int uAge,@RestParam("username")String uName){ ...
- * uName=fk uAge=12 }
- * 
- * } Lucky根据请求的url唯一定位到一个Controller方法 method[]：对请求的类型进行限制，默认接受GET POST PUT
- * DELETE 四组请求
+ * 定义一个URL映射(支持Rest风格的URL)<br>
+ * 1.普通类型的URL映射<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;
+ * -@RequestMapping("/server/query")<br>
+ * 2.Rest风格的URL映射<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;
+ * -@RequestMapping("/server/query/name/#{name}/sex/#{sex}")<br>
+ * 3.带有特殊符号的URL映射<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;
+ * a."?":匹配一个任意的字符串<br>&nbsp;&nbsp;&nbsp;&nbsp;
+ * -@RequestMapping("/server/?/query")<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;
+ * b.xxx*:匹配一个以xxx开头的字符串<br>&nbsp;&nbsp;&nbsp;&nbsp;
+ * -@RequestMapping("/server/admin_* /query")<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;
+ * c.*xxx：匹配一个以xxx结尾的字符串<br>&nbsp;&nbsp;&nbsp;&nbsp;
+ * -@RequestMapping("/server/*_admin/query")<br>
  * 
  * @author fk-7075
  *
@@ -30,10 +35,28 @@ import com.lucky.jacklamb.enums.Rest;
 @Documented
 public @interface RequestMapping {
 	
+	/**
+	 * 定义一个url请求映射
+	 * @return
+	 */
 	String value() default "";
+	
+	/**
+	 * 指定一些合法访问的ip地址，来自其他ip地址的请求将会被拒绝
+	 * @return
+	 */
 	String[] ip() default {};
-	String ipSection() default "";
-	Rest rest() default Rest.NO;
+	
+	/**
+	 * 指定一些合法访问的ip段，来自其他ip地址的请求将会被拒绝
+	 * @return
+	 */
+	String[] ipSection() default {};
+	
+	/**
+	 * 定义该映射支持的请求类型，默认支持POST GET PUT DELETE
+	 * @return
+	 */
 	RequestMethod[] method() default { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE };
 
 }

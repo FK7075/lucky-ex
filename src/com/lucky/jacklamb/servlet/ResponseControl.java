@@ -6,7 +6,8 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
-import com.lucky.jacklamb.utils.LuckyUtils;
+import com.lucky.jacklamb.enums.Rest;
+import com.lucky.jacklamb.ioc.ControllerAndMethod;
 
 /**
  * 处理响应相关的类
@@ -55,16 +56,32 @@ public class ResponseControl {
 	 * @throws IOException
 	 * @throws ServletException
 	 */
-	public void jump(Model model,List<String> pre_suf, Method method, Object obj)
+	public void jump(Model model,ControllerAndMethod controllerAndMethod, Method method, Object obj)
 			throws IOException, ServletException {
 		if (obj != null) {
-			String res="";
-			if (LuckyUtils.isJavaClass(obj.getClass())) {
-				res=obj.toString();
-				toPage(model,res,pre_suf);
-			} 
+			if(controllerAndMethod.getRest()==Rest.JSON) {
+				model.witerJson(obj);
+				model.closeWriter();
+				return;
+			}
+			if(controllerAndMethod.getRest()==Rest.XML) {
+				model.witerXml(obj);
+				model.closeWriter();
+				return;
+			}
+			if(controllerAndMethod.getRest()==Rest.TXT) {
+				model.responseWriter(obj.toString());
+				model.closeWriter();
+				return;
+			}
+			if(controllerAndMethod.getRest()==Rest.NO) {
+				if(String.class.isAssignableFrom(obj.getClass())) {
+					toPage(model,obj.toString(),controllerAndMethod.getPreAndSuf());
+				}else {
+					throw new RuntimeException("返回值类型错误，无法完成转发和重定向操作!合法的返回值类型为String，错误位置："+controllerAndMethod.getMethod());
+				}
+			}
+				
 		}
 	}
-
-
 }

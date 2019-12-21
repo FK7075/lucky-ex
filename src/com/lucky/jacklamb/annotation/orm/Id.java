@@ -9,10 +9,8 @@ import java.lang.annotation.Target;
 import com.lucky.jacklamb.enums.PrimaryType;
 
 /**
- * 用于建立表与实体类的映射关系
- * 	value 标识主键，主键映射
- * 	type 设置类型【Type.DEFAULT：普通主键 Type.AUTO_INT：自增的INT主键 AUTO_UUID：自增的UUID主键】
- *  length 设置字段长度
+ * 主键映射
+ * 
  * @author fk-7075
  *
  */
@@ -20,7 +18,28 @@ import com.lucky.jacklamb.enums.PrimaryType;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Id {
+	
+	/**
+	 * 标识主键，设置映射名
+	 * @return
+	 */
 	String value() default "";
+	
+	/**
+	 * 设置类型<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;
+	 * Type.DEFAULT(默认):普通主键<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;
+	 * Type.AUTO_INT:自增的INT主键 <br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;
+	 * AUTO_UUID：自增的UUID主键
+	 * @return
+	 */
 	PrimaryType type() default PrimaryType.DEFAULT;
+	
+	/**
+	 * 设置建表时的字段长度,默认35
+	 * @return
+	 */
 	int length() default 35;
 }

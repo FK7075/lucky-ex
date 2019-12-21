@@ -211,72 +211,75 @@ public class IOCContainers {
 				if(field.isAnnotationPresent(Autowired.class)) {
 					auto=field.getAnnotation(Autowired.class);
 					if("".equals(auto.value())) {
-						field.set(component, beans.getBean(fieldClass));
+						field.set(component, beans.getBean(fieldClass));//类型扫描
 					}else {
-						field.set(component, beans.getBean(auto.value()));
+						field.set(component, beans.getBean(auto.value()));//id注入
 					}
 				}else if(field.isAnnotationPresent(Value.class)) {
 					value=field.getAnnotation(Value.class);
 					String[] val = value.value();
-					if(fieldClass.isArray()) {
-						field.set(component,ArrayCast.strArrayChange(val, fieldClass));
-					}else if(List.class.isAssignableFrom(fieldClass)) {
-						List<Object> list=new ArrayList<>();
-						String fx=ArrayCast.getFieldGenericType(field)[0];
-						if(fx.endsWith("$ref")) {
-							for(String z:val) {
-								list.add(beans.getBean(z));
-							}
-						}else {
-							for(String z:val) {
-								list.add(JavaConversion.strToBasic(z, fx));
-							}
-						}
-						field.set(component, list);
-					}else if(Set.class.isAssignableFrom(fieldClass)) {
-						Set<Object> set=new HashSet<>();
-						String fx=ArrayCast.getFieldGenericType(field)[0];
-						if(fx.endsWith("$ref")) {
-							for(String z:val) {
-								set.add(beans.getBean(z));
-							}
-						}else {
-							for(String z:val) {
-								set.add(JavaConversion.strToBasic(z, fx));
-							}
-						}
-						field.set(component, set);
-					}else if(Map.class.isAssignableFrom(fieldClass)) {
-						Map<Object,Object> map=new HashMap<>();
-						String[] fx=ArrayCast.getFieldGenericType(field);
-						boolean one=fx[0].endsWith("$ref");
-						boolean two=fx[1].endsWith("$ref");
-						if(one&&two) {//K-V都不是基本类型
-							for(String z:val) {
-								String[] kv=z.split(":");
-								map.put(beans.getBean(kv[0]), beans.getBean(kv[1]));
-							}
-						}else if(one&&!two) {//V是基本类型
-							for(String z:val) {
-								String[] kv=z.split(":");
-								map.put(beans.getBean(kv[0]), JavaConversion.strToBasic(kv[1], fx[1]));
-							}
-						}else if(!one&&two) {//K是基本类型
-							for(String z:val) {
-								String[] kv=z.split(":");
-								map.put(JavaConversion.strToBasic(kv[0], fx[0]),beans.getBean(kv[1]));
-							}
-						}else {//K-V都是基本类型
-							for(String z:val) {
-								String[] kv=z.split(":");
-								map.put(JavaConversion.strToBasic(kv[0], fx[0]), JavaConversion.strToBasic(kv[1], fx[1]));
-							}
-						}
-						field.set(component, map);
+					if(val.length==0) {//类型扫描
+						field.set(component, beans.getBean(fieldClass));
 					}else {
-						field.set(component, JavaConversion.strToBasic(val[0], fieldClass.getSimpleName()));
+						if(fieldClass.isArray()) {//基本类型的数组类型
+							field.set(component,ArrayCast.strArrayChange(val, fieldClass));
+						}else if(List.class.isAssignableFrom(fieldClass)) {//List类型
+							List<Object> list=new ArrayList<>();
+							String fx=ArrayCast.getFieldGenericType(field)[0];
+							if(fx.endsWith("$ref")) {
+								for(String z:val) {
+									list.add(beans.getBean(z));
+								}
+							}else {
+								for(String z:val) {
+									list.add(JavaConversion.strToBasic(z, fx));
+								}
+							}
+							field.set(component, list);
+						}else if(Set.class.isAssignableFrom(fieldClass)) {//Set类型
+							Set<Object> set=new HashSet<>();
+							String fx=ArrayCast.getFieldGenericType(field)[0];
+							if(fx.endsWith("$ref")) {
+								for(String z:val) {
+									set.add(beans.getBean(z));
+								}
+							}else {
+								for(String z:val) {
+									set.add(JavaConversion.strToBasic(z, fx));
+								}
+							}
+							field.set(component, set);
+						}else if(Map.class.isAssignableFrom(fieldClass)) {//Map类型
+							Map<Object,Object> map=new HashMap<>();
+							String[] fx=ArrayCast.getFieldGenericType(field);
+							boolean one=fx[0].endsWith("$ref");
+							boolean two=fx[1].endsWith("$ref");
+							if(one&&two) {//K-V都不是基本类型
+								for(String z:val) {
+									String[] kv=z.split(":");
+									map.put(beans.getBean(kv[0]), beans.getBean(kv[1]));
+								}
+							}else if(one&&!two) {//V是基本类型
+								for(String z:val) {
+									String[] kv=z.split(":");
+									map.put(beans.getBean(kv[0]), JavaConversion.strToBasic(kv[1], fx[1]));
+								}
+							}else if(!one&&two) {//K是基本类型
+								for(String z:val) {
+									String[] kv=z.split(":");
+									map.put(JavaConversion.strToBasic(kv[0], fx[0]),beans.getBean(kv[1]));
+								}
+							}else {//K-V都是基本类型
+								for(String z:val) {
+									String[] kv=z.split(":");
+									map.put(JavaConversion.strToBasic(kv[0], fx[0]), JavaConversion.strToBasic(kv[1], fx[1]));
+								}
+							}
+							field.set(component, map);
+						}else {//自定义的基本类型
+							field.set(component, JavaConversion.strToBasic(val[0], fieldClass.getSimpleName()));
+						}
 					}
-					
 				}
 			}
 		}

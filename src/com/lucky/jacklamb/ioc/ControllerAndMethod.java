@@ -37,7 +37,7 @@ public class ControllerAndMethod {
 	/**
 	 * 该请求支持的ip段范围
 	 */
-	private String ipSection;
+	private String[] ipSection;
 	
 	/**
 	 * Rest风格参数名与值的Map
@@ -163,19 +163,23 @@ public class ControllerAndMethod {
 	}
 	
 	public boolean ipExistsInRange(String ip) {
-		if(ipSection==null||"".equals(ipSection))
+		if(ipSection==null||ipSection.length==0)
 			return true;
-		return IpUtil.ipExistsInRange(ip, ipSection);
+		boolean isok=true;
+		for(String hfip:ipSection)
+			isok=isok&&IpUtil.ipExistsInRange(ip,hfip);
+		return isok;
 	}
 	public void addIds(String[] ips) {
 		for(String ip:ips) {
 			addIp(ip);
 		}
 	}
-	public String getIpSection() {
+	
+	public String[] getIpSection() {
 		return ipSection;
 	}
-	public void setIpSection(String ipSection) {
+	public void setIpSection(String[] ipSection) {
 		this.ipSection = ipSection;
 	}
 	public Rest getRest() {

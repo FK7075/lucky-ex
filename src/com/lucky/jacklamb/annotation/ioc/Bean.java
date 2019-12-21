@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 输出一个Ioc组件
+ * 注册一个Component组件，需要配合@BeanFactory注解使用
  * @author fk-7075
  *
  */
@@ -15,5 +15,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Bean {
+	
+	/**
+	 * 为该Component组件指定一个唯一ID，默认会使用[类名.方法名]作为组件的唯一ID
+	 * @return
+	 */
 	String value() default "";
 }

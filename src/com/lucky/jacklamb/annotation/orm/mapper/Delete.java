@@ -17,5 +17,10 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Delete {
 	String value() default "";
+	
+	/**
+	 * ÊÇ·ñÆôÓÃ[Class+ID]É¾³ı
+	 * @return
+	 */
 	boolean byid() default false;
 }

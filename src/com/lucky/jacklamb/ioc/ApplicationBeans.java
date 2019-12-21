@@ -1,15 +1,11 @@
 package com.lucky.jacklamb.ioc;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.lucky.jacklamb.annotation.ioc.Controller;
 import com.lucky.jacklamb.exception.NotFindBeanException;
-import com.lucky.jacklamb.ioc.config.Configuration;
-import com.lucky.jacklamb.servlet.Model;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 import com.lucky.jacklamb.utils.Jacklabm;
 import com.lucky.jacklamb.utils.LuckyUtils;
@@ -187,6 +183,10 @@ public class ApplicationBeans {
 		return null;
 	}
 	
+	/**
+	 * 得到容器中所有的DataSource对象
+	 * @return
+	 */
 	public List<DataSource> getDataSources() {
 		List<DataSource> list=new ArrayList<>();
 		for(Entry<String,Object> entry:getComponentBeans().entrySet()) {
@@ -247,84 +247,9 @@ public class ApplicationBeans {
 			throw new NotFindBeanException("在IOC容器中找不到ID为--"+beanId+"--的Bean...");
 	}
 	
-	public ControllerAndMethod getCurrControllerAndMethod(String resturl) {
-		String mapping = getKey(resturl);
-		if(mapping==null)
-			return null;
-		ControllerAndMethod come = getHanderMethod(mapping);
-		come.setUrl(mapping);
-		Method method = come.getMethod();
-		String rmvalue = iocContainers.getControllerIOC().getMappingValue(method);
-		if (rmvalue.contains("//")) {
-			String restParamStr = resturl.replaceAll(mapping + "/", "");
-			String[] restVs = restParamStr.split("/");
-			int start = rmvalue.indexOf("//");
-			rmvalue = rmvalue.substring(start + 2, rmvalue.length());
-			String[] restKs = rmvalue.split("/");
-			if(restVs.length!=restKs.length)
-				return null;
-			for (int i = 0; i < restKs.length; i++) {
-				String currKey=restKs[i];
-				if( currKey.startsWith("#")) {//以#开头，表示Rest参数名
-					String ck=currKey.substring(1, currKey.length());
-					come.restPut(ck, restVs[i]);
-				}else if(currKey.startsWith("*")&&!currKey.endsWith("*")) {//以*开头，表示以*后面的字符结尾即可
-					String ck=currKey.substring(1, currKey.length());
-					if(!restVs[i].endsWith(ck))
-						return null;
-				}else if(!currKey.startsWith("*")&&currKey.endsWith("*")) {//以*结尾，表示以*前面的字符开头即可
-					String ck=currKey.substring(0, currKey.length()-1);
-					if(!restVs[i].startsWith(ck))
-						return null;
-				}else if(currKey.startsWith("*")&&currKey.endsWith("*")) {//以*开头以*结尾,表示存在中间的字符即可
-					String ck=currKey.substring(1, currKey.length()-1);
-					if(!restVs[i].contains(ck))
-						return null;
-				}else if("?".equals(currKey)) {
-					//只有?,表示匹配任意一个非空字符
-				}else {//没有特殊字符表示参数全匹配
-					if(!restVs[i].equals(currKey))
-						return null;
-				}
-			}
-		}
-		Controller cont=come.getController().getClass().getAnnotation(Controller.class);
-		List<String> globalprefixAndSuffix=Configuration.getConfiguration().getWebConfig().getHanderPrefixAndSuffix();
- 		come.setPrefix(globalprefixAndSuffix.get(0));
-		come.setSuffix(globalprefixAndSuffix.get(1));
-		if(!"".equals(cont.prefix()))
-			come.setPrefix(cont.prefix());
-		if(!"".equals(cont.suffix()))
-			come.setSuffix(cont.suffix());
-		return come;
-	}
-	
-	public void autowReqAdnResp(Object object,Model model) {
-		try {
-			iocContainers.autowReqAdnResp(object, model);
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 	/**
-	 * 过滤掉url中的参数项（rest风格参数）
-	 * @param url
-	 * @return
+	 * 打印容器中组件信息
 	 */
-	private String getKey(String url) {
-		if (iocContainers.getControllerIOC().containHander(url))
-			return url;
-		if (url.lastIndexOf('/') == 0)
-			return null;
-		int end = url.lastIndexOf('/');
-		url = url.substring(0, end);
-		return getKey(url);
-	}
 	public void printBeans() {
 		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Controller组件:"+getControllerBeans());
 		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Service组件:"+getServiceBeans());

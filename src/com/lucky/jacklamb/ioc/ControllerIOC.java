@@ -12,6 +12,7 @@ import com.lucky.jacklamb.annotation.mvc.GetMapping;
 import com.lucky.jacklamb.annotation.mvc.PostMapping;
 import com.lucky.jacklamb.annotation.mvc.PutMapping;
 import com.lucky.jacklamb.annotation.mvc.RequestMapping;
+import com.lucky.jacklamb.annotation.mvc.RestBody;
 import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.enums.Rest;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
@@ -29,8 +30,6 @@ public class ControllerIOC {
 	private Map<String,String> mapping;
 	
 	
-	
-
 	public Map<String, String> getMapping() {
 		return mapping;
 	}
@@ -162,27 +161,14 @@ public class ControllerIOC {
 					come.addIds(mappingIps);
 					if(clzz.getAnnotation(Controller.class).rest()!=Rest.NO)
 						come.setRest(clzz.getAnnotation(Controller.class).rest());
-					if(getRest(method)!=Rest.NO)
-						come.setRest(getRest(method));
-					String controllerIpSection=clzz.getAnnotation(Controller.class).ipSection();
-					String methodIpSection=getIpSection(method);
-					if(!"".equals(controllerIpSection))
-						come.setIpSection(controllerIpSection);
-					if(!"".equals(methodIpSection))
-						come.setIpSection(methodIpSection);
+					if(method.isAnnotationPresent(RestBody.class))
+						come.setRest(method.getAnnotation(RestBody.class).value());
+					come.setIpSection(clzz.getAnnotation(Controller.class).ipSection());
+					come.setIpSection(getIpSection(method));
 					come.setController(entry.getValue());
-					String url_m;
-					String mappingValue=getMappingValue(method);
-					if (mappingValue.contains("//")) {
-						int end = mappingValue.indexOf("//");
-						url_m = mappingValue.substring(0, end);
-						if (url_m.startsWith("/"))
-							url_m = url_m.substring(1, url_m.length());
-					} else {
-						url_m = mappingValue;
-						if (url_m.startsWith("/"))
-							url_m = url_m.substring(1, url_m.length());
-					}
+					String url_m=getMappingValue(method);
+					if(url_m.startsWith("/"))
+						url_m=url_m.substring(1);
 					come.setMethod(method);
 					come.setRequestMethods(getMappingRequestMethod(method));
 					addHanderMap(url_c + url_m, come);
@@ -226,20 +212,6 @@ public class ControllerIOC {
 		return null;
 	}
 	
-	public Rest getRest(Method method) {
-		if(method.isAnnotationPresent(RequestMapping.class))
-			return method.getAnnotation(RequestMapping.class).rest();
-		if(method.isAnnotationPresent(GetMapping.class))
-			return method.getAnnotation(GetMapping.class).rest();
-		if(method.isAnnotationPresent(PostMapping.class))
-			return method.getAnnotation(PostMapping.class).rest();
-		if(method.isAnnotationPresent(PutMapping.class))
-			return method.getAnnotation(PutMapping.class).rest();
-		if(method.isAnnotationPresent(DeleteMapping.class))
-			return method.getAnnotation(DeleteMapping.class).rest();
-		return Rest.NO;
-	}
-	
 	private String[] getIps(Method method) {
 		if(method.isAnnotationPresent(RequestMapping.class))
 			return method.getAnnotation(RequestMapping.class).ip();
@@ -254,7 +226,7 @@ public class ControllerIOC {
 		return new String[0];
 	}
 	
-	private String getIpSection(Method method) {
+	private String[] getIpSection(Method method) {
 		if(method.isAnnotationPresent(RequestMapping.class))
 			return method.getAnnotation(RequestMapping.class).ipSection();
 		if(method.isAnnotationPresent(GetMapping.class)) 
@@ -265,7 +237,7 @@ public class ControllerIOC {
 			return method.getAnnotation(PutMapping.class).ipSection();
 		if(method.isAnnotationPresent(DeleteMapping.class))
 			return method.getAnnotation(DeleteMapping.class).ipSection();
-		return "";
+		return new String[0];
 	}
 	
 	private RequestMethod[] getMappingRequestMethod(Method method) {

@@ -86,9 +86,7 @@ public class ComponentIOC {
 			Class<?> component = Class.forName(clzz);
 			if (component.isAnnotationPresent(Component.class)) {
 				Component com = component.getAnnotation(Component.class);
-				if (!"".equals(com.id())) {
-					addAppMap(com.id(), component.newInstance());
-				} else if (!"".equals(com.value())) {
+				if (!"".equals(com.value())) {
 					addAppMap(com.value(), component.newInstance());
 				} else {
 					addAppMap(LuckyUtils.TableToClass1(component.getSimpleName()), component.newInstance());
