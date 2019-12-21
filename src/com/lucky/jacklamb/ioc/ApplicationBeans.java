@@ -3,6 +3,7 @@ package com.lucky.jacklamb.ioc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import com.lucky.jacklamb.exception.NotFindBeanException;
@@ -34,8 +35,8 @@ public class ApplicationBeans {
 	 * 得到所有简化的方法映射关系
 	 * @return
 	 */
-	public Map<String,String> allMapping(){
-		return iocContainers.getControllerIOC().getMapping();
+	public Set<String> allMapping(){
+		return iocContainers.getControllerIOC().getMappingSet();
 	}
 	
 	/**
@@ -43,15 +44,15 @@ public class ApplicationBeans {
 	 * @param id
 	 * @return
 	 */
-	public ControllerAndMethod getHanderMethod(String id) {
-		return iocContainers.getControllerIOC().getControllerAndMethod(id);
+	public ControllerAndMethod getHanderMethod(URLAndRequestMethod uRLAndRequestMethod) {
+		return iocContainers.getControllerIOC().getControllerAndMethod(uRLAndRequestMethod);
 	}
 	
 	/**
 	 * 得到所有的方法映射
 	 * @return
 	 */
-	public Map<String,ControllerAndMethod> getHanderMethods() {
+	public ControllerAndMethodMap getHanderMethods() {
 		return iocContainers.getControllerIOC().getHanderMap();
 	}
 	
@@ -257,7 +258,12 @@ public class ApplicationBeans {
 		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Mapper组件:"+getMapperBeans());
 		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Component组件:"+getComponentBeans());
 		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Agent组件:"+getAgentBeans());
-		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->URL-ControllerMethod映射关系:"+allMapping());
+		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->URL-ControllerMethod映射关系:");
+		Set<String> allMapping = allMapping();
+		for(String mapping:allMapping) {
+			System.out.println(mapping);
+			System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------------");
+		}
 	}
 	
 

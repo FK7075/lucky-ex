@@ -3,8 +3,10 @@ package com.lucky.jacklamb.ioc;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.lucky.jacklamb.annotation.ioc.Controller;
 import com.lucky.jacklamb.annotation.mvc.DeleteMapping;
@@ -25,47 +27,47 @@ public class ControllerIOC {
 
 	private List<String> controllerIDS;
 	
-	private Map<String, ControllerAndMethod> handerMap;
+	private ControllerAndMethodMap handerMap;
 	
-	private Map<String,String> mapping;
+	private Set<String> mappingSet;
 	
-	
-	public Map<String, String> getMapping() {
-		return mapping;
+
+	public Set<String> getMappingSet() {
+		return mappingSet;
 	}
 
-	public void setMapping(Map<String, String> mapping) {
-		this.mapping = mapping;
+	public void setMappingSet(Set<String> mappingSet) {
+		this.mappingSet = mappingSet;
 	}
 
-	public Map<String, ControllerAndMethod> getHanderMap() {
+	public ControllerAndMethodMap getHanderMap() {
 		return handerMap;
 	}
 
-	public void setHanderMap(Map<String, ControllerAndMethod> handerMap) {
+	public void setHanderMap(ControllerAndMethodMap handerMap) {
 		this.handerMap = handerMap;
 	}
-	public void addHanderMap(String url,ControllerAndMethod coam) {
-		if(this.handerMap.containsKey(url))
-			throw new NotAddIOCComponent("URL-ControllerMethod(url映射)容器中已存在URL为--" + url + "--的映射，无法重复添加（您可能在同一个Controller中配置了'value'值相同的@RequestMapping，这将会导致异常的发生！）......");
-		this.handerMap.put(url, coam);
+	public void addHanderMap(URLAndRequestMethod uRLAndRequestMethod, ControllerAndMethod controllerAndMethod) {
+		if(this.handerMap.containsKey(uRLAndRequestMethod))
+			throw new NotAddIOCComponent("URL-ControllerMethod(url映射)容器中已存在一个作用域相同的URLAndRequestMethod！同一个URL只能被不同类型的请求代理一次！请求类型" + uRLAndRequestMethod.getMethods() + "中的某一种已经将此URL代理了一次！URL:"+uRLAndRequestMethod.getUrl());
+		this.handerMap.put(uRLAndRequestMethod, controllerAndMethod);
 	}
 
 	public ControllerIOC() {
 		controllerMap = new HashMap<>();
 		controllerIDS = new ArrayList<>();
-		handerMap = new HashMap<>();
-		mapping = new HashMap<>();
+		handerMap = new ControllerAndMethodMap();
+		mappingSet = new HashSet<>();
 	}
 	
-	public boolean containHander(String id) {
-		return handerMap.containsKey(id);
+	public boolean containHander(URLAndRequestMethod uRLAndRequestMethod) {
+		return handerMap.containsKey(uRLAndRequestMethod);
 	}
 	
-	public ControllerAndMethod getControllerAndMethod(String id) {
-		if(!containHander(id))
-			throw new NotFindBeanException("在ControllerAndMethod(ioc)容器中找不到ID为--" + id + "--的Bean...");
-		return handerMap.get(id);
+	public ControllerAndMethod getControllerAndMethod(URLAndRequestMethod uRLAndRequestMethod) {
+		if(!containHander(uRLAndRequestMethod))
+			throw new NotFindBeanException("在ControllerAndMethod(ioc)容器中找不到URL为:" + uRLAndRequestMethod.getUrl() + ",且请求类型代理为"+uRLAndRequestMethod.getMethods()+"的映射！");
+		return handerMap.get(uRLAndRequestMethod);
 	}
 
 	public boolean containId(String id) {
@@ -170,9 +172,13 @@ public class ControllerIOC {
 					if(url_m.startsWith("/"))
 						url_m=url_m.substring(1);
 					come.setMethod(method);
-					come.setRequestMethods(getMappingRequestMethod(method));
-					addHanderMap(url_c + url_m, come);
-					mapping.put(url_c + url_m, clzz.getName()+"."+method.getName()+"(x,x,x)");
+					RequestMethod[] mappingRequestMethod = getMappingRequestMethod(method);
+					come.setRequestMethods(mappingRequestMethod);
+					URLAndRequestMethod uRLAndRequestMethod=new URLAndRequestMethod();
+					uRLAndRequestMethod.setUrl(url_c + url_m);
+					uRLAndRequestMethod.addMethods(mappingRequestMethod);
+					addHanderMap(uRLAndRequestMethod, come);
+					mappingSet.add("支持的请求类型："+uRLAndRequestMethod.getMethods() +"\nURL: "+ url_m+"\nController方法："+method);
 				} else {
 					continue;
 				}

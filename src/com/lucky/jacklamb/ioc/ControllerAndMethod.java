@@ -165,10 +165,11 @@ public class ControllerAndMethod {
 	public boolean ipExistsInRange(String ip) {
 		if(ipSection==null||ipSection.length==0)
 			return true;
-		boolean isok=true;
-		for(String hfip:ipSection)
-			isok=isok&&IpUtil.ipExistsInRange(ip,hfip);
-		return isok;
+		for(String hfip:ipSection) {
+			if(IpUtil.ipExistsInRange(ip,hfip))
+				return true;
+		}
+		return false;
 	}
 	public void addIds(String[] ips) {
 		for(String ip:ips) {

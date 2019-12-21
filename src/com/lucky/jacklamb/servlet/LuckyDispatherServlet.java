@@ -74,7 +74,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 				String forwardurl=webCfg.getHanderPrefixAndSuffix().get(0)+webCfg.getStaticHander().get(path)+webCfg.getHanderPrefixAndSuffix().get(1);
 				req.getRequestDispatcher(forwardurl).forward(req, resp);
 			}else {
-				ControllerAndMethod controllerAndMethod = urlParsMap.pars(path);
+				ControllerAndMethod controllerAndMethod = urlParsMap.pars(path,this.method);
 				if(controllerAndMethod==null) {
 					resp.getWriter().print(Jacklabm.exception("HTTP Status 404 Not Found", "不正确的url"+req.getRequestURI(), "找不与请求相匹配的映射资,请检查您的URL是否正确！"));
 					return;

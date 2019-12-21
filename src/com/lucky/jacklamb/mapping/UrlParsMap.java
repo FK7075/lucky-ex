@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +16,7 @@ import com.lucky.jacklamb.annotation.mvc.CrossOrigin;
 import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.ControllerAndMethod;
+import com.lucky.jacklamb.ioc.URLAndRequestMethod;
 import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.servlet.LuckyWebContext;
 import com.lucky.jacklamb.servlet.Model;
@@ -28,6 +28,7 @@ import com.lucky.jacklamb.servlet.Model;
  *
  */
 public class UrlParsMap {
+	
 
 	/**
 	 * 跨域访问配置
@@ -110,14 +111,14 @@ public class UrlParsMap {
 	 * @param url 当前请求的URL
 	 * @return ControllerAndMethod对象
 	 */
-	public ControllerAndMethod pars(String url) {
+	public ControllerAndMethod pars(String url,RequestMethod requestMethod) {
 		ControllerAndMethod come = new ControllerAndMethod();
-		String mapping=getKey(ApplicationBeans.createApplicationBeans().getHanderMethods().keySet(),url);
-		if(mapping==null)
+		URLAndRequestMethod iocURM=getURLAndRequestMethod(url,requestMethod);
+		if(iocURM==null)
 			return null;
-		come = ApplicationBeans.createApplicationBeans().getHanderMethods().get(mapping);
-		come.setUrl(mapping);
-		come.setRestKV(getRestKV(mapping, url));
+		come = ApplicationBeans.createApplicationBeans().getHanderMethods().get(iocURM);
+		come.setUrl(iocURM.getUrl());
+		come.setRestKV(getRestKV(iocURM.getUrl(), url));
 		Controller cont=come.getController().getClass().getAnnotation(Controller.class);
 		List<String> globalprefixAndSuffix=Configuration.getConfiguration().getWebConfig().getHanderPrefixAndSuffix();
  		come.setPrefix(globalprefixAndSuffix.get(0));
@@ -147,51 +148,17 @@ public class UrlParsMap {
 		return restKV;
 	}
 	
-	/**
-	 * 根据当前传入的url地址找到Controller中的映射方法
-	 * @param keySet
-	 * @param currurl
-	 * @return
-	 */
-	public String getKey(Set<String> keySet,String currurl) {
-		for(String key:keySet) {
-			if(isConform(key,currurl))
-				return key;
+	public URLAndRequestMethod getURLAndRequestMethod(String currUrl,RequestMethod currRequestMethod) {
+		URLAndRequestMethod urm= new URLAndRequestMethod();
+		urm.setUrl(currUrl);
+		urm.addMethod(currRequestMethod);
+		List<URLAndRequestMethod> urlList = ApplicationBeans.createApplicationBeans().getHanderMethods().getUrlList();
+		for(URLAndRequestMethod iocURM:urlList) {
+			if(iocURM.equalsTemplate(urm))
+				return iocURM;
 		}
 		return null;
-	}
-	
-	/**
-	 * 判断当前传入的url是否符合容器中的某一个映射
-	 * @param mapstr
-	 * @param currurl
-	 * @return
-	 */
-	public boolean isConform(String mapstr,String currurl) {
-		String[] mapArray=participle(mapstr);
-		String[] urlArray=participle(currurl);
-		if(mapArray.length!=urlArray.length)
-			return false;
-		boolean rest=true;
-		for(int i=0;i<mapArray.length;i++)
-			rest=rest&&wordVerification(mapArray[i],urlArray[i]);
-		return rest;
-	}
-
-	/**
-	 * 单词汇校验(判断单词是否符合模板)
-	 * @param template 模板
-	 * @param word 单词
-	 * @return
-	 */
-	public boolean wordVerification(String template,String word) {
-		if(template.startsWith("*"))//word必须以template结尾
-			return word.endsWith(template.substring(1));
-		if(template.endsWith("*"))//word必须以template开始
-			return word.startsWith(template.substring(0,template.length()-1));
-		if("?".equals(template)||(template.startsWith("#{")&&template.endsWith("}")))//任意word都匹配
-			return true;
-		return template.equals(word);//没有特殊符号，表示word必须为template
+		
 	}
 	
 	private String[] participle(String url) {
