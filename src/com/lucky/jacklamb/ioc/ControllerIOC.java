@@ -2,6 +2,7 @@ package com.lucky.jacklamb.ioc;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -154,6 +155,7 @@ public class ControllerIOC {
 				url_c = "/";
 			}
 			Method[] publicMethods = clzz.getDeclaredMethods();
+			String ip,ips,rest;
 			for (Method method : publicMethods) {
 				if (haveMapping(method)) {
 					ControllerAndMethod come = new ControllerAndMethod();
@@ -178,7 +180,10 @@ public class ControllerIOC {
 					uRLAndRequestMethod.setUrl(url_c + url_m);
 					uRLAndRequestMethod.addMethods(mappingRequestMethod);
 					addHanderMap(uRLAndRequestMethod, come);
-					mappingSet.add("支持的请求类型："+uRLAndRequestMethod.getMethods() +"\nURL: "+ url_m+"\nController方法："+method);
+					ip=come.getIps().isEmpty()?"":"\nIP："+come.getIps().toString();
+					ips=come.getIpSection().length==0?"":"\nIP段："+Arrays.toString(come.getIpSection());
+					rest=come.getRest()==Rest.NO?"\nRest：执行转发或重定向操作":"\nRest：返回"+come.getRest().toString()+"格式数据";
+					mappingSet.add("URL: "+ url_c +url_m+"\nRequestMethod："+uRLAndRequestMethod.getMethods() +ip+ips+rest+"\nController方法："+method);
 				} else {
 					continue;
 				}

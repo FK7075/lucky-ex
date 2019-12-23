@@ -260,10 +260,12 @@ public class ApplicationBeans {
 		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Agent组件:"+getAgentBeans());
 		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->URL-ControllerMethod映射关系:");
 		Set<String> allMapping = allMapping();
+			System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------------");
 		for(String mapping:allMapping) {
 			System.out.println(mapping);
 			System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------------");
 		}
+		System.out.println(LuckyUtils.showtime()+"[START-OK] Lucky启动成功！");
 	}
 	
 

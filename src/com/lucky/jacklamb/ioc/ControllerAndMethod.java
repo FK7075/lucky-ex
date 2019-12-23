@@ -93,6 +93,7 @@ public class ControllerAndMethod {
 		ips=new HashSet<>();
 		preAndSuf.add("");
 		preAndSuf.add("");
+		rest=Rest.NO;
 	}
 	
 	public void restPut(String key,String value) {

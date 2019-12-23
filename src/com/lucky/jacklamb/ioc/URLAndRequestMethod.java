@@ -1,6 +1,7 @@
 package com.lucky.jacklamb.ioc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -87,11 +88,19 @@ public class URLAndRequestMethod {
 	 * @return
 	 */
 	public boolean wordVerification(String template,String word) {
+		if(template.startsWith("[")&&template.endsWith("]")) {//[candidate1,candidate2,candidate3]//候选词匹配，匹配其中一个即可
+			String[] split = template.substring(1, template.length()-1).trim().split(",");
+			return Arrays.asList(split).contains(word);
+		}
+		if(template.startsWith("![")&&template.endsWith("]")) {//![candidate1,candidate2,candidate3]//候选词反向匹配，匹配其中任意一个都不行
+			String[] split = template.substring(2, template.length()-1).trim().split(",");
+			return !Arrays.asList(split).contains(word);
+		}
 		if(template.startsWith("*"))//word必须以template结尾
 			return word.endsWith(template.substring(1));
 		if(template.endsWith("*"))//word必须以template开始
 			return word.startsWith(template.substring(0,template.length()-1));
-		if("?".equals(template)||(template.startsWith("#{")&&template.endsWith("}")))//任意word都匹配
+		if("?".equals(template)||(template.startsWith("#{")&&template.endsWith("}")))//参数项，任意word都匹配
 			return true;
 		return template.equals(word);//没有特殊符号，表示word必须为template
 	}
@@ -105,23 +114,4 @@ public class URLAndRequestMethod {
 		return rest;
 	}
 
-	
-
-
-	public static void main(String[] args) {
-		ControllerAndMethodMap map=new ControllerAndMethodMap();
-		URLAndRequestMethod urm1=new URLAndRequestMethod();
-		urm1.setUrl("aaaa");
-		urm1.addMethod(RequestMethod.GET);
-		urm1.addMethod(RequestMethod.POST);
-		map.put(urm1, new ControllerAndMethod());
-		URLAndRequestMethod urm2=new URLAndRequestMethod();
-		urm2.setUrl("aaaa");
-		urm2.addMethod(RequestMethod.GET);
-		
-		System.out.println(map.containsKey(urm2));
-		
-	}
-	
-	
 }

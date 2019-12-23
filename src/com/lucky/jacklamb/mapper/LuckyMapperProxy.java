@@ -596,7 +596,6 @@ public class LuckyMapperProxy {
 			objectarray=new Object[objectlist.size()];
 			objectlist.toArray(objectarray);
 			queryBuilder.addObject(objectarray);
-			queryBuilder.limit((int)args[end-2], (int)args[end-1]);
 			setLike(parameters,queryBuilder,method,args,indexs,end);
 			setSort(query,queryBuilder);
 			setResults(method,query,queryBuilder);

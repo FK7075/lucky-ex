@@ -76,7 +76,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 			}else {
 				ControllerAndMethod controllerAndMethod = urlParsMap.pars(path,this.method);
 				if(controllerAndMethod==null) {
-					resp.getWriter().print(Jacklabm.exception("HTTP Status 404 Not Found", "不正确的url"+req.getRequestURI(), "找不与请求相匹配的映射资,请检查您的URL是否正确！"));
+					resp.getWriter().print(Jacklabm.exception("HTTP Status 404 Not Found", "不正确的url："+req.getRequestURI(), "找不与请求相匹配的映射资,请检查您的URL是否正确！"));
 					return;
 				}
 				if(!controllerAndMethod.ipExistsInRange(req.getRemoteAddr())) {

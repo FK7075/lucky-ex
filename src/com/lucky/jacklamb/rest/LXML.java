@@ -13,6 +13,7 @@ import com.lucky.jacklamb.utils.LuckyUtils;
 public class LXML {
 	
 	private String xmlStr;
+	
 
 	public String getXmlStr() {
 		return xmlStr;
@@ -109,7 +110,11 @@ public class LXML {
 		}
 		field_json_copy.stream().filter(str -> !"".equals(str)).forEach(field_json::add);
 		for (int i = 0; i < field_json.size(); i++) {
-			listxmlStr.append("<element>").append(field_json.get(i)).append("</element>");
+			String string = field_json.get(i);
+			if(string.startsWith("<")&&string.endsWith(">")) 
+				listxmlStr.append(string);
+			else
+				listxmlStr.append("<element>").append(string).append("</element>");
 		}
 		return listxmlStr.toString()+"</collection>";
 	}
@@ -217,7 +222,7 @@ public class LXML {
 class TT{
 	
 	private String str;
-	private List<Double> list;
+	private List<Double> doublelist;
 	private Map<String,BB> map_BB;
 	private List<BB> list_BB;
 	private Map<String,Integer> map;
@@ -229,10 +234,10 @@ class TT{
 		this.str = str;
 	}
 	public List<Double> getList() {
-		return list;
+		return doublelist;
 	}
 	public void setList(List<Double> list) {
-		this.list = list;
+		this.doublelist = list;
 	}
 	public Map<String, BB> getMap_BB() {
 		return map_BB;
@@ -272,7 +277,7 @@ class BB{
 		this.bname = bname;
 	}
 	private String bname;
-	private String[] array;
+	private String[] stringarray;
 	public String getBname() {
 		return bname;
 	}
@@ -280,10 +285,10 @@ class BB{
 		this.bname = bname;
 	}
 	public String[] getArray() {
-		return array;
+		return stringarray;
 	}
 	public void setArray(String[] array) {
-		this.array = array;
+		this.stringarray = array;
 	}
 	
 	
