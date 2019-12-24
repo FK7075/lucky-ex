@@ -39,6 +39,8 @@ public class DataSource {
 
 	private boolean cache;
 	
+	private boolean poolMethod;
+	
 	private boolean formatSqlLog;
 	
 	private int checkoutTimeout;
@@ -50,7 +52,6 @@ public class DataSource {
 	private List<String> caeateTable;
 	
 	private List<String> otherproperties;
-	
 	
 	public boolean isFormatSqlLog() {
 		return formatSqlLog;
@@ -190,6 +191,18 @@ public class DataSource {
 	public int getMaxStatementsPerConnection() {
 		return maxStatementsPerConnection;
 	}
+	
+	public boolean isPoolMethod() {
+		return poolMethod;
+	}
+
+	/**
+	 * 设置为true时，每一次SQL操作都将会使用不同的Connection对象，默认false
+	 * @param poolMethod
+	 */
+	public void setPoolMethod(boolean poolMethod) {
+		this.poolMethod = poolMethod;
+	}
 
 	/**
 	 * maxStatementsPerConnection定义了连接池内单个连接所拥有的最大缓存statements数。Default: 0
@@ -285,6 +298,7 @@ public class DataSource {
 		caeateTable=ScacFactory.createScan().loadComponent(suffixlist);
 		log=false;
 		cache=false;
+		poolMethod=false;
 		formatSqlLog=false;
 		otherproperties=new ArrayList<>();
 	}

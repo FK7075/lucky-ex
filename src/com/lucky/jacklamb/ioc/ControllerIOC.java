@@ -182,7 +182,7 @@ public class ControllerIOC {
 					addHanderMap(uRLAndRequestMethod, come);
 					ip=come.getIps().isEmpty()?"":"\nIP："+come.getIps().toString();
 					ips=come.getIpSection().length==0?"":"\nIP段："+Arrays.toString(come.getIpSection());
-					rest=come.getRest()==Rest.NO?"\nRest：执行转发或重定向操作":"\nRest：返回"+come.getRest().toString()+"格式数据";
+					rest="\nRest:"+come.getRest().toString();
 					mappingSet.add("URL: "+ url_c +url_m+"\nRequestMethod："+uRLAndRequestMethod.getMethods() +ip+ips+rest+"\nController方法："+method);
 				} else {
 					continue;

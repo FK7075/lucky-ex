@@ -16,7 +16,9 @@ public class SqlOperation {
 	private PreparedStatement ps;
 	private LogInfo log;
 	private ResultSet rs;
+	private String dbname;
 	private boolean isOk;
+	private boolean poolMethod;
 
 	public Connection getConn() {
 		return conn;
@@ -28,6 +30,8 @@ public class SqlOperation {
 	
 	public SqlOperation(String dbname) {
 		conn=C3p0Util.getConnecion(dbname);
+		this.dbname=dbname;
+		this.poolMethod=ReadProperties.getDataSource(dbname).isPoolMethod();
 		log=new LogInfo(dbname);
 	}
 	/**
@@ -38,6 +42,8 @@ public class SqlOperation {
 	 */
 	public boolean setSql(String sql, Object...obj) {
 		try {
+			if(poolMethod)
+				conn=C3p0Util.getConnecion(dbname);
 			log.isShowLog(sql, obj);
 			ps = conn.prepareStatement(sql);
 			if (obj != null) {
@@ -67,6 +73,8 @@ public class SqlOperation {
 	 */
 	public boolean setSqlBatch(String sql,Object[]... obj) {
 		try {
+			if(poolMethod)
+				conn=C3p0Util.getConnecion(dbname);
 			log.isShowLog(sql, obj);
 			ps = conn.prepareStatement(sql);
 			if(obj==null||obj.length==0) {
@@ -99,6 +107,8 @@ public class SqlOperation {
 	 */
 	public ResultSet getResultSet(String sql, Object...obj) {
 		try {
+			if(poolMethod)
+				conn=C3p0Util.getConnecion(dbname);
 			log.isShowLog(sql, obj);
 			ps = conn.prepareStatement(sql);
 			if (obj != null) {
