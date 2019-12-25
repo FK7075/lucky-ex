@@ -10,7 +10,7 @@ import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
-public class ServiceIOC {
+public class ServiceIOC extends ComponentFactory{
 
 	private Map<String, Object> serviceMap;
 

@@ -22,7 +22,7 @@ import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
-public class ControllerIOC {
+public class ControllerIOC extends ComponentFactory{
 
 	private Map<String, Object> controllerMap;
 

@@ -20,7 +20,7 @@ import com.lucky.jacklamb.utils.LuckyUtils;
  * @author DELL
  *
  */
-public class ComponentIOC {
+public class ComponentIOC extends ComponentFactory {
 
 	private Map<String, Object> appMap;
 

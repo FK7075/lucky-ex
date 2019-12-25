@@ -15,7 +15,7 @@ import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
-public class RepositoryIOC {
+public class RepositoryIOC extends ComponentFactory {
 
 	private Map<String, Object> repositoryMap;
 

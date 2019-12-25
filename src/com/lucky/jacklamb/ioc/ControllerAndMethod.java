@@ -147,7 +147,15 @@ public class ControllerAndMethod {
 			return true;
 		if("localhost".equals(currip))
 			currip="127.0.0.1";
-		return ips.contains(currip);
+		for(String ip:ips) {
+			if(ip.startsWith("!")) {//判断该ip是否属于非法IP
+				if(currip.equals(ip.substring(1)))
+					return false;
+			}else if(currip.equals(ip)) {//判断该ip是否属性合法ip
+				return true;
+			}
+		}
+		return false;//非非法ip也非合法ip，即为未注册ip，不给予通过
 	}
 	
 	public Set<String> getIps() {
@@ -167,10 +175,14 @@ public class ControllerAndMethod {
 		if(ipSection==null||ipSection.length==0)
 			return true;
 		for(String hfip:ipSection) {
-			if(IpUtil.ipExistsInRange(ip,hfip))
+			if(hfip.startsWith("!")) {//判断该ip是否属于非法IP段
+				if(IpUtil.ipExistsInRange(ip,hfip.substring(1)))
+					return false;
+			}else if(IpUtil.ipExistsInRange(ip,hfip)){//判断该ip是否属性合法ip段
 				return true;
+			}
 		}
-		return false;
+		return false;//非非法ip段也非合法ip段，即为未注册ip，不给予通过
 	}
 	public void addIds(String[] ips) {
 		for(String ip:ips) {
