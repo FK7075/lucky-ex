@@ -153,10 +153,8 @@ public class LXML {
 	/**
 	 * 将不为null的属性转变为json格式
 	 * 
-	 * @param field_Obj
-	 *            目标对象
-	 * @param field
-	 *            目标属性
+	 * @param field_Obj 目标对象
+	 * @param field 目标属性
 	 * @return
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
@@ -169,20 +167,32 @@ public class LXML {
 		Class<?> fieldClass=field.getType();
 		if (obj != null) {
 			String fieldXmlStr=new LXML(obj).getXmlStr();
-			if(fieldClass.isArray()&&!"<array/>".equals(fieldXmlStr)&&!"<array></array>".equals(fieldXmlStr)) {
-				fieldXmlStr=fieldXmlStr.replaceAll("<array>", "<"+field.getName()+">").replaceAll("</array>", "</"+field.getName()+">");
-				fieldxmlStr.append(fieldXmlStr);
-				return fieldxmlStr.toString();
+			if(fieldClass.isArray()) {
+				if(!"<array/>".equals(fieldXmlStr)&&!"<array></array>".equals(fieldXmlStr)) {
+					fieldXmlStr=fieldXmlStr.replaceAll("<array>", "<"+field.getName()+">").replaceAll("</array>", "</"+field.getName()+">");
+					fieldxmlStr.append(fieldXmlStr);
+					return "";
+				}else {
+					return fieldxmlStr.toString();
+				}
 			}
-			if(Collection.class.isAssignableFrom(fieldClass)&&!"<collection/>".equals(fieldXmlStr)&&!"<collection></collection>".equals(fieldXmlStr)) {
-				fieldXmlStr=fieldXmlStr.replaceAll("<collection>", "<"+field.getName()+">").replaceAll("</collection>", "</"+field.getName()+">");
-				fieldxmlStr.append(fieldXmlStr);
-				return fieldxmlStr.toString();
+			if(Collection.class.isAssignableFrom(fieldClass)) {
+				if(!"<collection/>".equals(fieldXmlStr)&&!"<collection></collection>".equals(fieldXmlStr)) {
+					fieldXmlStr=fieldXmlStr.replaceAll("<collection>", "<"+field.getName()+">").replaceAll("</collection>", "</"+field.getName()+">");
+					fieldxmlStr.append(fieldXmlStr);
+					return fieldxmlStr.toString();
+				}else {
+					return "";
+				}
 			}
-			if(Map.class.isAssignableFrom(fieldClass)&&!"<map/>".equals(fieldXmlStr)&&!"<map></map>".equals(fieldXmlStr)) {
-				fieldXmlStr=fieldXmlStr.replaceAll("<map>", "<"+field.getName()+">").replaceAll("</map>", "</"+field.getName()+">");
-				fieldxmlStr.append(fieldXmlStr);
-				return fieldxmlStr.toString();
+			if(Map.class.isAssignableFrom(fieldClass)) {
+				if(!"<map/>".equals(fieldXmlStr)&&!"<map></map>".equals(fieldXmlStr)) {
+					fieldXmlStr=fieldXmlStr.replaceAll("<map>", "<"+field.getName()+">").replaceAll("</map>", "</"+field.getName()+">");
+					fieldxmlStr.append(fieldXmlStr);
+					return fieldxmlStr.toString();
+				}else {
+					return "";
+				}
 			}
 			return "<"+field.getName()+">"+fieldXmlStr+"</"+field.getName()+">";
 		}
@@ -201,7 +211,7 @@ public class LXML {
 		object.setMap(map);
 		BB bb=new BB();
 		bb.setBname("BNAME");
-		String[] arr= {"OK","YES","HELLO"};
+		String[] arr= {};
 		bb.setArray(arr);
 		object.setBb(bb);
 		List<BB> list_bb=new ArrayList<>();

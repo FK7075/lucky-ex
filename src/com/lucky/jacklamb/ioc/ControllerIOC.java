@@ -183,7 +183,7 @@ public class ControllerIOC extends ComponentFactory{
 					ip=come.getIps().isEmpty()?"":"\nIP£º"+come.getIps().toString();
 					ips=come.getIpSection().length==0?"":"\nIP¶Î£º"+Arrays.toString(come.getIpSection());
 					rest="\nRest:"+come.getRest().toString();
-					mappingSet.add("URL: "+ url_c +url_m+"\nRequestMethod£º"+uRLAndRequestMethod.getMethods() +ip+ips+rest+"\nController·½·¨£º"+method);
+					mappingSet.add("URL: "+ url_c +url_m+"\nRequestMethod£º"+uRLAndRequestMethod.getMethods() +ip+ips+rest+"\nMethod£º"+method);
 				} else {
 					continue;
 				}

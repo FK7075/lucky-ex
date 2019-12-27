@@ -3,6 +3,7 @@ package com.lucky.jacklamb.rest;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -169,11 +170,45 @@ public class LSON {
 		StringBuilder fieldJsonStr = new StringBuilder();
 		field.setAccessible(true);
 		Object obj = field.get(field_Obj);
+		StringBuilder fieldValueJson;
+		StringBuilder fieldNameJson;
 		if (obj != null) {
-			fieldJsonStr.append(new LSON(field.getName()).getJsonStr()).append(":").append(new LSON(obj).getJsonStr());
-			return fieldJsonStr.toString();
+			fieldValueJson = new StringBuilder(new LSON(obj).getJsonStr());
+			fieldNameJson=new StringBuilder(new LSON(field.getName()).getJsonStr());
+			if(!"{}".equals(fieldValueJson.toString())&&!"[]".equals(fieldValueJson.toString())) {
+				fieldJsonStr.append(fieldNameJson).append(":").append(fieldValueJson);
+				return fieldJsonStr.toString();
+			}
 		}
 		return null;
 	}
 	
+	public static void main(String[] args) {
+		TT object=new TT();
+		object.setStr("String Ù–‘");
+		List<Double> list=new ArrayList<>();
+		list.add(12.5);list.add(55.7);list.add(99.999);
+		object.setList(list);
+		Map<String,Integer> map=new HashMap<>();
+		map.put("key1", 111);
+		map.put("key2", 222);
+		object.setMap(map);
+		BB bb=new BB();
+		bb.setBname("BNAME");
+		String[] arr= {"OK","YES","HELLO"};
+		bb.setArray(arr);
+		object.setBb(bb);
+		List<BB> list_bb=new ArrayList<>();
+		list_bb.add(bb);list_bb.add(new BB("BB2"));
+		object.setList_BB(list_bb);
+		Map<String,BB> map_bb=new HashMap<>();
+		map_bb.put("map1", bb);
+		map_bb.put("map2", bb);
+		map_bb.put("map3", new BB("MAPBB"));
+		object.setMap_BB(map_bb);
+		LSON l=new LSON(object);
+		System.out.println(l.getJsonStr());
+		
+	}
+
 }
