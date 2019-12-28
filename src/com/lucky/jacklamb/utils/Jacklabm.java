@@ -65,14 +65,17 @@ public class Jacklabm {
 		case JUDY:
 			d=str12();
 			break;
+		case LUCKY:
+			d=str13();
+			break;
 		default:
 			d="";
 		}
 		System.out.println(d);
 		if(sc.getLogo()!=Logo.MOUSELET&&sc.getLogo()!=Logo.KEYBOARD)
-			System.out.println("\n--------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n--------------------------------------------------\n\n");
+			System.out.println("\n----------------------------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n----------------------------------------------------------------------\n\n");
 		try {
-			Thread.sleep(500);
+			Thread.sleep(800);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -409,8 +412,28 @@ public class Jacklabm {
 		return d;
 	}
 	
+	public static String str13() {
+		String d="                                                                            \r\n" + 
+				"                                                                            \r\n" + 
+				"          ,:                                    ;                           \r\n" + 
+				"       i0MM0                                 7MMM                           \r\n" + 
+				"        ,8MZ                                 ..MM                           \r\n" + 
+				"         :MZ                         ,.        MM                           \r\n" + 
+				"         iMa      ZMMa   WMM:     SMMMMMM,     MM   MMM@. ;MMMMi XMMMW      \r\n" + 
+				"         ;MZ       7M@    MM:    MM;   MMM     MM  WMB      MMa    MB       \r\n" + 
+				"         iMZ        MB    8M:   aMX     Z;     MM MM         MM   MM        \r\n" + 
+				"         ;MZ       ,MB    8M,   MM             MMMM          BM7 .M         \r\n" + 
+				"         iMa       .M8    ZM,   MM2      rr    MM MMX         MM M@         \r\n" + 
+				"         .MX       ,MM    MMi   rMM,    7M:    MM  MMM        rMMM          \r\n" + 
+				"       .XMMMXi      MMMBMZMMM7   aMMMMMMM:   ,8MMX  MMMa.      MM.          \r\n" + 
+				"       iaZXaZS       8MMS :;       ZMMMS     rZSXZ: 7XZ8,      BM           \r\n" + 
+				"                                                           SMSaM            \r\n" + 
+				"                                                           @MMM        ";
+		return d;
+	}
+	
 	public static void main(String[] args) {
-		System.out.println(str12());
+		System.out.println(str13());
 	}
 	
 }

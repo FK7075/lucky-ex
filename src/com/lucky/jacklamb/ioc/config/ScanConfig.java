@@ -287,7 +287,7 @@ public class ScanConfig {
 			scanfig.addComponentPackSuffix("component", "bean");
 			scanfig.addAgentPackSuffix("agent");
 			scanfig.addPojoPackSuffix("pojo", "entity");
-			scanfig.setLogo(Logo.MOUSELET);
+			scanfig.setLogo(Logo.LUCKY);
 			scanfig.setDefaultDB("db.properties");
 		}
 		return scanfig;

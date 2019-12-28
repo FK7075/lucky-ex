@@ -61,7 +61,12 @@ public enum Logo {
 	/**
 	 * Œ£œ’–≈∫≈
 	 */
-	DANGER_SIGNALS
+	DANGER_SIGNALS,
+	
+	/**
+	 * Lucky
+	 */
+	LUCKY
 	
 	
 
