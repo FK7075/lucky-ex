@@ -1,7 +1,7 @@
 将Lucky加入到本地Maven创库，使用pom.xml方式引入Lucky
 
 
-mvn install:install-file -Dfile=D:\link\lib\todo-1.0.jar  -DgroupId=lucky.jacklamb -DartifactId=lucky -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=lucky-noxml-custom.jar  -DgroupId=lucky.jacklamb -DartifactId=lucky -Dversion=1.0.0 -Dpackaging=jar
 
 -Dfile：jar包所在本地的具体路径
 -DgroupId：项目组织唯一的标识符，实际对应JAVA的包的结构
@@ -13,7 +13,7 @@ mvn install:install-file -Dfile=D:\link\lib\todo-1.0.jar  -DgroupId=lucky.jackla
 <dependency>
      <groupId>lucky.jacklamb</groupId>
      <artifactId>lucky</artifactId>
-     <version>1.0</version>
+     <version>1.0.0</version>
 </dependency>
 
 打包配置

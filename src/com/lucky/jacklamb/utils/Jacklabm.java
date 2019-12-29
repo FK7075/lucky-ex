@@ -20,11 +20,6 @@ public class Jacklabm {
 			d=sc.getCustomLogo();
 			System.out.println(d);
 			System.out.println("\n--------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n--------------------------------------------------\n\n");
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 			return;
 		}
 		first=false;
@@ -74,11 +69,6 @@ public class Jacklabm {
 		System.out.println(d);
 		if(sc.getLogo()!=Logo.MOUSELET&&sc.getLogo()!=Logo.KEYBOARD)
 			System.out.println("\n----------------------------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n----------------------------------------------------------------------\n\n");
-		try {
-			Thread.sleep(800);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
 
