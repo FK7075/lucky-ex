@@ -1,5 +1,7 @@
 package com.lucky.jacklamb.ioc;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -116,17 +118,23 @@ public class RepositoryIOC extends ComponentFactory {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 * @throws ClassNotFoundException
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
 	 */
-	public RepositoryIOC initRepositoryIOC(List<String> repositoryClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public RepositoryIOC initRepositoryIOC(List<String> repositoryClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		boolean first = true;
 		for (String clzz : repositoryClass) {
 			Class<?> repository = Class.forName(clzz);
 			if (repository.isAnnotationPresent(Repository.class)) {
 				Repository rep = repository.getAnnotation(Repository.class);
+				Constructor<?> constructor = repository.getConstructor();
+				constructor.setAccessible(true);
 				if (!"".equals(rep.value()))
-					addRepositoryMap(rep.value(), repository.newInstance());
+					addRepositoryMap(rep.value(), constructor.newInstance());
 				else
-					addRepositoryMap(LuckyUtils.TableToClass1(repository.getSimpleName()), repository.newInstance());
+					addRepositoryMap(LuckyUtils.TableToClass1(repository.getSimpleName()), constructor.newInstance());
 			} else if (repository.isAnnotationPresent(Mapper.class)) {
 				if (first) {
 					List<DataSource> datalist=ReadProperties.getAllDataSource();

@@ -75,7 +75,6 @@ public class Model {
 		this.requestMethod=requestMethod;
 		this.parameterMap=getRequestParameterMap();
 		restMap=new HashMap<>();
-		out=response.getWriter();
 	}
 	
 	/**
@@ -225,7 +224,9 @@ public class Model {
 	 * @param info
 	 * @throws IOException
 	 */
-	public void responsePrintIn(String info){
+	public void responsePrintIn(String info) throws IOException{
+		if(out==null)
+			out=resp.getWriter();
 		out.println(info);
 	}
 
@@ -234,7 +235,7 @@ public class Model {
 	 * @param pojo(数组，对象，Collection,Map)
 	 * @throws IOException
 	 */
-	public void printJson(Object pojo){
+	public void printJson(Object pojo) throws IOException{
 		LSON lson = new LSON(pojo);
 		responsePrintIn(lson.getJsonStr());
 	}
@@ -244,7 +245,7 @@ public class Model {
 	 * @param pojo(数组，对象，Collection,Map)
 	 * @throws IOException
 	 */
-	public void printXml(Object pojo){
+	public void printXml(Object pojo) throws IOException{
 		LXML lson = new LXML(pojo);
 		responsePrintIn(HEAD+lson.getXmlStr());
 	}
@@ -253,7 +254,8 @@ public class Model {
 	 * 关闭PrintWriter
 	 */
 	public void closeWriter() {
-		out.close();
+		if(out!=null)
+			out.close();
 	}
 
 	/**
@@ -261,7 +263,7 @@ public class Model {
 	 * @param pojo(数组，对象，Collection,Map)
 	 * @throws IOException
 	 */
-	public void witerJson(Object pojo){
+	public void witerJson(Object pojo) throws IOException{
 		LSON lson = new LSON(pojo);
 		responseWriter(lson.getJsonStr());
 	}
@@ -271,7 +273,7 @@ public class Model {
 	 * @param pojo(数组，对象，Collection,Map)
 	 * @throws IOException
 	 */
-	public void witerXml(Object pojo){
+	public void witerXml(Object pojo) throws IOException{
 		LXML lson = new LXML(pojo);
 		responseWriter(HEAD+lson.getXmlStr());
 	}
@@ -281,7 +283,9 @@ public class Model {
 	 * @param info
 	 * @throws IOException
 	 */
-	public void responseWriter(String info){
+	public void responseWriter(String info) throws IOException{
+		if(out==null)
+			out=resp.getWriter();
 		out.write(info);
 	}
 

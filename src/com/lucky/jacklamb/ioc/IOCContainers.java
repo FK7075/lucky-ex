@@ -76,6 +76,12 @@ public class IOCContainers {
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -147,21 +153,21 @@ public class IOCContainers {
 		scanConfig=Configuration.getConfiguration().getScanConfig();
 	}
 	
-	public void initComponentIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public void initComponentIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		appIOC=new ComponentIOC();
 		appIOC.initComponentIOC(ScacFactory.createScan().loadComponent(scanConfig.getComponentPackSuffix()));
 	}
 	
-	public void initControllerIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public void initControllerIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		controllerIOC=new ControllerIOC();
 		controllerIOC.initControllerIOC(ScacFactory.createScan().loadComponent(scanConfig.getControllerPackSuffix())).methodHanderSetting();
 	}
 	
-	public void initServiceIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public void initServiceIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		serviceIOC=new ServiceIOC();
 		serviceIOC.initServiceIOC(ScacFactory.createScan().loadComponent(scanConfig.getServicePackSuffix()));
 	}
-	public void initRepositoryIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public void initRepositoryIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		repositoryIOC=new RepositoryIOC();
 		repositoryIOC.initRepositoryIOC(ScacFactory.createScan().loadComponent(scanConfig.getRepositoryPackSuffix()));
 	}

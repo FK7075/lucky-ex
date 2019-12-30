@@ -1,5 +1,7 @@
 package com.lucky.jacklamb.ioc;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,17 +118,25 @@ public class ControllerIOC extends ComponentFactory{
 	 * @throws ClassNotFoundException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
 	 */
-	public ControllerIOC initControllerIOC(List<String> controllerClass)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public ControllerIOC initControllerIOC(List<String> controllerClass) 
+			throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 		for (String clzz : controllerClass) {
 			Class<?> controller = Class.forName(clzz);
 			if (controller.isAnnotationPresent(Controller.class)) {
 				Controller cont = controller.getAnnotation(Controller.class);
-				if (!"".equals(cont.value()))
-					addControllerMap(cont.value(), controller.newInstance());
-				else
-					addControllerMap(LuckyUtils.TableToClass1(controller.getSimpleName()), controller.newInstance());
+				Constructor<?> constructor = controller.getConstructor();
+				constructor.setAccessible(true);
+				if (!"".equals(cont.value())) {
+					addControllerMap(cont.value(), constructor.newInstance());
+				}
+				else {
+					addControllerMap(LuckyUtils.TableToClass1(controller.getSimpleName()), constructor.newInstance());
+				}
 			}
 
 		}

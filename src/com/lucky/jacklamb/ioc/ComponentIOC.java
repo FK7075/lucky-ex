@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.ioc;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -79,17 +80,21 @@ public class ComponentIOC extends ComponentFactory {
 	 * @throws InstantiationException
 	 * @throws InvocationTargetException 
 	 * @throws IllegalArgumentException 
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
 	 */
 	public ComponentIOC initComponentIOC(List<String> componentClass)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		for (String clzz : componentClass) {
 			Class<?> component = Class.forName(clzz);
 			if (component.isAnnotationPresent(Component.class)) {
 				Component com = component.getAnnotation(Component.class);
+				Constructor<?> constructor = component.getConstructor();
+				constructor.setAccessible(true);
 				if (!"".equals(com.value())) {
-					addAppMap(com.value(), component.newInstance());
+					addAppMap(com.value(), constructor.newInstance());
 				} else {
-					addAppMap(LuckyUtils.TableToClass1(component.getSimpleName()), component.newInstance());
+					addAppMap(LuckyUtils.TableToClass1(component.getSimpleName()), constructor.newInstance());
 				}
 			} else if (component.isAnnotationPresent(BeanFactory.class)) {
 				Object obj = component.newInstance();

@@ -1,5 +1,7 @@
 package com.lucky.jacklamb.ioc;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,16 +68,22 @@ public class ServiceIOC extends ComponentFactory{
 	 * @throws ClassNotFoundException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
 	 */
-	public ServiceIOC initServiceIOC(List<String> serviceClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public ServiceIOC initServiceIOC(List<String> serviceClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		for (String clzz : serviceClass) {
 			Class<?> service = Class.forName(clzz);
 			if (service.isAnnotationPresent(Service.class)) {
 				Service ser = service.getAnnotation(Service.class);
+				Constructor<?> constructor = service.getConstructor();
+				constructor.setAccessible(true);
 				if (!"".equals(ser.value()))
-					addServiceMap(ser.value(), service.newInstance());
+					addServiceMap(ser.value(), constructor.newInstance());
 				else
-					addServiceMap(LuckyUtils.TableToClass1(service.getSimpleName()), service.newInstance());
+					addServiceMap(LuckyUtils.TableToClass1(service.getSimpleName()), constructor.newInstance());
 			}
 		}
 		return this;
