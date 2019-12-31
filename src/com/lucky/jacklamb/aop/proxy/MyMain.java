@@ -2,6 +2,7 @@ package com.lucky.jacklamb.aop.proxy;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.lucky.jacklamb.enums.Location;
@@ -24,9 +25,9 @@ public class MyMain {
 		//构造PerformMethod对象
 		PerformMethod pms1=new PerformMethod();
 		pms1.setTargetClass(User.class);
-		pms1.addTargetMethodName(clzz.getDeclaredMethod("printf",String.class));
+		pms1.addTargetMethodName(clzz.getDeclaredMethod("printf",String.class),clzz.getDeclaredMethod("print",String.class));
 		Method method2=ExpandClass.class.getDeclaredMethod("m2");
-		MethodRun methodRun2=new MethodRun(new ExpandClass(), method2, null,Location.AFTER);
+		MethodRun methodRun2=new MethodRun(new ExpandClass(), method2, null,Location.BEFORE);
 		pms1.setMethodRun(methodRun2);
 		performMethods.add(pms);performMethods.add(pms1);
 		
@@ -42,27 +43,27 @@ public class MyMain {
 		
 		//使用PerformMethod对象和PointRun对象得到真实对象的代理对象，并执行方法
 		User user=(User) factory.getProxy(User.class, performMethods,pointRun1,pointRun2);
-		user.print("OKO");
-		System.out.println();
-		user.printf("NO");
+		String tt=user.print("OKO");
+		System.out.println(tt);
+//		user.printf("NO");
 	}
 
 }
 
-class PointImplOne implements Point{
+class PointImplOne extends Point{
 
 	@Override
 	public Object proceed(Chain chain) {
 		Object result;
-		System.out.println("22222222222222");
+		System.out.println("真实方法名："+method.getName());
 		result=chain.proceed();
-		System.out.println("33333333333333");
+		System.out.println("方法参数列表："+Arrays.toString(params));
 		return result;
 	}
 	
 }
 
-class PointImplTwo implements Point{
+class PointImplTwo extends Point{
 
 	@Override
 	public Object proceed(Chain chain) {
@@ -72,6 +73,7 @@ class PointImplTwo implements Point{
 			
 		}catch(Throwable e) {
 			System.out.println("捕获异常，执行异常处理操作");
+			e.printStackTrace();
 		}
 		return result;
 
@@ -83,12 +85,13 @@ class PointImplTwo implements Point{
 
 class User{
 	
-	public void print(String info) {
+	public String print(String info) {
 		System.out.println("METHOD:print->"+info);
+		return info;
 	}
 	
 	public void printf(String info) {
-		int i=9/0;
+//		int i=9/0;
 		System.out.println("METHOD:printf->"+info);
 	}
 	

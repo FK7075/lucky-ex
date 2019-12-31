@@ -16,7 +16,6 @@ import javax.servlet.http.HttpSession;
 
 import com.lucky.jacklamb.annotation.ioc.Autowired;
 import com.lucky.jacklamb.annotation.ioc.Value;
-import com.lucky.jacklamb.aop.defaultexpand.CacheExpand;
 import com.lucky.jacklamb.exception.InjectionPropertiesException;
 import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.ScanConfig;
@@ -44,12 +43,9 @@ public class IOCContainers {
 	private ScanConfig scanConfig;
 	
 	public void init() {
-		agentIOC=new AgentIOC();
 		scanConfigToComponentIOC();
 		inversionOfControl();
 		dependencyInjection();
-		CacheExpand cacheAgent=new CacheExpand();
-		cacheAgent.cacheAgent();
 	}
 	
 	/**
@@ -57,6 +53,7 @@ public class IOCContainers {
 	 */
 	public void inversionOfControl() {
 		try {
+			initAgentIOC();
 			initComponentIOC();
 			initControllerIOC();
 			initServiceIOC();
@@ -167,9 +164,15 @@ public class IOCContainers {
 		serviceIOC=new ServiceIOC();
 		serviceIOC.initServiceIOC(ScacFactory.createScan().loadComponent(scanConfig.getServicePackSuffix()));
 	}
+	
 	public void initRepositoryIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		repositoryIOC=new RepositoryIOC();
 		repositoryIOC.initRepositoryIOC(ScacFactory.createScan().loadComponent(scanConfig.getRepositoryPackSuffix()));
+	}
+	
+	public void initAgentIOC() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		agentIOC=new AgentIOC();
+		agentIOC.initAgentIOC(ScacFactory.createScan().loadComponent(scanConfig.getAgentPackSuffix()));
 	}
 	
 	/**

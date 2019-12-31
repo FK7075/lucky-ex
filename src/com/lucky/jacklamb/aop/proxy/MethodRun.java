@@ -15,6 +15,13 @@ public class MethodRun {
 	
 	private Location location;//增强方式
 	
+	/**
+	 * MethodRun构造器，用于构造一个可以直接运行的增强
+	 * @param expand 扩展类的对象
+	 * @param method 扩展方法
+	 * @param params 参数列表
+	 * @param location 增强方式(前置增强，后置增强)
+	 */
 	public MethodRun(Object expand, Method method, Object[] params, Location location) {
 		this.expand = expand;
 		this.method = method;

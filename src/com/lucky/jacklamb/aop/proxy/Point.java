@@ -1,7 +1,13 @@
 package com.lucky.jacklamb.aop.proxy;
 
-public interface Point {
+import java.lang.reflect.Method;
+
+public abstract class Point {
 	
-	public Object proceed(Chain chain);
+	protected Method method;
+	
+	protected Object[] params;
+	
+	public abstract Object proceed(Chain chain);
 
 }

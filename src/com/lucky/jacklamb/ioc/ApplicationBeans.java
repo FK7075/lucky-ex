@@ -3,9 +3,10 @@ package com.lucky.jacklamb.ioc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import com.lucky.jacklamb.aop.proxy.AgentRun;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 import com.lucky.jacklamb.utils.Jacklabm;
@@ -69,7 +70,7 @@ public class ApplicationBeans {
 	 * 得到所有Agent组件
 	 * @return
 	 */
-	public Map<String,Object> getAgentBeans(){
+	public Map<String,AgentRun> getAgentBeans(){
 		return iocContainers.getAgentIOC().getAgentMap();
 	}
 	
