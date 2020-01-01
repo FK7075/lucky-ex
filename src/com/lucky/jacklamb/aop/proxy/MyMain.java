@@ -1,58 +1,39 @@
 package com.lucky.jacklamb.aop.proxy;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.lucky.jacklamb.annotation.aop.Expand;
 import com.lucky.jacklamb.enums.Location;
 
 public class MyMain {
 
-	public static void main(String[] args) throws NoSuchMethodException, SecurityException {
+	public static void main(String[] args) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
 		ProxyFactory factory=ProxyFactory.createProxyFactory();
-		List<PerformMethod> performMethods=new ArrayList<>();
-		Class<?> clzz=User.class;
+		PointRun pu1=new PointRun(PointImplOne.class);
+		PointRun pu2=new PointRun(PointImplTwo.class);
+		List<PointRun> createPointRuns = PointRunFactory.createPointRuns(ExpandClass.class);
+		createPointRuns.add(pu1);createPointRuns.add(pu2);
+		User user=(User) factory.getProxy(User.class, createPointRuns);
+		Field declaredField = user.getClass().getField("username");
+		declaredField.setAccessible(true);
+		declaredField.set(user, "Lucky");
+		System.out.println(user.username);
+		user.print("OOK",234);
 		
-		//构造PerformMethod对象
-		PerformMethod pms=new PerformMethod();
-		pms.setTargetClass(clzz);
-		pms.addTargetMethodName(clzz.getDeclaredMethod("print",String.class),clzz.getDeclaredMethod("printf",String.class));
-		Method method1=ExpandClass.class.getDeclaredMethod("m1");
-		MethodRun methodRun=new MethodRun(new ExpandClass(), method1, null, Location.BEFORE);
-		pms.setMethodRun(methodRun);
 		
-		//构造PerformMethod对象
-		PerformMethod pms1=new PerformMethod();
-		pms1.setTargetClass(User.class);
-		pms1.addTargetMethodName(clzz.getDeclaredMethod("printf",String.class),clzz.getDeclaredMethod("print",String.class));
-		Method method2=ExpandClass.class.getDeclaredMethod("m2");
-		MethodRun methodRun2=new MethodRun(new ExpandClass(), method2, null,Location.BEFORE);
-		pms1.setMethodRun(methodRun2);
-		performMethods.add(pms);performMethods.add(pms1);
-		
-		//构造PointRun对象
-		List<Method> methods=new ArrayList<>();
-		methods.add(clzz.getDeclaredMethod("print",String.class));
-		PointRun pointRun1=new PointRun(new PointImplOne(), methods);
-		
-		//构造PointRun对象
-		List<Method> methods1=new ArrayList<>();
-		methods1.add(clzz.getDeclaredMethod("printf",String.class));
-		PointRun pointRun2=new PointRun(new PointImplTwo(), methods1);
-		
-		//使用PerformMethod对象和PointRun对象得到真实对象的代理对象，并执行方法
-		User user=(User) factory.getProxy(User.class, performMethods,pointRun1,pointRun2);
-		String tt=user.print("OKO");
-		System.out.println(tt);
-//		user.printf("NO");
 	}
 
 }
 
 class PointImplOne extends Point{
+	
+	public PointImplOne() {}
 
-	@Override
+	@Expand
 	public Object proceed(Chain chain) {
 		Object result;
 		System.out.println("真实方法名："+method.getName());
@@ -65,11 +46,15 @@ class PointImplOne extends Point{
 
 class PointImplTwo extends Point{
 
-	@Override
+	public PointImplTwo() {}
+	
+	@Expand
 	public Object proceed(Chain chain) {
 		Object result = null;
 		try {
+			System.out.println("TWO-B");
 			result=chain.proceed();
+			System.out.println("TWO-A");
 			
 		}catch(Throwable e) {
 			System.out.println("捕获异常，执行异常处理操作");
@@ -85,24 +70,31 @@ class PointImplTwo extends Point{
 
 class User{
 	
-	public String print(String info) {
-		System.out.println("METHOD:print->"+info);
+	public String username;
+
+	public String print(String info,int index) {
+		System.out.println("METHOD:print=="+info+",index="+index);
 		return info;
 	}
 	
 	public void printf(String info) {
 //		int i=9/0;
-		System.out.println("METHOD:printf->"+info);
+		System.out.println("METHOD:printf==@@"+info);
 	}
 	
 }
 
 class ExpandClass{
-	public void m1() {
-		System.out.println("ExpandClass-M1");
+	
+	public ExpandClass() {}
+	
+	@Expand(params= {"ind:1","23.5","[params]"},location=Location.AFTER)
+	public void m1(String ss,Double dou,Object[] params) {
+		System.out.println("ExpandClass-M1->## ss="+ss+",dou="+dou+",param="+Arrays.toString(params));
 	}
 	
-	public void m2() {
-		System.out.println("ExpandClass-M2");
+	@Expand(params= {"ind:1","true","[method]"})
+	public void m2(String ss,boolean bool,Method method) {
+		System.out.println("ExpandClass-M2->@@ ss="+ss+",bool="+bool+",method="+method);
 	}
 }

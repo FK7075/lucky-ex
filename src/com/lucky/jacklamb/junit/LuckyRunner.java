@@ -6,7 +6,6 @@ public class LuckyRunner extends LuckyJUnit4ClassRunner {
 
 	public LuckyRunner(Class<?> testClass) throws InitializationError {
 		super(testClass);
-		// TODO Auto-generated constructor stub
 	}
 
 }

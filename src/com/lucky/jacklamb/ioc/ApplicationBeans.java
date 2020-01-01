@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.lucky.jacklamb.aop.proxy.AgentRun;
+import com.lucky.jacklamb.aop.proxy.PointRun;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 import com.lucky.jacklamb.utils.Jacklabm;
@@ -70,7 +70,7 @@ public class ApplicationBeans {
 	 * 得到所有Agent组件
 	 * @return
 	 */
-	public Map<String,AgentRun> getAgentBeans(){
+	public Map<String,PointRun> getAgentBeans(){
 		return iocContainers.getAgentIOC().getAgentMap();
 	}
 	
