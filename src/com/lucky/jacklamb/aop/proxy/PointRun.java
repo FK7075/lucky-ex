@@ -106,9 +106,92 @@ public class PointRun {
 	 * @return
 	 */
 	public boolean standard(Method method) {
-		return true;
+		return standardStart(method);
 	}
 	
+	/**
+	 * 遍历mateMethod，逐个验证
+	 * @param method 当前Method
+	 * @return
+	 */
+	private boolean standardStart(Method method) {
+		String methodName=method.getName();
+		Parameter[] parameters = method.getParameters();
+		for(String str:mateMethod) {
+			if("*".equals(str)) {
+				return true;
+			}else if(str.contains("(")&&str.endsWith(")")){
+				if(standardMethod(methodName,parameters,str))
+					return true;
+			}else {
+				if(standardName(methodName,str))
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * 方法名验证
+	 * @param mothodName 当前方法的方法名
+	 * @param methodStr 配置中配置的标准方法名
+	 * @return
+	 */
+	private boolean standardName(String mothodName,String methodStr) {
+		if(methodStr.startsWith("!")) {
+			return !(mothodName.equals(methodStr.substring(1)));
+		}else if(methodStr.startsWith("*")) {
+			return mothodName.endsWith(methodStr);
+		}else if(methodStr.endsWith("*")) {
+			return mothodName.startsWith(methodStr);
+		}else {
+			return mothodName.equals(methodStr);
+		}
+	}
+	
+	/**
+	 * 方法名+方法参数验证
+	 * @param mothodName 当前方法的方法名
+	 * @param parameters 当前方法的参数列表
+	 * @param methodStr 配置中配置的标准方法名+参数
+	 * @return
+	 */
+	private boolean standardMethod(String mothodName,Parameter[] parameters,String methodStr) {
+		int indexOf = methodStr.indexOf("(");
+		String methodNameStr;
+		boolean pass=true;
+		String[] methodParamStr=methodStr.substring(indexOf+1, methodStr.length()-1).split(",");
+		if(methodStr.startsWith("!")) {
+			if(methodParamStr.length!=parameters.length)
+				return true;
+			methodNameStr=methodStr.substring(1, indexOf);
+			for(int i=0;i<methodParamStr.length;i++) {
+				if(!(methodParamStr[i].equals(parameters[i].getType().getSimpleName()))) {
+					pass=false;
+					break;
+				}
+			}
+			return !(standardName(mothodName,methodNameStr)&&pass);
+		}else {//没有  ！
+			if(methodParamStr.length!=parameters.length)
+				return false;
+			methodNameStr=methodStr.substring(0, indexOf);
+			for(int i=0;i<methodParamStr.length;i++) {
+				if(!(methodParamStr[i].equals(parameters[i].getType().getSimpleName()))) {
+					pass=false;
+					break;
+				}
+			}
+			return standardName(mothodName,methodNameStr)&&pass;
+		}
+	}
+	
+	public static void main(String[] args) {
+		String methodStr="show(String,int)";
+		int indexOf = methodStr.indexOf("(");
+		String[] methodParamStr=methodStr.substring(indexOf+1, methodStr.length()-1).split(",");
+		System.out.println(Arrays.toString(methodParamStr));
+	}
 	/**
 	 * 使用增强类的执行参数构造Point
 	 * @param expand 增强类实例
