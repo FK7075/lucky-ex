@@ -17,9 +17,9 @@ public class PointRun {
 	
 	private Point point;
 	
-	private String mateClass;
+	private String aspect;
 	
-	private String mateMethod;
+	private String pointcat;
 	
 	public Method method;
 	
@@ -29,8 +29,8 @@ public class PointRun {
 			proceedMethod = point.getClass().getDeclaredMethod("proceed", Chain.class);
 			Expand exp = proceedMethod.getAnnotation(Expand.class);
 			this.point = point;
-			this.mateClass = exp.mateClass();
-			this.mateMethod = exp.mateMethod();
+			this.aspect = exp.aspect();
+			this.pointcat = exp.pointcat();
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -49,8 +49,8 @@ public class PointRun {
 			Constructor<?> constructor = pointClass.getConstructor();
 			constructor.setAccessible(true);
 			this.point = (Point) constructor.newInstance();
-			this.mateClass = exp.mateClass();
-			this.mateMethod = exp.mateMethod();
+			this.aspect = exp.aspect();
+			this.pointcat = exp.pointcat();
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -78,31 +78,31 @@ public class PointRun {
 		if(method.isAnnotationPresent(Before.class)) {
 			Before before=method.getAnnotation(Before.class);
 			this.point=conversion(expand,method,Location.BEFORE);
-			this.mateClass = before.mateClass();
-			this.mateMethod = before.mateMethod();
+			this.aspect = before.aspect();
+			this.pointcat = before.pointcat();
 		}else if(method.isAnnotationPresent(After.class)) {
 			After after=method.getAnnotation(After.class);
 			this.point=conversion(expand,method,Location.AFTER);
-			this.mateClass = after.mateClass();
-			this.mateMethod = after.mateMethod();
+			this.aspect = after.aspect();
+			this.pointcat = after.pointcat();
 		}
 		
 	}
 
 	public String getMateClass() {
-		return mateClass;
+		return aspect;
 	}
 
 	public void setMateClass(String mateClass) {
-		this.mateClass = mateClass;
+		this.aspect = mateClass;
 	}
 
 	public String getMateMethod() {
-		return mateMethod;
+		return pointcat;
 	}
 
 	public void setMateMethod(String mateMethod) {
-		this.mateMethod = mateMethod;
+		this.pointcat = mateMethod;
 	}
 
 	public Point getPoint() {
@@ -134,7 +134,7 @@ public class PointRun {
 	private boolean standardStart(Method method) {
 		String methodName=method.getName();
 		Parameter[] parameters = method.getParameters();
-		String[] mateMethodArr=mateMethod.split(",");
+		String[] mateMethodArr=pointcat.split(",");
 		for(String str:mateMethodArr) {
 			if("*".equals(str)) {
 				return true;
