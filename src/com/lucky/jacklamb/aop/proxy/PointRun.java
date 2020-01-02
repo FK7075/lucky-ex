@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 
+import com.lucky.jacklamb.annotation.aop.After;
+import com.lucky.jacklamb.annotation.aop.Before;
 import com.lucky.jacklamb.annotation.aop.Expand;
 import com.lucky.jacklamb.enums.Location;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
@@ -15,9 +17,11 @@ public class PointRun {
 	
 	private Point point;
 	
-	private String[] mateClass;
+	private String mateClass;
 	
-	private String[] mateMethod;
+	private String mateMethod;
+	
+	public Method method;
 	
 	public PointRun(Point point) {
 		Method proceedMethod;
@@ -70,26 +74,35 @@ public class PointRun {
 	}
 
 	public PointRun(Object expand, Method method) {
-		Expand exp = method.getAnnotation(Expand.class);
-		this.point=conversion(expand,method,exp.location());
-		this.mateClass = exp.mateClass();
-		this.mateMethod = exp.mateMethod();
+		this.method=method;
+		if(method.isAnnotationPresent(Before.class)) {
+			Before before=method.getAnnotation(Before.class);
+			this.point=conversion(expand,method,Location.BEFORE);
+			this.mateClass = before.mateClass();
+			this.mateMethod = before.mateMethod();
+		}else if(method.isAnnotationPresent(After.class)) {
+			After after=method.getAnnotation(After.class);
+			this.point=conversion(expand,method,Location.AFTER);
+			this.mateClass = after.mateClass();
+			this.mateMethod = after.mateMethod();
+		}
+		
 	}
 
-	public String[] getIdScope() {
+	public String getMateClass() {
 		return mateClass;
 	}
 
-	public void setIdScope(String[] idScope) {
-		this.mateClass = idScope;
+	public void setMateClass(String mateClass) {
+		this.mateClass = mateClass;
 	}
 
-	public String[] getPathScope() {
+	public String getMateMethod() {
 		return mateMethod;
 	}
 
-	public void setPathScope(String[] pathScope) {
-		this.mateMethod = pathScope;
+	public void setMateMethod(String mateMethod) {
+		this.mateMethod = mateMethod;
 	}
 
 	public Point getPoint() {
@@ -106,7 +119,11 @@ public class PointRun {
 	 * @return
 	 */
 	public boolean standard(Method method) {
-		return standardStart(method);
+		try {
+			return standardStart(method);
+		}catch(StringIndexOutOfBoundsException e) {
+			throw new RuntimeException("错误的增强方法表达式，错误位置："+method+" ->@Expand(mateMethod=>err)", e);
+		}
 	}
 	
 	/**
@@ -117,7 +134,8 @@ public class PointRun {
 	private boolean standardStart(Method method) {
 		String methodName=method.getName();
 		Parameter[] parameters = method.getParameters();
-		for(String str:mateMethod) {
+		String[] mateMethodArr=mateMethod.split(",");
+		for(String str:mateMethodArr) {
 			if("*".equals(str)) {
 				return true;
 			}else if(str.contains("(")&&str.endsWith(")")){
@@ -186,12 +204,6 @@ public class PointRun {
 		}
 	}
 	
-	public static void main(String[] args) {
-		String methodStr="show(String,int)";
-		int indexOf = methodStr.indexOf("(");
-		String[] methodParamStr=methodStr.substring(indexOf+1, methodStr.length()-1).split(",");
-		System.out.println(Arrays.toString(methodParamStr));
-	}
 	/**
 	 * 使用增强类的执行参数构造Point
 	 * @param expand 增强类实例
@@ -217,10 +229,14 @@ public class PointRun {
 			
 			//执行增强方法
 			private Object perform(Object expand, Method expandMethod) {
-				Expand exp=expandMethod.getAnnotation(Expand.class);
+				String[] expression = null;
+				if(expandMethod.isAnnotationPresent(Before.class)) {
+					expression=expandMethod.getAnnotation(Before.class).params();
+				}else if(expandMethod.isAnnotationPresent(After.class)) {
+					expression=expandMethod.getAnnotation(After.class).params();
+				}
 				Parameter[] parameters = expandMethod.getParameters();
 				Object[] expandParams=new Object[parameters.length];
-				String[] expression = exp.params();
 				if(expression.length!=expandParams.length)
 					throw new RuntimeException("增强方法的参数配置错误，配置参数数量不匹配！错误位置："+expandMethod+" @Expand(params="+Arrays.toString(expression)+")");
 				setParams(parameters,expandParams,expression);
@@ -267,6 +283,11 @@ public class PointRun {
 			}
 		};
 		return cpoint;
+	}
+	
+	public static void main(String[] args) {
+		String str="vergg43qg3";
+		str.substring(0, str.length()+1);
 	}
 
 	

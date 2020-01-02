@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 
 import com.lucky.jacklamb.annotation.ioc.Autowired;
 import com.lucky.jacklamb.annotation.ioc.Value;
+import com.lucky.jacklamb.aop.util.PointRunFactory;
 import com.lucky.jacklamb.exception.InjectionPropertiesException;
 import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.ScanConfig;
@@ -28,7 +29,7 @@ import com.lucky.jacklamb.utils.ArrayCast;
  * @author DELL
  *
  */
-public class IOCContainers {
+public final class IOCContainers {
 	
 	private AgentIOC agentIOC;
 	
@@ -43,9 +44,16 @@ public class IOCContainers {
 	private ScanConfig scanConfig;
 	
 	public void init() {
+		
+		//得到配置信息
 		scanConfigToComponentIOC();
+		
+		//控制反转(IOC)
 		inversionOfControl();
+		
+		//依赖注入+执行代理(DI+AOP)
 		dependencyInjection();
+		
 	}
 	
 	/**
@@ -83,14 +91,18 @@ public class IOCContainers {
 	}
 	
 	/**
-	 * 依赖注入
+	 * 依赖注入,执行代理
 	 */
 	public void dependencyInjection() {
 		try {
-			injection(controllerIOC.getControllerMap());
-			injection(serviceIOC.getServiceMap());
-			injection(repositoryIOC.getRepositoryMap());
 			injection(appIOC.getAppMap());
+			iocComponentAgent(appIOC.getAppMap(),"component");
+			injection(repositoryIOC.getRepositoryMap());
+			iocComponentAgent(repositoryIOC.getRepositoryMap(),"repository");
+			injection(serviceIOC.getServiceMap());
+			iocComponentAgent(serviceIOC.getServiceMap(),"service");
+			injection(controllerIOC.getControllerMap());
+			iocComponentAgent(controllerIOC.getControllerMap(),"controller");
 		} catch (IllegalArgumentException e) {
 			throw new InjectionPropertiesException("属性注入异常，注入的属性与原属性类型不匹配....");
 		} catch (IllegalAccessException e) {
@@ -98,7 +110,7 @@ public class IOCContainers {
 		}
 		
 	}
-
+	
 	public AgentIOC getAgentIOC() {
 		return agentIOC;
 	}
@@ -291,6 +303,13 @@ public class IOCContainers {
 					}
 				}
 			}
+		}
+	}
+
+	
+	private void iocComponentAgent(Map<String,Object> iocMap,String iocCode) {
+		for(Entry<String,Object> entry:iocMap.entrySet()) {
+			entry.setValue(PointRunFactory.agent(agentIOC.getAgentMap(), iocCode, entry.getKey(), entry.getValue()));
 		}
 	}
 }

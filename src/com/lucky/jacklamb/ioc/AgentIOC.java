@@ -8,8 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.lucky.jacklamb.annotation.aop.After;
 import com.lucky.jacklamb.annotation.aop.Agent;
-import com.lucky.jacklamb.annotation.aop.Expand;
+import com.lucky.jacklamb.annotation.aop.Before;
 import com.lucky.jacklamb.aop.proxy.Point;
 import com.lucky.jacklamb.aop.proxy.PointRun;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
@@ -69,12 +70,25 @@ public class AgentIOC {
 		agentIDS.add(id);
 	}
 	
-	public AgentIOC initAgentIOC(List<String> componentClass) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	/**
+	 * ¼ÓÔØAgent×é¼þ
+	 * @param agentClass
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
+	public AgentIOC initAgentIOC(List<String> agentClass) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Agent agann;
-		Expand expand;
+		Before before;
+		After after;
 		PointRun pointRun;
 		Constructor<?> constructor;
-		for(String clzz:componentClass) {
+		for(String clzz:agentClass) {
 			Class<?> agent=Class.forName(clzz);
 			if(agent.isAnnotationPresent(Agent.class)) {
 				String name;
@@ -87,24 +101,34 @@ public class AgentIOC {
 				Method[] enhanceMethods=agent.getDeclaredMethods();
 				for(Method method:enhanceMethods) {
 					String agentid;
-					if(method.isAnnotationPresent(Expand.class)) {
-						expand=method.getAnnotation(Expand.class);
-						if("".equals(expand.value())) {
+					if(method.isAnnotationPresent(Before.class)) {
+						before=method.getAnnotation(Before.class);
+						if("".equals(before.value())) {
 							agentid=name+("."+LuckyUtils.TableToClass1(method.getName()));
 						}else {
-							agentid=name+("."+expand.value());
+							agentid=name+("."+before.value());
 						}
 						constructor = agent.getConstructor();
 						constructor.setAccessible(true);
 						pointRun=new PointRun(constructor.newInstance(),method);
 						addAgentMap(agentid, pointRun);
-					}else{
+					}else if(method.isAnnotationPresent(After.class)){
+						after=method.getAnnotation(After.class);
+						if("".equals(after.value())) {
+							agentid=name+("."+LuckyUtils.TableToClass1(method.getName()));
+						}else {
+							agentid=name+("."+after.value());
+						}
+						constructor = agent.getConstructor();
+						constructor.setAccessible(true);
+						pointRun=new PointRun(constructor.newInstance(),method);
+						addAgentMap(agentid, pointRun);
+					}else {
 						continue;
 					}
 				}
 			}else if(Point.class.isAssignableFrom(agent)) {
 				String name;
-				expand=agent.getAnnotation(Expand.class);
 				name=LuckyUtils.TableToClass1(agent.getSimpleName())+".proceed";
 				constructor = agent.getConstructor();
 				constructor.setAccessible(true);

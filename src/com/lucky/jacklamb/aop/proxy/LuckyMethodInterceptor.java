@@ -6,14 +6,13 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import com.lucky.jacklamb.annotation.aop.Cacheable;
-import com.lucky.jacklamb.aop.defaultexpand.CacheExpandPoint;
+import com.lucky.jacklamb.aop.expandpoint.CacheExpandPoint;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 public class LuckyMethodInterceptor implements MethodInterceptor {
 	
-//	private List<PerformMethod> performMethods;//关于某一个类的所有增强的执行方法
 	
 	private List<PointRun> pointRuns;//关于某一个类的所有增强的执行节点
 	
@@ -40,6 +39,8 @@ public class LuckyMethodInterceptor implements MethodInterceptor {
 	@Override
 	public Object intercept(Object target, Method method, Object[] params, MethodProxy methodProxy) throws Throwable {
 		List<Point> points=new ArrayList<>();
+		
+		//被@Cacheable注解标注的方法优先执行缓存代理
 		if(method.isAnnotationPresent(Cacheable.class)) {
 			Point cacheExpandPoint = new CacheExpandPoint();
 			cacheExpandPoint.method=method;
