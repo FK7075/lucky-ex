@@ -1,6 +1,5 @@
 package com.lucky.jacklamb.ioc;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.lucky.jacklamb.annotation.ioc.Service;
+import com.lucky.jacklamb.aop.util.PointRunFactory;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.utils.LuckyUtils;
@@ -74,16 +74,16 @@ public class ServiceIOC extends ComponentFactory{
 	 * @throws IllegalArgumentException 
 	 */
 	public ServiceIOC initServiceIOC(List<String> serviceClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+		String beanID;
 		for (String clzz : serviceClass) {
 			Class<?> service = Class.forName(clzz);
 			if (service.isAnnotationPresent(Service.class)) {
 				Service ser = service.getAnnotation(Service.class);
-				Constructor<?> constructor = service.getConstructor();
-				constructor.setAccessible(true);
 				if (!"".equals(ser.value()))
-					addServiceMap(ser.value(), constructor.newInstance());
+					beanID=ser.value();
 				else
-					addServiceMap(LuckyUtils.TableToClass1(service.getSimpleName()), constructor.newInstance());
+					beanID=LuckyUtils.TableToClass1(service.getSimpleName());
+				addServiceMap(beanID, PointRunFactory.agent(AgentIOC.getAgentIOC().getAgentMap(), "service", beanID, service));
 			}
 		}
 		return this;

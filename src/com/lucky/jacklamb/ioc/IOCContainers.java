@@ -16,7 +16,6 @@ import javax.servlet.http.HttpSession;
 
 import com.lucky.jacklamb.annotation.ioc.Autowired;
 import com.lucky.jacklamb.annotation.ioc.Value;
-import com.lucky.jacklamb.aop.util.PointRunFactory;
 import com.lucky.jacklamb.exception.InjectionPropertiesException;
 import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.ScanConfig;
@@ -48,10 +47,13 @@ public final class IOCContainers {
 		//得到配置信息
 		scanConfigToComponentIOC();
 		
-		//控制反转(IOC)
-		inversionOfControl();
+		//得到所有的增强
+		agentIOC=AgentIOC.getAgentIOC();
 		
-		//依赖注入+执行代理(DI+AOP)
+		//控制反转+动态代理(IOC+AOP)
+		inversionOfControlAndAop();
+		
+		//依赖注入(DI)
 		dependencyInjection();
 		
 	}
@@ -59,9 +61,8 @@ public final class IOCContainers {
 	/**
 	 * 控制反转
 	 */
-	public void inversionOfControl() {
+	public void inversionOfControlAndAop() {
 		try {
-			initAgentIOC();
 			initComponentIOC();
 			initControllerIOC();
 			initServiceIOC();
@@ -96,13 +97,9 @@ public final class IOCContainers {
 	public void dependencyInjection() {
 		try {
 			injection(appIOC.getAppMap());
-			iocComponentAgent(appIOC.getAppMap(),"component");
 			injection(repositoryIOC.getRepositoryMap());
-			iocComponentAgent(repositoryIOC.getRepositoryMap(),"repository");
 			injection(serviceIOC.getServiceMap());
-			iocComponentAgent(serviceIOC.getServiceMap(),"service");
 			injection(controllerIOC.getControllerMap());
-			iocComponentAgent(controllerIOC.getControllerMap(),"controller");
 		} catch (IllegalArgumentException e) {
 			throw new InjectionPropertiesException("属性注入异常，注入的属性与原属性类型不匹配....");
 		} catch (IllegalAccessException e) {
@@ -182,11 +179,6 @@ public final class IOCContainers {
 		repositoryIOC.initRepositoryIOC(ScacFactory.createScan().loadComponent(scanConfig.getRepositoryPackSuffix()));
 	}
 	
-	public void initAgentIOC() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		agentIOC=new AgentIOC();
-		agentIOC.initAgentIOC(ScacFactory.createScan().loadComponent(scanConfig.getAgentPackSuffix()));
-	}
-	
 	/**
 	 * 每次处理请求时为Controller注入Model、Request、Response和Session对象属性
 	 * @param object
@@ -195,7 +187,10 @@ public final class IOCContainers {
 	 * @throws IllegalAccessException
 	 */
 	public void autowReqAdnResp(Object object,Model model) throws IllegalArgumentException, IllegalAccessException {
-		Field[] fields=object.getClass().getDeclaredFields();
+		Class<?> controllerClass=object.getClass();
+		if(controllerClass.getSimpleName().contains("$$EnhancerByCGLIB$$"))
+			controllerClass=controllerClass.getSuperclass();
+		Field[] fields=controllerClass.getDeclaredFields();
 		for(Field field:fields) {
 			field.setAccessible(true);
 			if(Model.class.isAssignableFrom(field.getType())) {
@@ -225,6 +220,8 @@ public final class IOCContainers {
 		for(Entry<String,Object> entry:componentMap.entrySet()) {
 			Object component=entry.getValue();
 			Class<?> componentClass=component.getClass();
+			if(componentClass.getSimpleName().contains("$$EnhancerByCGLIB$$"))
+				componentClass=componentClass.getSuperclass();
 			Field[] fields=componentClass.getDeclaredFields();
 			for(Field field:fields) {
 				field.setAccessible(true);
@@ -303,13 +300,6 @@ public final class IOCContainers {
 					}
 				}
 			}
-		}
-	}
-
-	
-	private void iocComponentAgent(Map<String,Object> iocMap,String iocCode) {
-		for(Entry<String,Object> entry:iocMap.entrySet()) {
-			entry.setValue(PointRunFactory.agent(agentIOC.getAgentMap(), iocCode, entry.getKey(), entry.getValue()));
 		}
 	}
 }

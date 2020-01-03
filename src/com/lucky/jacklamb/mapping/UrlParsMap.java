@@ -119,7 +119,10 @@ public class UrlParsMap {
 		come = ApplicationBeans.createApplicationBeans().getHanderMethods().get(iocURM);
 		come.setUrl(iocURM.getUrl());
 		come.setRestKV(getRestKV(iocURM.getUrl(), url));
-		Controller cont=come.getController().getClass().getAnnotation(Controller.class);
+		Class<?> controllerClass=come.getController().getClass();
+		if(controllerClass.getSimpleName().contains("$$EnhancerByCGLIB$$"))
+			controllerClass=controllerClass.getSuperclass();
+		Controller cont=controllerClass.getAnnotation(Controller.class);
 		List<String> globalprefixAndSuffix=Configuration.getConfiguration().getWebConfig().getHanderPrefixAndSuffix();
  		come.setPrefix(globalprefixAndSuffix.get(0));
 		come.setSuffix(globalprefixAndSuffix.get(1));

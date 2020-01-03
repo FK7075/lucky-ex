@@ -15,6 +15,7 @@ import com.lucky.jacklamb.aop.proxy.Point;
 import com.lucky.jacklamb.aop.proxy.PointRun;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
+import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**
@@ -24,13 +25,45 @@ import com.lucky.jacklamb.utils.LuckyUtils;
  */
 public class AgentIOC {
 	
+	private static AgentIOC agentIoc;
+	
 	private Map<String,PointRun> agentMap;
 	
 	private List<String> agentIDS;
 	
-	public AgentIOC() {
-		agentMap=new HashMap<>();
-		agentIDS=new ArrayList<>();
+	private AgentIOC() {
+		try {
+			agentMap=new HashMap<>();
+			agentIDS=new ArrayList<>();
+			initAgentIOC(ScacFactory.createScan().loadComponent(Configuration.getConfiguration().getScanConfig().getAgentPackSuffix()));
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static AgentIOC getAgentIOC() {
+		if(agentIoc==null)
+			agentIoc=new AgentIOC();
+		return agentIoc;
 	}
 
 	public boolean containId(String id) {
@@ -82,7 +115,7 @@ public class AgentIOC {
 	 * @throws IllegalArgumentException
 	 * @throws InvocationTargetException
 	 */
-	public AgentIOC initAgentIOC(List<String> agentClass) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public void initAgentIOC(List<String> agentClass) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Agent agann;
 		Before before;
 		After after;
@@ -136,7 +169,6 @@ public class AgentIOC {
 				addAgentMap(name,pointRun);
 			}
 		}
-		return this;
 	}
 
 }

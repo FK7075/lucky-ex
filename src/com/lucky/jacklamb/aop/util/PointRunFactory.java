@@ -14,7 +14,6 @@ import com.lucky.jacklamb.annotation.aop.Cacheable;
 import com.lucky.jacklamb.aop.proxy.PointRun;
 import com.lucky.jacklamb.aop.proxy.ProxyFactory;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlCore;
-import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 
 public class PointRunFactory {
 	
@@ -36,16 +35,24 @@ public class PointRunFactory {
 	 * @param agentMap 所有的Agent组件
 	 * @param iocCode 当前组件的组件代码(Controller,Service,Repository,Component)
 	 * @param beanid 当前组件的组件id
-	 * @param bean 当前组件
+	 * @param beanClass 当前组件
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public static Object agent(Map<String,PointRun> agentMap,String iocCode, String beanid,Object bean) {
-		List<PointRun> findPointbyBean = findPointbyBean(agentMap,iocCode,beanid,bean);
+	public static Object agent(Map<String,PointRun> agentMap,String iocCode, String beanid,Class<?> beanClass) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		List<PointRun> findPointbyBean = findPointbyBean(agentMap,iocCode,beanid,beanClass);
 		if(!findPointbyBean.isEmpty()) {
-			return ProxyFactory.createProxyFactory().getProxy(bean.getClass(), findPointbyBean);
-		}else if(isCacheable(bean.getClass())) {
-			return ProxyFactory.createProxyFactory().getProxy(bean.getClass(), findPointbyBean);
+			return ProxyFactory.createProxyFactory().getProxy(beanClass, findPointbyBean);
+		}else if(isCacheable(beanClass.getClass())) {
+			return ProxyFactory.createProxyFactory().getProxy(beanClass, findPointbyBean);
 		}else{
-			return bean;
+			Constructor<?> constructor = beanClass.getConstructor();
+			constructor.setAccessible(true);
+			return constructor.newInstance();
 		}
 	}
 	
@@ -68,19 +75,19 @@ public class PointRunFactory {
 	 * @param agentMap
 	 * @param iocCode 当前组件的组件代码(Controller,Service,Repository,Component)
 	 * @param beanid 当前组件的组件id
-	 * @param bean 当前组件
+	 * @param beanClass 当前组件
 	 * @return
 	 */
-	public static List<PointRun> findPointbyBean(Map<String,PointRun> agentMap,String iocCode, String beanid,Object bean){
+	public static List<PointRun> findPointbyBean(Map<String,PointRun> agentMap,String iocCode, String beanid,Class<?> beanClass){
 		List<PointRun> pointRuns=new  ArrayList<>();
 		Collection<PointRun> values = agentMap.values();
-		if(SqlCore.class.isAssignableFrom(bean.getClass())||DataSource.class.isAssignableFrom(bean.getClass()))
+		if(SqlCore.class.isAssignableFrom(beanClass))
 			return pointRuns;
 		String mateClass;
 		for(PointRun pointRun:values) {
 			mateClass=pointRun.getMateClass();
 			if(mateClass.startsWith("path:")) {
-				if(standardPath(mateClass.substring(5),bean.getClass().getName())) 
+				if(standardPath(mateClass.substring(5),beanClass.getName())) 
 					pointRuns.add(pointRun);
 			}else if(mateClass.startsWith("id:")) {
 				if(standardId(mateClass.substring(3),beanid))
@@ -89,7 +96,7 @@ public class PointRunFactory {
 				if(standardIocCode(mateClass.substring(4),iocCode))
 					pointRuns.add(pointRun);
 			}else {
-				throw new RuntimeException("无法识别的mateClass,正确的mateClass必须以[path:,ioc:,id:]中的一个为前缀！错误位置："+pointRun.method+" ->@Expand(mateClass=>err)");
+				throw new RuntimeException("无法识别的切面配置aspect,正确的aspect必须以[path:,ioc:,id:]中的一个为前缀！错误位置："+pointRun.method+" ->@E/B/A(aspect=>err)");
 			}
 		}
 		return pointRuns;

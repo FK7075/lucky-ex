@@ -1,6 +1,5 @@
 package com.lucky.jacklamb.ioc;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +8,7 @@ import java.util.Map;
 
 import com.lucky.jacklamb.annotation.ioc.Repository;
 import com.lucky.jacklamb.annotation.orm.mapper.Mapper;
+import com.lucky.jacklamb.aop.util.PointRunFactory;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlCore;
@@ -125,16 +125,16 @@ public class RepositoryIOC extends ComponentFactory {
 	 */
 	public RepositoryIOC initRepositoryIOC(List<String> repositoryClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		boolean first = true;
+		String beanID;
 		for (String clzz : repositoryClass) {
 			Class<?> repository = Class.forName(clzz);
 			if (repository.isAnnotationPresent(Repository.class)) {
 				Repository rep = repository.getAnnotation(Repository.class);
-				Constructor<?> constructor = repository.getConstructor();
-				constructor.setAccessible(true);
 				if (!"".equals(rep.value()))
-					addRepositoryMap(rep.value(), constructor.newInstance());
+					beanID=rep.value();
 				else
-					addRepositoryMap(LuckyUtils.TableToClass1(repository.getSimpleName()), constructor.newInstance());
+					beanID=LuckyUtils.TableToClass1(repository.getSimpleName());
+				addRepositoryMap(beanID, PointRunFactory.agent(AgentIOC.getAgentIOC().getAgentMap(), "repository", beanID, repository));
 			} else if (repository.isAnnotationPresent(Mapper.class)) {
 				if (first) {
 					List<DataSource> datalist=ReadProperties.getAllDataSource();

@@ -122,7 +122,7 @@ public class PointRun {
 		try {
 			return standardStart(method);
 		}catch(StringIndexOutOfBoundsException e) {
-			throw new RuntimeException("错误的增强方法表达式，错误位置："+method+" ->@Expand(mateMethod=>err)", e);
+			throw new RuntimeException("切入点配置错误，错误位置："+method+" ->@E/B/A(pointcat=>err)", e);
 		}
 	}
 	
@@ -152,18 +152,18 @@ public class PointRun {
 	/**
 	 * 方法名验证
 	 * @param mothodName 当前方法的方法名
-	 * @param methodStr 配置中配置的标准方法名
+	 * @param pointcut 配置中配置的标准方法名
 	 * @return
 	 */
-	private boolean standardName(String mothodName,String methodStr) {
-		if(methodStr.startsWith("!")) {
-			return !(mothodName.equals(methodStr.substring(1)));
-		}else if(methodStr.startsWith("*")) {
-			return mothodName.endsWith(methodStr);
-		}else if(methodStr.endsWith("*")) {
-			return mothodName.startsWith(methodStr);
+	private boolean standardName(String mothodName,String pointcut) {
+		if(pointcut.startsWith("!")) {
+			return !(mothodName.equals(pointcut.substring(1)));
+		}else if(pointcut.startsWith("*")) {
+			return mothodName.endsWith(pointcut.substring(1));
+		}else if(pointcut.endsWith("*")) {
+			return mothodName.startsWith(pointcut.substring(0, pointcut.length()-1));
 		}else {
-			return mothodName.equals(methodStr);
+			return mothodName.equals(pointcut);
 		}
 	}
 	
@@ -171,18 +171,18 @@ public class PointRun {
 	 * 方法名+方法参数验证
 	 * @param mothodName 当前方法的方法名
 	 * @param parameters 当前方法的参数列表
-	 * @param methodStr 配置中配置的标准方法名+参数
+	 * @param pointcut 配置中配置的标准方法名+参数
 	 * @return
 	 */
-	private boolean standardMethod(String mothodName,Parameter[] parameters,String methodStr) {
-		int indexOf = methodStr.indexOf("(");
+	private boolean standardMethod(String mothodName,Parameter[] parameters,String pointcut) {
+		int indexOf = pointcut.indexOf("(");
 		String methodNameStr;
 		boolean pass=true;
-		String[] methodParamStr=methodStr.substring(indexOf+1, methodStr.length()-1).split(",");
-		if(methodStr.startsWith("!")) {
+		String[] methodParamStr=pointcut.substring(indexOf+1, pointcut.length()-1).split(",");
+		if(pointcut.startsWith("!")) {
 			if(methodParamStr.length!=parameters.length)
 				return true;
-			methodNameStr=methodStr.substring(1, indexOf);
+			methodNameStr=pointcut.substring(1, indexOf);
 			for(int i=0;i<methodParamStr.length;i++) {
 				if(!(methodParamStr[i].equals(parameters[i].getType().getSimpleName()))) {
 					pass=false;
@@ -193,7 +193,7 @@ public class PointRun {
 		}else {//没有  ！
 			if(methodParamStr.length!=parameters.length)
 				return false;
-			methodNameStr=methodStr.substring(0, indexOf);
+			methodNameStr=pointcut.substring(0, indexOf);
 			for(int i=0;i<methodParamStr.length;i++) {
 				if(!(methodParamStr[i].equals(parameters[i].getType().getSimpleName()))) {
 					pass=false;

@@ -1,6 +1,5 @@
 package com.lucky.jacklamb.ioc;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ import com.lucky.jacklamb.annotation.mvc.PostMapping;
 import com.lucky.jacklamb.annotation.mvc.PutMapping;
 import com.lucky.jacklamb.annotation.mvc.RequestMapping;
 import com.lucky.jacklamb.annotation.mvc.RestBody;
+import com.lucky.jacklamb.aop.util.PointRunFactory;
 import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.enums.Rest;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
@@ -125,18 +125,18 @@ public class ControllerIOC extends ComponentFactory{
 	 */
 	public ControllerIOC initControllerIOC(List<String> controllerClass) 
 			throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+		String beanID;
 		for (String clzz : controllerClass) {
 			Class<?> controller = Class.forName(clzz);
 			if (controller.isAnnotationPresent(Controller.class)) {
 				Controller cont = controller.getAnnotation(Controller.class);
-				Constructor<?> constructor = controller.getConstructor();
-				constructor.setAccessible(true);
 				if (!"".equals(cont.value())) {
-					addControllerMap(cont.value(), constructor.newInstance());
+					beanID=cont.value();
 				}
 				else {
-					addControllerMap(LuckyUtils.TableToClass1(controller.getSimpleName()), constructor.newInstance());
+					beanID=LuckyUtils.TableToClass1(controller.getSimpleName());
 				}
+				addControllerMap(beanID, PointRunFactory.agent(AgentIOC.getAgentIOC().getAgentMap(), "controller", beanID, controller));
 			}
 
 		}
@@ -151,6 +151,8 @@ public class ControllerIOC extends ComponentFactory{
 		for (Map.Entry<String, Object> entry : controllerMap.entrySet()) {
 			Object instance = entry.getValue();
 			Class<?> clzz = instance.getClass();
+			if(clzz.getSimpleName().contains("$$EnhancerByCGLIB$$"))
+				clzz=clzz.getSuperclass();
 			String url_c;
 			if (clzz.isAnnotationPresent(RequestMapping.class)) {
 				RequestMapping crm = clzz.getAnnotation(RequestMapping.class);
