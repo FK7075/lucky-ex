@@ -35,7 +35,7 @@ public class PointRunFactory {
 	 * @param agentMap 所有的Agent组件
 	 * @param iocCode 当前组件的组件代码(Controller,Service,Repository,Component)
 	 * @param beanid 当前组件的组件id
-	 * @param beanClass 当前组件
+	 * @param beanClass 当前组件Class
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws InvocationTargetException 
@@ -47,7 +47,7 @@ public class PointRunFactory {
 		List<PointRun> findPointbyBean = findPointbyBean(agentMap,iocCode,beanid,beanClass);
 		if(!findPointbyBean.isEmpty()) {
 			return ProxyFactory.createProxyFactory().getProxy(beanClass, findPointbyBean);
-		}else if(isCacheable(beanClass.getClass())) {
+		}else if(isCacheable(beanClass)) {
 			return ProxyFactory.createProxyFactory().getProxy(beanClass, findPointbyBean);
 		}else{
 			Constructor<?> constructor = beanClass.getConstructor();
