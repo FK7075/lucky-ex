@@ -15,6 +15,11 @@ import com.lucky.jacklamb.aop.proxy.PointRun;
 import com.lucky.jacklamb.aop.proxy.ProxyFactory;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlCore;
 
+/**
+ * 代理对象发生器
+ * @author fk-7075
+ *
+ */
 public class PointRunFactory {
 	
 	public static List<PointRun> createPointRuns(Class<?> agentClass) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
@@ -96,14 +101,20 @@ public class PointRunFactory {
 				if(standardIocCode(mateClass.substring(4),iocCode))
 					pointRuns.add(pointRun);
 			}else {
-				throw new RuntimeException("无法识别的切面配置aspect,正确的aspect必须以[path:,ioc:,id:]中的一个为前缀！错误位置："+pointRun.method+" ->@E/B/A(aspect=>err)");
+				throw new RuntimeException("无法识别的切面配置aspect,正确的aspect必须以[path:,ioc:,id:]中的一个为前缀！错误位置："+pointRun.method+" ->@Before/@After/@Around(aspect=>err)");
 			}
 		}
 		return pointRuns;
 	}
 	
-	private static boolean standardPath(String mateMethod,String beanName) {
-		String[] cfgIocCode = mateMethod.split(",");
+	/**
+	 * 检验当前类是否符合path:配置
+	 * @param pointcut 切面配置
+	 * @param beanName 当前类的全路径
+	 * @return
+	 */
+	private static boolean standardPath(String pointcut,String beanName) {
+		String[] cfgIocCode = pointcut.split(",");
 		for(String cfg:cfgIocCode) {
 			if(cfg.endsWith(".*")) {
 				if(beanName.contains(cfg.substring(0, cfg.length()-2)))
@@ -117,8 +128,14 @@ public class PointRunFactory {
 		
 	}
 	
-	private static boolean standardId(String mateMethod,String beanid) {
-		String[] cfgIocCode = mateMethod.split(",");
+	/**
+	 * 检验当前类是否符合id:配置
+	 * @param pointcut 切面配置
+	 * @param beanid 当前类的beanID
+	 * @return
+	 */
+	private static boolean standardId(String pointcut,String beanid) {
+		String[] cfgIocCode = pointcut.split(",");
 		for(String cfg:cfgIocCode) {
 			if(cfg.equals(beanid))
 				return true;
@@ -127,8 +144,14 @@ public class PointRunFactory {
 		
 	}
 	
-	private static boolean standardIocCode(String mateMethod,String iocCode) {
-		String[] cfgIocCode = mateMethod.split(",");
+	/**
+	 * 检验当前类是否符合ioc:配置
+	 * @param pointcut 切面配置
+	 * @param iocCode 当前类的组件代码
+	 * @return
+	 */
+	private static boolean standardIocCode(String pointcut,String iocCode) {
+		String[] cfgIocCode = pointcut.split(",");
 		for(String cfg:cfgIocCode) {
 			if(cfg.trim().equalsIgnoreCase(iocCode))
 				return true;

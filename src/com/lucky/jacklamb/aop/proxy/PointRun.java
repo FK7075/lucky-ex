@@ -7,8 +7,8 @@ import java.lang.reflect.Parameter;
 import java.util.Arrays;
 
 import com.lucky.jacklamb.annotation.aop.After;
+import com.lucky.jacklamb.annotation.aop.Around;
 import com.lucky.jacklamb.annotation.aop.Before;
-import com.lucky.jacklamb.annotation.aop.Expand;
 import com.lucky.jacklamb.enums.Location;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.tcconversion.typechange.JavaConversion;
@@ -23,11 +23,15 @@ public class PointRun {
 	
 	public Method method;
 	
+	/**
+	 * 使用一个Point对象构造PointRun
+	 * @param point
+	 */
 	public PointRun(Point point) {
 		Method proceedMethod;
 		try {
 			proceedMethod = point.getClass().getDeclaredMethod("proceed", Chain.class);
-			Expand exp = proceedMethod.getAnnotation(Expand.class);
+			Around exp = proceedMethod.getAnnotation(Around.class);
 			this.point = point;
 			this.aspect = exp.aspect();
 			this.pointcat = exp.pointcat();
@@ -41,11 +45,15 @@ public class PointRun {
 
 	}
 	
+	/**
+	 * 使用Point类型对象的Class来构造PointRun
+	 * @param pointClass
+	 */
 	public PointRun(Class<?> pointClass) {
 		Method proceedMethod;
 		try {
 			proceedMethod =pointClass.getDeclaredMethod("proceed", Chain.class);
-			Expand exp = proceedMethod.getAnnotation(Expand.class);
+			Around exp = proceedMethod.getAnnotation(Around.class);
 			Constructor<?> constructor = pointClass.getConstructor();
 			constructor.setAccessible(true);
 			this.point = (Point) constructor.newInstance();
@@ -73,6 +81,11 @@ public class PointRun {
 
 	}
 
+	/**
+	 * 使用增强类的实例对象+增强方法Method来构造PointRun
+	 * @param expand 增强类实例
+	 * @param method 增强(方法)
+	 */
 	public PointRun(Object expand, Method method) {
 		this.method=method;
 		if(method.isAnnotationPresent(Before.class)) {
@@ -86,7 +99,6 @@ public class PointRun {
 			this.aspect = after.aspect();
 			this.pointcat = after.pointcat();
 		}
-		
 	}
 
 	public String getMateClass() {
@@ -122,7 +134,7 @@ public class PointRun {
 		try {
 			return standardStart(method);
 		}catch(StringIndexOutOfBoundsException e) {
-			throw new RuntimeException("切入点配置错误，错误位置："+method+" ->@E/B/A(pointcat=>err)", e);
+			throw new RuntimeException("切入点配置错误，错误位置："+method+" ->@Before/@After/@Around(pointcat=>err)", e);
 		}
 	}
 	
@@ -134,8 +146,13 @@ public class PointRun {
 	private boolean standardStart(Method method) {
 		String methodName=method.getName();
 		Parameter[] parameters = method.getParameters();
-		String[] mateMethodArr=pointcat.split(",");
-		for(String str:mateMethodArr) {
+		String[] pointcutStr=pointcat.split(",");
+		if(Arrays.asList(pointcutStr).contains("public")) {
+			//是否配置了public,如果配置了public，则所有非public都将不会执行该增强
+			if(method.getModifiers()!=1)
+				return false;
+		}
+		for(String str:pointcutStr) {
 			if("*".equals(str)) {
 				return true;
 			}else if(str.contains("(")&&str.endsWith(")")){
@@ -238,7 +255,7 @@ public class PointRun {
 				Parameter[] parameters = expandMethod.getParameters();
 				Object[] expandParams=new Object[parameters.length];
 				if(expression.length!=expandParams.length)
-					throw new RuntimeException("增强方法的参数配置错误，配置参数数量不匹配！错误位置："+expandMethod+" @Expand(params="+Arrays.toString(expression)+")");
+					throw new RuntimeException("增强方法的参数配置错误，配置参数数量不匹配！错误位置："+expandMethod+" @Around(params="+Arrays.toString(expression)+")");
 				setParams(parameters,expandParams,expression);
 				try {
 					expandMethod.setAccessible(true);
@@ -246,7 +263,7 @@ public class PointRun {
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException("IllegalAccessException", e);
 				} catch (IllegalArgumentException e) {
-					throw new RuntimeException("IllegalArgumentException", e);
+					throw new RuntimeException("参数类型不匹配!在增强方法中配置了无法从目标方法参数列表获取的参数，错误位置："+expandMethod+",@Before/@After/@Around(params=>err)", e);
 				} catch (InvocationTargetException e) {
 					throw new RuntimeException("InvocationTargetException", e);
 				}
@@ -259,19 +276,19 @@ public class PointRun {
 				String indexStr;
 				int index;
 				for(String exp:expression) {
-					if(exp.startsWith("ref:")) {//取容器中的值
+					if(exp.startsWith("ref:")) {//取IOC容器中的值
 						if("ref:".equals(exp.trim())) 
 							expandParams[i]=ApplicationBeans.createApplicationBeans().getBean(parameters[i].getType());
 						else 
 							expandParams[i]=ApplicationBeans.createApplicationBeans().getBean(exp.substring(4));
 						
-					}else if(exp.startsWith("ind:")) {//真实方法中的参数列表值
+					}else if(exp.startsWith("ind:")) {//目标方法中的参数列表值中指定位置的参数值
 						indexStr=exp.substring(4).trim();
 						index=Integer.parseInt(indexStr);
 						if(index<1||index>params.length)
-							throw new RuntimeException("错误的表达式，参数表达式中的索引超出参数列表索引范围！错误位置："+expandMethod+"  @Expand(params="+Arrays.toString(expression)+")->"+exp);
+							throw new RuntimeException("错误的表达式，参数表达式中的索引超出参数列表索引范围！错误位置："+expandMethod+"  @Around(params="+Arrays.toString(expression)+")->"+exp);
 						expandParams[i]=params[index-1];	
-					} else if(exp.equals("[params]")){//参数列表
+					} else if(exp.equals("[params]")){//整个参数列表
 						expandParams[i]=params;
 					}else if(exp.equals("[method]")) {//Method对象
 						expandParams[i]=method;
@@ -284,11 +301,4 @@ public class PointRun {
 		};
 		return cpoint;
 	}
-	
-	public static void main(String[] args) {
-		String str="vergg43qg3";
-		str.substring(0, str.length()+1);
-	}
-
-	
 }

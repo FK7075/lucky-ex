@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Expand {
+public @interface Around {
 	
 	/**
 	 * 设置增强方法的唯一标记(默认值：方法名)

@@ -16,9 +16,6 @@ public class Chain {
 	
 	private MethodProxy methodProxy;
 	
-	
-	
-	
 	public Chain(List<Point> points, Object target, Object[] params, MethodProxy methodProxy) {
 		this.points = points;
 		this.target = target;
@@ -26,11 +23,11 @@ public class Chain {
 		this.methodProxy = methodProxy;
 	}
 
-	public int getIndex() {
+	int getIndex() {
 		return index;
 	}
 
-	public void setIndex(int index) {
+	void setIndex(int index) {
 		this.index = index;
 	}
 
@@ -65,7 +62,6 @@ public class Chain {
 	public void setMethodProxy(MethodProxy methodProxy) {
 		this.methodProxy = methodProxy;
 	}
-
 
 
 	public Object proceed() {
