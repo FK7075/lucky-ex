@@ -34,7 +34,7 @@ public class PointRun {
 			Around exp = proceedMethod.getAnnotation(Around.class);
 			this.point = point;
 			this.aspect = exp.aspect();
-			this.pointcat = exp.pointcat();
+			this.pointcat = exp.pointcut();
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -58,7 +58,7 @@ public class PointRun {
 			constructor.setAccessible(true);
 			this.point = (Point) constructor.newInstance();
 			this.aspect = exp.aspect();
-			this.pointcat = exp.pointcat();
+			this.pointcat = exp.pointcut();
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -92,12 +92,12 @@ public class PointRun {
 			Before before=method.getAnnotation(Before.class);
 			this.point=conversion(expand,method,Location.BEFORE);
 			this.aspect = before.aspect();
-			this.pointcat = before.pointcat();
+			this.pointcat = before.pointcut();
 		}else if(method.isAnnotationPresent(After.class)) {
 			After after=method.getAnnotation(After.class);
 			this.point=conversion(expand,method,Location.AFTER);
 			this.aspect = after.aspect();
-			this.pointcat = after.pointcat();
+			this.pointcat = after.pointcut();
 		}
 	}
 

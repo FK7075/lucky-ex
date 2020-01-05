@@ -44,7 +44,7 @@ public @interface Before {
 	 * 方法名+参数类型定位：需要增强的方法名+参数列表，eg:mateMethod="method1(String,int),method2(User,Double)"<br>
 	 * @return
 	 */
-	String pointcat();
+	String pointcut();
 	
 	/**
 	 * 设置增强方法的参数<br>

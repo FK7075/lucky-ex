@@ -42,9 +42,11 @@ public @interface After {
 	 * 方法名定位：需要增强的方法名，eg:mateMethod="method1,method2"<br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;
 	 * 方法名+参数类型定位：需要增强的方法名+参数列表，eg:mateMethod="method1(String,int),method2(User,Double)"<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;
+	 * 方法权限修饰符：public private protected，eg:mateMethod="public"<br>
 	 * @return
 	 */
-	String pointcat();
+	String pointcut();
 	
 	/**
 	 * 设置增强方法的参数<br>
