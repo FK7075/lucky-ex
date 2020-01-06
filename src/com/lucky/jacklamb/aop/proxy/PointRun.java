@@ -244,6 +244,7 @@ public class PointRun {
 				return null;
 			}
 			
+			
 			//执行增强方法
 			private Object perform(Object expand, Method expandMethod) {
 				String[] expression = null;

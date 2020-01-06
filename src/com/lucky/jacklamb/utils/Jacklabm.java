@@ -403,22 +403,38 @@ public class Jacklabm {
 	}
 	
 	public static String str13() {
-		String d="                                                                            \r\n" + 
-				"                                                                            \r\n" + 
-				"          ,:                                    ;                           \r\n" + 
-				"       i0MM0                                 7MMM                           \r\n" + 
-				"        ,8MZ                                 ..MM                           \r\n" + 
-				"         :MZ                         ,.        MM                           \r\n" + 
-				"         iMa      ZMMa   WMM:     SMMMMMM,     MM   MMM@. ;MMMMi XMMMW      \r\n" + 
-				"         ;MZ       7M@    MM:    MM;   MMM     MM  WMB      MMa    MB       \r\n" + 
-				"         iMZ        MB    8M:   aMX     Z;     MM MM         MM   MM        \r\n" + 
-				"         ;MZ       ,MB    8M,   MM             MMMM          BM7 .M         \r\n" + 
-				"         iMa       .M8    ZM,   MM2      rr    MM MMX         MM M@         \r\n" + 
-				"         .MX       ,MM    MMi   rMM,    7M:    MM  MMM        rMMM          \r\n" + 
-				"       .XMMMXi      MMMBMZMMM7   aMMMMMMM:   ,8MMX  MMMa.      MM.          \r\n" + 
-				"       iaZXaZS       8MMS :;       ZMMMS     rZSXZ: 7XZ8,      BM           \r\n" + 
-				"                                                           SMSaM            \r\n" + 
-				"                                                           @MMM        ";
+		String d="                                                                                \r\n" + 
+				"                                    .i7i.                                       \r\n" + 
+				"                           bRDZRPi7BDUvuPBZi :7jJsi    bggEJ.1dEi               \r\n" + 
+				"                   75I5s:.B1    :bD       :gQSLi:iJBqUBB  .vQu.:BRKSL           \r\n" + 
+				"                 uBU:::r1BJ                        JQ            .  BZ          \r\n" + 
+				"             .::PB                                 Bv               Bi          \r\n" + 
+				"           iBDU1b                                  Xrii             vB          \r\n" + 
+				"          .B.                                       BBBgUUZggSLruMBBI           \r\n" + 
+				"          rB                                  .ZBBBBBB   .   ..r: iBBgSJ.       \r\n" + 
+				"          vB                                 iBBBBBdKd  BBj   :QB. BBQBBBB.     \r\n" + 
+				"         Qg.                                  YMgI. Q. :BBq   7BB7 LDvBBBBi     \r\n" + 
+				"        DQ                                          B   ..     ..   B           \r\n" + 
+				"        B.                                         SM               B.          \r\n" + 
+				"        PU                 JackLamb                B7               Bv          \r\n" + 
+				"       XQB.                                        B:               Bs          \r\n" + 
+				"     gBQBd             Lucky_noxml_1.0.0           Bs               B:          \r\n" + 
+				"    dBBBB                                          vB              .B           \r\n" + 
+				"    uBBBYB                                          BI  .gI.:IB.   Br           \r\n" + 
+				"     71  iQI                                         BR.   BB    YB7            \r\n" + 
+				"           ZB                                         7ggj:QQ.LqRX              \r\n" + 
+				"           1B                                            .::.BB                 \r\n" + 
+				"            Bq.                                             iB                  \r\n" + 
+				"             vdQg                                        .PRd                   \r\n" + 
+				"                BL    ..                                 Q7                     \r\n" + 
+				"                 BPLuMdBi                        .Zr   LB7                      \r\n" + 
+				"                  .iB   Bq.              7.    .EQ.BBKE2                        \r\n" + 
+				"                    B  qI BMIBRgBJ    :XgBBXUBEBL  B                            \r\n" + 
+				"                    B  B  B  Q   UgZgZbr 5s :B Q  Mv                            \r\n" + 
+				"                    B  B  B  B           IJ v2 Qi PY                            \r\n" + 
+				"                    B  B :B2vB1          YB :B QBQBB.                           \r\n" + 
+				"                   vBBBBRiBBBBB          2BBBBvUBQgB.                           \r\n" + 
+				"                    BBBBB .7i:           .BBBBU   ";
 		return d;
 	}
 	
