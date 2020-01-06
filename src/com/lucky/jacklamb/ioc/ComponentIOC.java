@@ -83,7 +83,7 @@ public class ComponentIOC extends ComponentFactory {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 */
-	public ComponentIOC initComponentIOC(List<String> componentClass)
+	public void initComponentIOC(List<String> componentClass)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		String beanID;
 		for (String clzz : componentClass) {
@@ -114,7 +114,6 @@ public class ComponentIOC extends ComponentFactory {
 				}
 			}
 		}
-		return this;
 	}
 
 }

@@ -24,6 +24,8 @@ public class RepositoryIOC extends ComponentFactory {
 	private List<String> repositoryIDS;
 
 	private Map<String, Object> mapperMap;
+	
+	private Map<String,String> mapperTtypeMap;
 
 	private List<String> mapperIDS;
 	
@@ -32,6 +34,7 @@ public class RepositoryIOC extends ComponentFactory {
 		repositoryMap=new HashMap<>();
 		repositoryIDS=new ArrayList<>();
 		mapperMap=new HashMap<>();
+		mapperTtypeMap=new HashMap<>();
 		mapperIDS=new ArrayList<>();
 	}
 
@@ -83,6 +86,10 @@ public class RepositoryIOC extends ComponentFactory {
 		repositoryIDS.add(repositoryID);
 	}
 
+	public Map<String, String> getMapperTtypeMap() {
+		return mapperTtypeMap;
+	}
+
 	public Map<String, Object> getMapperMap() {
 		return mapperMap;
 	}
@@ -96,6 +103,7 @@ public class RepositoryIOC extends ComponentFactory {
 			throw new NotAddIOCComponent("Mapper(ioc)容器中已存在ID为--"+mapperID+"--的组件，无法重复添加......");
 		mapperMap.put(mapperID, mapperObj);
 		addMapperIDS(mapperID);
+		mapperTtypeMap.put(mapperID, mapperObj.getClass().getName());
 	}
 
 	public List<String> getMapperIDS() {
@@ -123,7 +131,7 @@ public class RepositoryIOC extends ComponentFactory {
 	 * @throws InvocationTargetException 
 	 * @throws IllegalArgumentException 
 	 */
-	public RepositoryIOC initRepositoryIOC(List<String> repositoryClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+	public void initRepositoryIOC(List<String> repositoryClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		boolean first = true;
 		String beanID;
 		for (String clzz : repositoryClass) {
@@ -153,6 +161,5 @@ public class RepositoryIOC extends ComponentFactory {
 					addMapperMap(LuckyUtils.TableToClass1(repository.getSimpleName()), currSqlCore.getMapper(repository));
 			}
 		}
-		return this;
 	}
 }

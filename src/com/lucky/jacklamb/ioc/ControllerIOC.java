@@ -123,7 +123,7 @@ public class ControllerIOC extends ComponentFactory{
 	 * @throws InvocationTargetException 
 	 * @throws IllegalArgumentException 
 	 */
-	public ControllerIOC initControllerIOC(List<String> controllerClass) 
+	public void initControllerIOC(List<String> controllerClass) 
 			throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 		String beanID;
 		for (String clzz : controllerClass) {
@@ -140,7 +140,6 @@ public class ControllerIOC extends ComponentFactory{
 			}
 
 		}
-		return this;
 	}
 
 	/**

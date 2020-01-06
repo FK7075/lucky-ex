@@ -68,7 +68,7 @@ public class LuckyApplication {
 			tomcat.start();
 			long end= System.currentTimeMillis();
 			ApplicationBeans.createApplicationBeans();
-			System.out.println(LuckyUtils.showtime()+"[START-OK]->Embedded Tomcat [http-nio-"+serverCfg.getPort()+"] 启动成功,用时"+(end-start)+"ms!");
+			System.err.println(LuckyUtils.showtime()+"[EMBEDDED-TOMCAT-START-OK]->内嵌Tomcat启动成功！ [http-nio-"+serverCfg.getPort()+"] ,用时"+(end-start)+"ms!");
 			tomcat.getServer().await();
 		} catch (LifecycleException e) {
 			e.printStackTrace();

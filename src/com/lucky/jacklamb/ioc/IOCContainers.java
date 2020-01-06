@@ -166,7 +166,9 @@ public final class IOCContainers {
 	
 	public void initControllerIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		controllerIOC=new ControllerIOC();
-		controllerIOC.initControllerIOC(ScacFactory.createScan().loadComponent(scanConfig.getControllerPackSuffix())).methodHanderSetting();
+		controllerIOC.initControllerIOC(ScacFactory.createScan().loadComponent(scanConfig.getControllerPackSuffix()));
+		controllerIOC.methodHanderSetting();
+		
 	}
 	
 	public void initServiceIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {

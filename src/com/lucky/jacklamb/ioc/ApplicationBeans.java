@@ -22,12 +22,12 @@ public class ApplicationBeans {
 		Jacklabm.welcome();
 		iocContainers=new IOCContainers();
 		iocContainers.init();
+		applicationBean.printBeans();
 	}
 	
 	public static ApplicationBeans createApplicationBeans() {
 		if(applicationBean==null) {
 			applicationBean=new ApplicationBeans();
-			applicationBean.printBeans();
 		}
 		return applicationBean;
 	}
@@ -131,6 +131,10 @@ public class ApplicationBeans {
 	 */
 	public Map<String,Object> getMapperBeans(){
 		return iocContainers.getRepositoryIOC().getMapperMap();
+	}
+	
+	private Map<String,String> getMapperTypes(){
+		return iocContainers.getRepositoryIOC().getMapperTtypeMap();
 	}
 	
 	/**
@@ -253,20 +257,25 @@ public class ApplicationBeans {
 	 * 打印容器中组件信息
 	 */
 	public void printBeans() {
-		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Controller组件:"+getControllerBeans());
-		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Service组件:"+getServiceBeans());
-		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Repository组件:"+getRepositoryBeans());
-		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Mapper组件:"+getMapperBeans());
-		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Component组件:"+getComponentBeans());
-		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->Agent组件:"+getAgentBeans());
-		System.out.println(LuckyUtils.showtime()+"[SCAN-OK]->URL-ControllerMethod映射关系:");
+		System.err.println();
+		System.err.println(LuckyUtils.showtime()+"[SCAN-STRAT]->Lucky组件扫描开始......");
+		System.err.println(LuckyUtils.showtime()+"[AOP-AGENT-SCAN-OK] AGENT==>"+getAgentBeans());
+		System.err.println(LuckyUtils.showtime()+"[AOP-SCAN-END]->Agent组件注册完成，开始执行IOC扫描以及动态代理......");
+		System.err.println(LuckyUtils.showtime()+"[IOC-CONTROLLER-SCAN-OK] CONTROLLER==>"+getControllerBeans());
+		System.err.println(LuckyUtils.showtime()+"[IOC-SERVICE-SCAN-OK]  SERVICE==>"+getServiceBeans());
+		System.err.println(LuckyUtils.showtime()+"[IOC-REPOSITORY-SCAN-OK]  REPOSITORY==>"+getRepositoryBeans());
+		System.err.println(LuckyUtils.showtime()+"[IOC-MAPPER-SCAN-OK]  MAPPER==>"+getMapperTypes());
+		System.err.println(LuckyUtils.showtime()+"[IOC-COMPONENT-SCAN-OK] COMPONENT==>"+getComponentBeans());
+		System.err.println(LuckyUtils.showtime()+"[IOC-SCAN-END]->IOC组件扫描结束!动态代理结束......");
+		System.err.println(LuckyUtils.showtime()+"[URL-MAPPING-PARSING-START] 开始解析URL映射......");
+		System.err.println(LuckyUtils.showtime()+"[URL-CONTROLLERMETHOD-SCAN-OK]->URL映射解析完毕，解析结果如下：");
 		Set<String> allMapping = allMapping();
-			System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------------");
+			System.err.println("----------------------------------------------------------------------------------------------------------------------------------------------------------");
 		for(String mapping:allMapping) {
-			System.out.println(mapping);
-			System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------------");
+			System.err.println(mapping);
+			System.err.println("----------------------------------------------------------------------------------------------------------------------------------------------------------");
 		}
-		System.out.println(LuckyUtils.showtime()+"[START-OK] Lucky启动成功！");
+		System.err.println(LuckyUtils.showtime()+"[INITIALIZE-SUCCESSFUL]->IOC容器初始化成功启动成功! 动态代理执行完毕! 依赖注入完毕！ URL解析完毕......");
 	}
 	
 

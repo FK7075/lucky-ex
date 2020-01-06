@@ -73,7 +73,7 @@ public class ServiceIOC extends ComponentFactory{
 	 * @throws InvocationTargetException 
 	 * @throws IllegalArgumentException 
 	 */
-	public ServiceIOC initServiceIOC(List<String> serviceClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+	public void initServiceIOC(List<String> serviceClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		String beanID;
 		for (String clzz : serviceClass) {
 			Class<?> service = Class.forName(clzz);
@@ -86,6 +86,5 @@ public class ServiceIOC extends ComponentFactory{
 				addServiceMap(beanID, PointRunFactory.agent(AgentIOC.getAgentIOC().getAgentMap(), "service", beanID, service));
 			}
 		}
-		return this;
 	}
 }
