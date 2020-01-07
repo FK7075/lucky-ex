@@ -1,3 +1,4 @@
+
 <dependency>
      <groupId>lucky.jacklamb.convenient</groupId>
      <artifactId>lucky</artifactId>
