@@ -1,0 +1,6 @@
+
+<dependency>
+     <groupId>lucky.jacklamb</groupId>
+     <artifactId>lucky</artifactId>
+     <version>1.0.0</version>
+</dependency>

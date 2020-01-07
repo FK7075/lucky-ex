@@ -1,14 +1,14 @@
 #Fat Jar Configuration File
-#Mon Dec 30 17:27:36 CST 2019
+#Tue Jan 07 11:21:24 CST 2020
 onejar.license.required=false
 manifest.classpath=
 manifest.removesigners=true
 onejar.checkbox=false
-jarname=lucky-noxml-custom.jar
+jarname=lucky-noxml-convenient.jar
 manifest.mergeall=true
 manifest.mainclass=
 manifest.file=<createnew>
 jarname.isextern=false
 onejar.expand=
-excludes=<jar|junit.jar>;<jar|org.hamcrest.core_1.3.0.v201303031735.jar>
+excludes=<jar|junit.jar>
 includes=
