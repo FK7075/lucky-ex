@@ -7,9 +7,11 @@ import java.lang.reflect.Parameter;
 import java.util.Arrays;
 
 import com.lucky.jacklamb.annotation.aop.After;
+import com.lucky.jacklamb.annotation.aop.AopParam;
 import com.lucky.jacklamb.annotation.aop.Around;
 import com.lucky.jacklamb.annotation.aop.Before;
 import com.lucky.jacklamb.enums.Location;
+import com.lucky.jacklamb.exception.IllegaAopparametersException;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.tcconversion.typechange.JavaConversion;
 
@@ -17,9 +19,9 @@ public class PointRun {
 	
 	private Point point;
 	
-	private String aspect;
+	private String pointCutClass;
 	
-	private String pointcat;
+	private String pointCutMethod;
 	
 	public Method method;
 	
@@ -33,8 +35,8 @@ public class PointRun {
 			proceedMethod = point.getClass().getDeclaredMethod("proceed", Chain.class);
 			Around exp = proceedMethod.getAnnotation(Around.class);
 			this.point = point;
-			this.aspect = exp.aspect();
-			this.pointcat = exp.pointcut();
+			this.pointCutClass = exp.pointCutClass();
+			this.pointCutMethod = exp.pointCutMethod();
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -57,8 +59,8 @@ public class PointRun {
 			Constructor<?> constructor = pointClass.getConstructor();
 			constructor.setAccessible(true);
 			this.point = (Point) constructor.newInstance();
-			this.aspect = exp.aspect();
-			this.pointcat = exp.pointcut();
+			this.pointCutClass = exp.pointCutClass();
+			this.pointCutMethod = exp.pointCutMethod();
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -91,30 +93,30 @@ public class PointRun {
 		if(method.isAnnotationPresent(Before.class)) {
 			Before before=method.getAnnotation(Before.class);
 			this.point=conversion(expand,method,Location.BEFORE);
-			this.aspect = before.aspect();
-			this.pointcat = before.pointcut();
+			this.pointCutClass = before.pointCutClass();
+			this.pointCutMethod = before.pointCutMethod();
 		}else if(method.isAnnotationPresent(After.class)) {
 			After after=method.getAnnotation(After.class);
 			this.point=conversion(expand,method,Location.AFTER);
-			this.aspect = after.aspect();
-			this.pointcat = after.pointcut();
+			this.pointCutClass = after.pointCutClass();
+			this.pointCutMethod = after.pointCutMethod();
 		}
 	}
 
 	public String getMateClass() {
-		return aspect;
+		return pointCutClass;
 	}
 
 	public void setMateClass(String mateClass) {
-		this.aspect = mateClass;
+		this.pointCutClass = mateClass;
 	}
 
 	public String getMateMethod() {
-		return pointcat;
+		return pointCutMethod;
 	}
 
 	public void setMateMethod(String mateMethod) {
-		this.pointcat = mateMethod;
+		this.pointCutMethod = mateMethod;
 	}
 
 	public Point getPoint() {
@@ -146,7 +148,7 @@ public class PointRun {
 	private boolean standardStart(Method method) {
 		String methodName=method.getName();
 		Parameter[] parameters = method.getParameters();
-		String[] pointcutStr=pointcat.split(",");
+		String[] pointcutStr=pointCutMethod.split(",");
 		if(Arrays.asList(pointcutStr).contains("public")) {
 			//是否配置了public,如果配置了public，则所有非public都将不会执行该增强
 			if(method.getModifiers()!=1)
@@ -247,59 +249,58 @@ public class PointRun {
 			
 			//执行增强方法
 			private Object perform(Object expand, Method expandMethod) {
-				String[] expression = null;
-				if(expandMethod.isAnnotationPresent(Before.class)) {
-					expression=expandMethod.getAnnotation(Before.class).params();
-				}else if(expandMethod.isAnnotationPresent(After.class)) {
-					expression=expandMethod.getAnnotation(After.class).params();
-				}
-				Parameter[] parameters = expandMethod.getParameters();
-				Object[] expandParams=new Object[parameters.length];
-				if(expression.length!=expandParams.length)
-					throw new RuntimeException("增强方法的参数配置错误，配置参数数量不匹配！错误位置："+expandMethod+" @Around(params="+Arrays.toString(expression)+")");
-				setParams(parameters,expandParams,expression);
 				try {
 					expandMethod.setAccessible(true);
-					return expandMethod.invoke(expand, expandParams);
+					return expandMethod.invoke(expand, setParams(expandMethod));
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException("IllegalAccessException", e);
 				} catch (IllegalArgumentException e) {
-					throw new RuntimeException("参数类型不匹配!在增强方法中配置了无法从目标方法参数列表获取的参数，错误位置："+expandMethod+",@Before/@After/@Around(params=>err)", e);
+					throw new RuntimeException("参数类型不匹配!在增强方法中配置了无法从目标方法参数列表获取的参数，错误位置："+expandMethod+ e);
 				} catch (InvocationTargetException e) {
 					throw new RuntimeException("InvocationTargetException", e);
 				}
 			}
 			
-			//设置增强方法的执行参数
-			private void setParams(Parameter[] parameters,Object[] expandParams,String[] expression) {
-				parameters = expandMethod.getParameters();
-				int i=0;
-				String indexStr;
+			//设置增强方法的执行参数-@AopParam配置
+			private Object[] setParams(Method expandMethod) {
 				int index;
-				for(String exp:expression) {
-					if(exp.startsWith("ref:")) {//取IOC容器中的值
-						if("ref:".equals(exp.trim())) 
+				String aopParamValue,indexStr;
+				Parameter[] parameters = expandMethod.getParameters();
+				Object[] expandParams=new Object[parameters.length];
+				for(int i=0;i<parameters.length;i++) {
+					if(!parameters[i].isAnnotationPresent(AopParam.class))
+						throw new IllegaAopparametersException("无法识别的AOP参数，前置增强或后置增强中存在无法识别的参数，错误原因：可能没有使用@AopParam注解标注参数！错误位置："+expandMethod);
+					aopParamValue=parameters[i].getAnnotation(AopParam.class).value();
+					if(aopParamValue.startsWith("ref:")) {//取IOC容器中的值
+						if("ref:".equals(aopParamValue.trim())) 
 							expandParams[i]=ApplicationBeans.createApplicationBeans().getBean(parameters[i].getType());
 						else 
-							expandParams[i]=ApplicationBeans.createApplicationBeans().getBean(exp.substring(4));
+							expandParams[i]=ApplicationBeans.createApplicationBeans().getBean(aopParamValue.substring(4));
 						
-					}else if(exp.startsWith("ind:")) {//目标方法中的参数列表值中指定位置的参数值
-						indexStr=exp.substring(4).trim();
-						index=Integer.parseInt(indexStr);
+					}else if(aopParamValue.startsWith("ind:")) {//目标方法中的参数列表值中指定位置的参数值
+						indexStr=aopParamValue.substring(4).trim();
+						try {
+							index=Integer.parseInt(indexStr);
+						}catch(NumberFormatException e) {
+							throw new RuntimeException("错误的表达式，参数表达式中的索引不合法，索引只能为整数！错误位置："+expandMethod+"@AopParam("+aopParamValue+")=>err");
+						}
 						if(index<1||index>params.length)
-							throw new RuntimeException("错误的表达式，参数表达式中的索引超出参数列表索引范围！错误位置："+expandMethod+"  @Around(params="+Arrays.toString(expression)+")->"+exp);
+							throw new RuntimeException("错误的表达式，参数表达式中的索引超出参数列表索引范围！错误位置："+expandMethod+"@AopParam("+aopParamValue+")=>err");
 						expandParams[i]=params[index-1];	
-					} else if(exp.equals("[params]")){//整个参数列表
+					} else if(aopParamValue.equals("[params]")){//整个参数列表
 						expandParams[i]=params;
-					}else if(exp.equals("[method]")) {//Method对象
+					}else if(aopParamValue.equals("[method]")) {//Method对象
 						expandParams[i]=method;
+					}else if(aopParamValue.equals("[target]")) {//目标类的一个具体实例
+						expandParams[i]=target;
 					} else{//普通值
-						expandParams[i]=JavaConversion.strToBasic(exp, parameters[i].getType());
+						expandParams[i]=JavaConversion.strToBasic(aopParamValue, parameters[i].getType());
 					}
-					i++;
 				}
+				return expandParams;
 			}
 		};
 		return cpoint;
 	}
+	
 }

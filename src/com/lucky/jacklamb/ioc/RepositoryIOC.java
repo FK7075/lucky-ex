@@ -142,7 +142,7 @@ public class RepositoryIOC extends ComponentFactory {
 					beanID=rep.value();
 				else
 					beanID=LuckyUtils.TableToClass1(repository.getSimpleName());
-				addRepositoryMap(beanID, PointRunFactory.agent(AgentIOC.getAgentIOC().getAgentMap(), "repository", beanID, repository));
+				addRepositoryMap(beanID, PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "repository", beanID, repository));
 			} else if (repository.isAnnotationPresent(Mapper.class)) {
 				if (first) {
 					List<DataSource> datalist=ReadProperties.getAllDataSource();

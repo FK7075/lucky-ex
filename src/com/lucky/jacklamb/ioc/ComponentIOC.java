@@ -95,7 +95,7 @@ public class ComponentIOC extends ComponentFactory {
 				} else {
 					beanID=LuckyUtils.TableToClass1(component.getSimpleName());
 				}
-				addAppMap(beanID, PointRunFactory.agent(AgentIOC.getAgentIOC().getAgentMap(), "component", beanID, component));
+				addAppMap(beanID, PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "component", beanID, component));
 			} else if (component.isAnnotationPresent(BeanFactory.class)) {
 				Object obj = component.newInstance();
 				Method[] methods=component.getDeclaredMethods();

@@ -83,7 +83,7 @@ public class ServiceIOC extends ComponentFactory{
 					beanID=ser.value();
 				else
 					beanID=LuckyUtils.TableToClass1(service.getSimpleName());
-				addServiceMap(beanID, PointRunFactory.agent(AgentIOC.getAgentIOC().getAgentMap(), "service", beanID, service));
+				addServiceMap(beanID, PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "service", beanID, service));
 			}
 		}
 	}

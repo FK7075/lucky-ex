@@ -30,7 +30,7 @@ import com.lucky.jacklamb.utils.ArrayCast;
  */
 public final class IOCContainers {
 	
-	private AgentIOC agentIOC;
+	private AspectAOP AspectIOC;
 	
 	private RepositoryIOC repositoryIOC;
 	
@@ -48,7 +48,7 @@ public final class IOCContainers {
 		scanConfigToComponentIOC();
 		
 		//得到所有的增强
-		agentIOC=AgentIOC.getAgentIOC();
+		AspectIOC=AspectAOP.getAspectIOC();
 		
 		//控制反转+动态代理(IOC+AOP)
 		inversionOfControlAndAop();
@@ -108,12 +108,12 @@ public final class IOCContainers {
 		
 	}
 	
-	public AgentIOC getAgentIOC() {
-		return agentIOC;
+	public AspectAOP getAspectIOC() {
+		return AspectIOC;
 	}
 
-	public void setAgentIOC(AgentIOC agentIOC) {
-		this.agentIOC = agentIOC;
+	public void setAspectIOC(AspectAOP AspectIOC) {
+		this.AspectIOC = AspectIOC;
 	}
 
 	public RepositoryIOC getRepositoryIOC() {

@@ -136,7 +136,7 @@ public class ControllerIOC extends ComponentFactory{
 				else {
 					beanID=LuckyUtils.TableToClass1(controller.getSimpleName());
 				}
-				addControllerMap(beanID, PointRunFactory.agent(AgentIOC.getAgentIOC().getAgentMap(), "controller", beanID, controller));
+				addControllerMap(beanID, PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "controller", beanID, controller));
 			}
 
 		}

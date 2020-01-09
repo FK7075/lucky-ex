@@ -22,22 +22,22 @@ import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlCore;
  */
 public class PointRunFactory {
 	
-	public static List<PointRun> createPointRuns(Class<?> agentClass) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
+	public static List<PointRun> createPointRuns(Class<?> AspectClass) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
 		List<PointRun> pointRuns=new ArrayList<>();
-		Constructor<?> constructor = agentClass.getConstructor();
+		Constructor<?> constructor = AspectClass.getConstructor();
 		constructor.setAccessible(true);
-		Object agent=constructor.newInstance();
-		Method[] agentMethods=agentClass.getDeclaredMethods();
-		for(Method method:agentMethods) {
+		Object Aspect=constructor.newInstance();
+		Method[] AspectMethods=AspectClass.getDeclaredMethods();
+		for(Method method:AspectMethods) {
 			if(method.isAnnotationPresent(Before.class)||method.isAnnotationPresent(After.class))
-				pointRuns.add(new PointRun(agent,method));
+				pointRuns.add(new PointRun(Aspect,method));
 		}
 		return pointRuns;
 	}
 	
 	/**
 	 * 执行代理
-	 * @param agentMap 所有的Agent组件
+	 * @param AspectMap 所有的Aspect组件
 	 * @param iocCode 当前组件的组件代码(Controller,Service,Repository,Component)
 	 * @param beanid 当前组件的组件id
 	 * @param beanClass 当前组件Class
@@ -48,8 +48,8 @@ public class PointRunFactory {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public static Object agent(Map<String,PointRun> agentMap,String iocCode, String beanid,Class<?> beanClass) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		List<PointRun> findPointbyBean = findPointbyBean(agentMap,iocCode,beanid,beanClass);
+	public static Object Aspect(Map<String,PointRun> AspectMap,String iocCode, String beanid,Class<?> beanClass) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		List<PointRun> findPointbyBean = findPointbyBean(AspectMap,iocCode,beanid,beanClass);
 		if(!findPointbyBean.isEmpty()) {
 			return ProxyFactory.createProxyFactory().getProxy(beanClass, findPointbyBean);
 		}else if(isCacheable(beanClass)) {
@@ -76,16 +76,16 @@ public class PointRunFactory {
 	}
 
 	/**
-	 * 得到Agent组件中所有符合bean的组件
-	 * @param agentMap
+	 * 得到Aspect组件中所有符合bean的组件
+	 * @param AspectMap
 	 * @param iocCode 当前组件的组件代码(Controller,Service,Repository,Component)
 	 * @param beanid 当前组件的组件id
 	 * @param beanClass 当前组件
 	 * @return
 	 */
-	public static List<PointRun> findPointbyBean(Map<String,PointRun> agentMap,String iocCode, String beanid,Class<?> beanClass){
+	public static List<PointRun> findPointbyBean(Map<String,PointRun> AspectMap,String iocCode, String beanid,Class<?> beanClass){
 		List<PointRun> pointRuns=new  ArrayList<>();
-		Collection<PointRun> values = agentMap.values();
+		Collection<PointRun> values = AspectMap.values();
 		if(SqlCore.class.isAssignableFrom(beanClass))
 			return pointRuns;
 		String mateClass;

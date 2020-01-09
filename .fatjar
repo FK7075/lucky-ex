@@ -1,10 +1,10 @@
 #Fat Jar Configuration File
-#Tue Jan 07 11:21:24 CST 2020
+#Thu Jan 09 10:58:42 CST 2020
 onejar.license.required=false
 manifest.classpath=
 manifest.removesigners=true
 onejar.checkbox=false
-jarname=lucky-noxml-convenient.jar
+jarname=lucky\\convenient\\lucky-noxml-convenient-1.0.0.jar
 manifest.mergeall=true
 manifest.mainclass=
 manifest.file=<createnew>

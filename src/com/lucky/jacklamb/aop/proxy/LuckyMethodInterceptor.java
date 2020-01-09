@@ -45,10 +45,11 @@ public class LuckyMethodInterceptor implements MethodInterceptor {
 			Point cacheExpandPoint = new CacheExpandPoint();
 			cacheExpandPoint.method=method;
 			cacheExpandPoint.params=params;
+			cacheExpandPoint.target=target;
 			points.add(cacheExpandPoint);
 		}
 		//得到所有自定义的的环绕增强节点
-		pointRuns.stream().filter(a->a.standard(method)).forEach((a)->{Point p=a.getPoint();p.method=method;p.params=params;points.add(p);});
+		pointRuns.stream().filter(a->a.standard(method)).forEach((a)->{Point p=a.getPoint();p.target=target;p.method=method;p.params=params;points.add(p);});
 		
 		//将所的环绕增强节点组成一个执行链
 		Chain chain=new Chain(points,target,params,methodProxy);

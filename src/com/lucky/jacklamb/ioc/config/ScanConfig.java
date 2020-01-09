@@ -32,9 +32,9 @@ public class ScanConfig {
 	private List<String> repositoryPackSuffix;
 
 	/**
-	 * Agent组件所在包的后缀
+	 * Aspect组件所在包的后缀
 	 */
-	private List<String> agentPackSuffix;
+	private List<String> AspectPackSuffix;
 
 	/**
 	 * 普通组件所在包的后缀
@@ -72,7 +72,7 @@ public class ScanConfig {
 		controllerPackSuffix = new ArrayList<>();
 		servicePackSuffix = new ArrayList<>();
 		repositoryPackSuffix = new ArrayList<>();
-		agentPackSuffix = new ArrayList<>();
+		AspectPackSuffix = new ArrayList<>();
 		componentPackSuffix = new ArrayList<>();
 		pojoPackSuffix = new ArrayList<>();
 	}
@@ -197,31 +197,31 @@ public class ScanConfig {
 		this.repositoryPackSuffix = repositoryPackSuffix;
 	}
 
-	public List<String> getAgentPackSuffix() {
-		return agentPackSuffix;
+	public List<String> getAspectPackSuffix() {
+		return AspectPackSuffix;
 	}
 
 	/**
-	 * 添加一个装载Agent组件的包后缀
+	 * 添加一个装载Aspect组件的包后缀
 	 * 
 	 * @param suffix
 	 */
-	public void addAgentPackSuffix(String... suffix) {
-		agentPackSuffix.addAll(Arrays.asList(suffix));
+	public void addAspectPackSuffix(String... suffix) {
+		AspectPackSuffix.addAll(Arrays.asList(suffix));
 	}
 
 	/**
-	 * 清空原有的配置后，添加一个装载Agent组件的包后缀
+	 * 清空原有的配置后，添加一个装载Aspect组件的包后缀
 	 * 
 	 * @param suffix
 	 */
-	public void emptyAddAgentPackSuffix(String... suffix) {
-		agentPackSuffix.clear();
-		agentPackSuffix.addAll(Arrays.asList(suffix));
+	public void emptyAddAspectPackSuffix(String... suffix) {
+		AspectPackSuffix.clear();
+		AspectPackSuffix.addAll(Arrays.asList(suffix));
 	}
 
-	public void setAgentPackSuffix(List<String> agentPackSuffix) {
-		this.agentPackSuffix = agentPackSuffix;
+	public void setAspectPackSuffix(List<String> AspectPackSuffix) {
+		this.AspectPackSuffix = AspectPackSuffix;
 	}
 
 	public List<String> getComponentPackSuffix() {
@@ -285,7 +285,7 @@ public class ScanConfig {
 			scanfig.addServicePackSuffix("service");
 			scanfig.addRepositoryPackSuffix("dao", "repository", "mapper");
 			scanfig.addComponentPackSuffix("component", "bean");
-			scanfig.addAgentPackSuffix("agent");
+			scanfig.addAspectPackSuffix("aspect","aop");
 			scanfig.addPojoPackSuffix("pojo", "entity");
 			scanfig.setLogo(Logo.LUCKY);
 			scanfig.setDefaultDB("db.properties");

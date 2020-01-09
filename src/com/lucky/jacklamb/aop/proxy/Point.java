@@ -10,6 +10,11 @@ import java.lang.reflect.Method;
 public abstract class Point {
 	
 	/**
+	 * 当前执行的目标方法的实例
+	 */
+	protected Object target;
+	
+	/**
 	 * 当前执行的目标方法的Method对象
 	 */
 	protected Method method;

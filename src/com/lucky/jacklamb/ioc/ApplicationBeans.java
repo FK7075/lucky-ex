@@ -58,20 +58,20 @@ public class ApplicationBeans {
 	}
 	
 	/**
-	 * 根据ID得到Agent组件
+	 * 根据ID得到Aspect组件
 	 * @param id
 	 * @return
 	 */
-	public Object getAgentBean(String id) {
-		return iocContainers.getAgentIOC().getAgentBean(id);
+	public Object getAspectBean(String id) {
+		return iocContainers.getAspectIOC().getAspectBean(id);
 	}
 	
 	/**
-	 * 得到所有Agent组件
+	 * 得到所有Aspect组件
 	 * @return
 	 */
-	public Map<String,PointRun> getAgentBeans(){
-		return iocContainers.getAgentIOC().getAgentMap();
+	public Map<String,PointRun> getAspectBeans(){
+		return iocContainers.getAspectIOC().getAspectMap();
 	}
 	
 	/**
@@ -212,7 +212,7 @@ public class ApplicationBeans {
 	public boolean contains(String beanId) {
 		return iocContainers.getControllerIOC().containId(beanId)||iocContainers.getServiceIOC().containId(beanId)
 				||iocContainers.getRepositoryIOC().containId(beanId)||iocContainers.getAppIOC().containId(beanId)
-				||iocContainers.getAgentIOC().containId(beanId);
+				||iocContainers.getAspectIOC().containId(beanId);
 	}
 	
 	/**
@@ -247,8 +247,8 @@ public class ApplicationBeans {
 			return iocContainers.getRepositoryIOC().getMaRepBean(beanId);
 		else if(iocContainers.getAppIOC().containId(beanId))
 			return iocContainers.getAppIOC().getComponentBean(beanId);
-		else if(iocContainers.getAgentIOC().containId(beanId))
-			return iocContainers.getAgentIOC().getAgentBean(beanId);
+		else if(iocContainers.getAspectIOC().containId(beanId))
+			return iocContainers.getAspectIOC().getAspectBean(beanId);
 		else
 			throw new NotFindBeanException("在IOC容器中找不到ID为--"+beanId+"--的Bean...");
 	}
@@ -259,8 +259,8 @@ public class ApplicationBeans {
 	public void printBeans() {
 		System.err.println();
 		System.err.println(LuckyUtils.showtime()+"[SCAN-STRAT]->Lucky组件扫描开始......");
-		System.err.println(LuckyUtils.showtime()+"[AOP-AGENT-SCAN-OK] AGENT==>"+getAgentBeans());
-		System.err.println(LuckyUtils.showtime()+"[AOP-SCAN-END]->Agent组件注册完成，开始执行IOC扫描以及动态代理......");
+		System.err.println(LuckyUtils.showtime()+"[AOP-ASPECT-SCAN-OK] ASPECT==>"+getAspectBeans());
+		System.err.println(LuckyUtils.showtime()+"[AOP-SCAN-END]->Aspect组件注册完成，开始执行IOC扫描以及动态代理......");
 		System.err.println(LuckyUtils.showtime()+"[IOC-CONTROLLER-SCAN-OK] CONTROLLER==>"+getControllerBeans());
 		System.err.println(LuckyUtils.showtime()+"[IOC-SERVICE-SCAN-OK]  SERVICE==>"+getServiceBeans());
 		System.err.println(LuckyUtils.showtime()+"[IOC-REPOSITORY-SCAN-OK]  REPOSITORY==>"+getRepositoryBeans());

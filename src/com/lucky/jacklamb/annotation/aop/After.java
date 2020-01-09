@@ -24,7 +24,7 @@ public @interface After {
 	
 	/**
 	 * 配置切面(Class)，增强方法执行的范围，用来定位需要代理的真实类<br>
-	 * mateClass的值必须以下列前缀开始,多个值使用","分隔:<br>
+	 * pointCutClass的值必须以下列前缀开始,多个值使用","分隔:<br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;
 	 * ioc:表示增强一种或多种类型的所有组件,可选值有:[controller,service,repository,component] eg:mateClass="ioc:component,service"<br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;
@@ -33,7 +33,7 @@ public @interface After {
 	 * path:表示增强某个路径下的所有IOC组件，eg:mateClass="path:com.lucky.*" OR mateClass="path:com.lucky.User"<br>
 	 * @return
 	 */
-	String aspect();
+	String pointCutClass();
 	
 	/**
 	 * 配置切点(Method)， 增强方法执行的范围，用来定位需要代理的真实类的一些具体方法<br>
@@ -42,11 +42,9 @@ public @interface After {
 	 * 方法名定位：需要增强的方法名，eg:mateMethod="method1,method2"<br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;
 	 * 方法名+参数类型定位：需要增强的方法名+参数列表，eg:mateMethod="method1(String,int),method2(User,Double)"<br>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;
-	 * 方法权限修饰符：public private protected，eg:mateMethod="public"<br>
 	 * @return
 	 */
-	String pointcut();
+	String pointCutMethod();
 	
 	/**
 	 * 设置增强方法的参数<br>
@@ -64,5 +62,5 @@ public @interface After {
 	 * [params]:表示将真实方法的参数列表作为增强对象的参数，此位置的参数类型必须为Object[]<br>
 	 * @return
 	 */
-	String[] params() default {};
+//	String[] params() default {};
 }
