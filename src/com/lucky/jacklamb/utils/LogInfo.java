@@ -18,6 +18,7 @@ public class LogInfo {
 	private DataSource dataSource;
 	private String dataName;
 	private String dataType;
+	private String ipPort;
 	private SqlFormatUtil sqlFormatUtil;
 	
 	public LogInfo(String dbname) {
@@ -25,6 +26,7 @@ public class LogInfo {
 		log=dataSource.isLog();
 		dataName=PojoManage.getDatabaseName(dataSource.getName());
 		dataType=PojoManage.getDatabaseType(dbname);
+		ipPort=PojoManage.getIpPort(dbname);
 		sqlFormatUtil=new SqlFormatUtil();
 	}
 	
@@ -45,7 +47,7 @@ public class LogInfo {
 	
 	
 	private void log(String sql, Object[] obj) {
-		System.out.println(showtime()+"\n[##"+dataType+":"+dataName+"##] SQL: " + formatSql(sql));
+		System.out.println(showtime()+"\n["+dataType.toLowerCase()+":"+ipPort+dataName+"] SQL: " + formatSql(sql));
 		if (obj == null)
 			System.out.println(showtime()+"Parameters    : { }");
 		else {

@@ -22,6 +22,12 @@ import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
  */
 public class PojoManage {
 	
+	public static String getIpPort(String dbname){
+		String url = ReadProperties.getDataSource(dbname).getJdbcUrl();
+		return url.substring(url.indexOf("//"),url.lastIndexOf("/")+1);
+		
+	}
+	
 	/**
 	 * 获取当前数据源对应数据库的类型
 	 * @param dbname
