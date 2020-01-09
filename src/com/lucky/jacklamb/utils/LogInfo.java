@@ -47,7 +47,7 @@ public class LogInfo {
 	
 	
 	private void log(String sql, Object[] obj) {
-		System.out.println(showtime()+"\n["+dataType.toLowerCase()+":"+ipPort+dataName+"] SQL: " + formatSql(sql));
+		System.out.println(showtime()+"["+dataType.toLowerCase()+":"+ipPort+dataName+"] SQL: " + formatSql(sql));
 		if (obj == null)
 			System.out.println(showtime()+"Parameters    : { }");
 		else {
@@ -66,7 +66,7 @@ public class LogInfo {
 	 * @param obj
 	 */
 	private void logBatch(String sql,Object obj[][]) {
-		System.out.println(showtime()+"\n[##"+dataType+":"+dataName+"##] SQL: " + formatSql(sql));
+		System.out.println(showtime()+"["+dataType.toLowerCase()+":"+ipPort+dataName+"] SQL: " + formatSql(sql));
 		if(obj==null||obj.length==0)
 			System.out.println(showtime()+"Parameters    : { }");
 		else {
