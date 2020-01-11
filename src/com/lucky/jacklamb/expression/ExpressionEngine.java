@@ -1,5 +1,11 @@
 package com.lucky.jacklamb.expression;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
+import com.lucky.jacklamb.exception.IllegalExpressionException;
+
 /**
  * 表达式解析引擎
  * @author fk-7075
@@ -72,6 +78,17 @@ public class ExpressionEngine {
 		original=original.substring(0,start)+object[index-1]+original.substring(end+endStr.length()-1);
 		return removeSymbol(original,object,startStr,endStr);
 	}
+	
+	public static String calculate(String expression) {
+        ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+        ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("nashorn");
+        try {
+            String result = String.valueOf(scriptEngine.eval(expression));
+            return result;
+        } catch (ScriptException e) {
+        	throw new IllegalExpressionException("非法表达式,您的表达式中含有无法识别的符号！err:"+expression);
+        }
+    }
 	
 	public static void main(String[] args) {
 		String str="aaa#[5 ]bbb#[4]cccc#[5]ddd";

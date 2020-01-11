@@ -3,20 +3,23 @@ package com.lucky.jacklamb.tcconversion.typechange;
 import java.sql.Time;
 import java.sql.Timestamp;
 
+import com.lucky.jacklamb.expression.ExpressionEngine;
+
 public class JavaConversion {
 	
 	/**
 	 * String类型转化为其他的基本类型
-	 * @param data String类型数据
+	 * @param expression String类型表达式
 	 * @param type 转换目标类型的Class或String表示
 	 * @return
 	 */
-	public static Object strToBasic(String data, Object type) {
+	public static Object strToBasic(String expression, Object type) {
 		String strtype;
 		if(type instanceof Class)
 			strtype=((Class<?>)type).getSimpleName();
 		else
 			strtype=(String) type;
+		String data=ExpressionEngine.calculate(expression);
 		if("String".equalsIgnoreCase(strtype))
 			return data;
 		if("int".equals(strtype)||"Integer".equals(strtype))
