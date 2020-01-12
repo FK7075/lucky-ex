@@ -13,7 +13,7 @@ public class DeleteKeySql {
 	private SqlOperation sqlop;
 	private String databasename;
 	private List<String> delkeysql = new ArrayList<String>();
-	private List<String> classlist;
+	private List<Class<?>> classlist;
 
 	public String getDatabasename() {
 		return databasename;
@@ -35,9 +35,8 @@ public class DeleteKeySql {
 	 * 建表时删除
 	 */
 	public void deleteKey() {
-		for (String str : classlist) {
+		for (Class<?> clazz : classlist) {
 			try {
-				Class<?> clazz = Class.forName(str);
 				String table = PojoManage.getTable(clazz);
 				String sql = "SHOW CREATE TABLE " + table;
 				ResultSet rs = sqlop.getResultSet(sql);
@@ -58,8 +57,6 @@ public class DeleteKeySql {
 					String sqlStr = "ALTER TABLE " + table + " DROP FOREIGN KEY " + wkey;
 					sqlop.setSql(sqlStr);
 				}
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -70,7 +67,7 @@ public class DeleteKeySql {
 	/**
 	 * 得到数据库的名字和删除数据库所有表外键的sql语句集合并封装到属性中
 	 */
-	public DeleteKeySql(String dbname,List<String> classlist) {
+	public DeleteKeySql(String dbname,List<Class<?>> classlist) {
 		sqlop = LuckyManager.getSqlOperation(dbname);
 		this.classlist = classlist;
 	}

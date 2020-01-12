@@ -123,11 +123,10 @@ public class ControllerIOC extends ComponentFactory{
 	 * @throws InvocationTargetException 
 	 * @throws IllegalArgumentException 
 	 */
-	public void initControllerIOC(List<String> controllerClass) 
-			throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+	public void initControllerIOC(List<Class<?>> controllerClass) 
+			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 		String beanID;
-		for (String clzz : controllerClass) {
-			Class<?> controller = Class.forName(clzz);
+		for (Class<?> controller : controllerClass) {
 			if (controller.isAnnotationPresent(Controller.class)) {
 				Controller cont = controller.getAnnotation(Controller.class);
 				if (!"".equals(cont.value())) {

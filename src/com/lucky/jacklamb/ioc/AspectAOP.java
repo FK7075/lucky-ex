@@ -15,7 +15,6 @@ import com.lucky.jacklamb.aop.proxy.Point;
 import com.lucky.jacklamb.aop.proxy.PointRun;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
-import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**
@@ -35,7 +34,7 @@ public class AspectAOP {
 		try {
 			aspectMap=new HashMap<>();
 			aspectIDS=new ArrayList<>();
-			initAspectIOC(ScacFactory.createScan().loadComponent(Configuration.getConfiguration().getScanConfig().getAspectPackSuffix()));
+			initAspectIOC(ScacFactory.createScan().getComponentClass("aspect"));
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -115,23 +114,22 @@ public class AspectAOP {
 	 * @throws IllegalArgumentException
 	 * @throws InvocationTargetException
 	 */
-	public void initAspectIOC(List<String> AspectClass) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public void initAspectIOC(List<Class<?>> AspectClass) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Aspect agann;
 		Before before;
 		After after;
 		PointRun pointRun;
 		Constructor<?> constructor;
-		for(String clzz:AspectClass) {
-			Class<?> Aspect=Class.forName(clzz);
-			if(Aspect.isAnnotationPresent(Aspect.class)) {
+		for(Class<?> aspect:AspectClass) {
+			if(aspect.isAnnotationPresent(Aspect.class)) {
 				String name;
-				agann=Aspect.getAnnotation(Aspect.class);
+				agann=aspect.getAnnotation(Aspect.class);
 				if("".equals(agann.value())) {
-					name=LuckyUtils.TableToClass1(Aspect.getSimpleName());
+					name=LuckyUtils.TableToClass1(aspect.getSimpleName());
 				}else {
 					name=agann.value();
 				}
-				Method[] enhanceMethods=Aspect.getDeclaredMethods();
+				Method[] enhanceMethods=aspect.getDeclaredMethods();
 				for(Method method:enhanceMethods) {
 					String Aspectid;
 					if(method.isAnnotationPresent(Before.class)) {
@@ -141,7 +139,7 @@ public class AspectAOP {
 						}else {
 							Aspectid=name+("."+before.value());
 						}
-						constructor = Aspect.getConstructor();
+						constructor = aspect.getConstructor();
 						constructor.setAccessible(true);
 						pointRun=new PointRun(constructor.newInstance(),method);
 						addAspectMap(Aspectid, pointRun);
@@ -152,7 +150,7 @@ public class AspectAOP {
 						}else {
 							Aspectid=name+("."+after.value());
 						}
-						constructor = Aspect.getConstructor();
+						constructor = aspect.getConstructor();
 						constructor.setAccessible(true);
 						pointRun=new PointRun(constructor.newInstance(),method);
 						addAspectMap(Aspectid, pointRun);
@@ -160,10 +158,10 @@ public class AspectAOP {
 						continue;
 					}
 				}
-			}else if(Point.class.isAssignableFrom(Aspect)) {
+			}else if(Point.class.isAssignableFrom(aspect)) {
 				String name;
-				name=LuckyUtils.TableToClass1(Aspect.getSimpleName())+".proceed";
-				constructor = Aspect.getConstructor();
+				name=LuckyUtils.TableToClass1(aspect.getSimpleName())+".proceed";
+				constructor = aspect.getConstructor();
 				constructor.setAccessible(true);
 				pointRun=new PointRun((Point)constructor.newInstance());
 				addAspectMap(name,pointRun);

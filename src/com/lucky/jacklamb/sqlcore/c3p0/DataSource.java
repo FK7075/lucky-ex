@@ -49,7 +49,7 @@ public class DataSource {
 
 	private String srcPath;
 
-	private List<String> caeateTable;
+	private List<Class<?>> caeateTable;
 	
 	private List<String> otherproperties;
 	
@@ -257,15 +257,15 @@ public class DataSource {
 		this.srcPath = srcPath;
 	}
 
-	public List<String> getCaeateTable() {
+	public List<Class<?>> getCaeateTable() {
 		return caeateTable;
 	}
 
-	public void setCaeateTable(List<String> caeateTable) {
+	public void setCaeateTable(List<Class<?>> caeateTable) {
 		this.caeateTable = caeateTable;
 	}
 	
-	public void addCaeateTable(String... pojoClassStr) {
+	public void addCaeateTable(Class<?>... pojoClassStr) {
 		if(caeateTable==null) {
 			caeateTable=new ArrayList<>();
 			caeateTable.addAll(Arrays.asList(pojoClassStr));

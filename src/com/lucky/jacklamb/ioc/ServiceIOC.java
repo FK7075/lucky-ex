@@ -73,10 +73,9 @@ public class ServiceIOC extends ComponentFactory{
 	 * @throws InvocationTargetException 
 	 * @throws IllegalArgumentException 
 	 */
-	public void initServiceIOC(List<String> serviceClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+	public void initServiceIOC(List<Class<?>> serviceClass) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		String beanID;
-		for (String clzz : serviceClass) {
-			Class<?> service = Class.forName(clzz);
+		for (Class<?> service : serviceClass) {
 			if (service.isAnnotationPresent(Service.class)) {
 				Service ser = service.getAnnotation(Service.class);
 				if (!"".equals(ser.value()))

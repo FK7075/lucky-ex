@@ -83,11 +83,10 @@ public class ComponentIOC extends ComponentFactory {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 */
-	public void initComponentIOC(List<String> componentClass)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public void initComponentIOC(List<Class<?>> componentClass)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		String beanID;
-		for (String clzz : componentClass) {
-			Class<?> component = Class.forName(clzz);
+		for (Class<?> component : componentClass) {
 			if (component.isAnnotationPresent(Component.class)) {
 				Component com = component.getAnnotation(Component.class);
 				if (!"".equals(com.value())) {

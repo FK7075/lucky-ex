@@ -7,51 +7,114 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class JarScan implements Scan {
-	
+import com.lucky.jacklamb.annotation.aop.Aspect;
+import com.lucky.jacklamb.annotation.ioc.BeanFactory;
+import com.lucky.jacklamb.annotation.ioc.Component;
+import com.lucky.jacklamb.annotation.ioc.Controller;
+import com.lucky.jacklamb.annotation.ioc.Repository;
+import com.lucky.jacklamb.annotation.ioc.Service;
+import com.lucky.jacklamb.annotation.orm.mapper.Mapper;
+import com.lucky.jacklamb.aop.proxy.Point;
+
+public class JarScan extends Scan {
+
 	private Class<?> clzz;
 
 	public JarScan(Class<?> clzz) {
-		this.clzz=clzz;
+		this.clzz = clzz;
 	}
-	
-	@Override
-	public List<String> loadComponent(List<String> suffixs) {
-		List<String> className=new ArrayList<>();
-		String prefix="";
+
+	public List<Class<?>> loadComponent(List<String> suffixs) {
+		List<Class<?>> className = new ArrayList<>();
+		String prefix = "";
 		String jarpath = JarScan.class.getResource("").getPath();
-		if(clzz!=null) {
-			String allname=clzz.getName();
-			String simpleName=clzz.getSimpleName();
-			prefix=allname.substring(0, allname.length()-simpleName.length()).replaceAll("\\.", "/");
-			jarpath=clzz.getResource("").getPath();
+		if (clzz != null) {
+			String allname = clzz.getName();
+			String simpleName = clzz.getSimpleName();
+			prefix = allname.substring(0, allname.length() - simpleName.length()).replaceAll("\\.", "/");
+			jarpath = clzz.getResource("").getPath();
 		}
-		jarpath=jarpath.substring(6, jarpath.indexOf(".jar!")+4);
-		JarFile jarFile=null;
-		
+		jarpath = jarpath.substring(6, jarpath.indexOf(".jar!") + 4);
+		JarFile jarFile = null;
+
 		try {
-			jarFile=new JarFile(jarpath);
+			jarFile = new JarFile(jarpath);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Enumeration<JarEntry> entrys = jarFile.entries();
 		String cpath;
-		while(entrys.hasMoreElements()) {
+		while (entrys.hasMoreElements()) {
 			JarEntry entry = entrys.nextElement();
-			String name=entry.getName();
-			if(name.endsWith(".class")&&name.startsWith(prefix)) {
-				name=name.substring(0, name.length()-6);
-				cpath=name.substring(0,name.lastIndexOf("/"));
-				for(String suf:suffixs) {
-					if(cpath.endsWith(suf)) {
-						className.add(name.replaceAll("/", "\\."));
+			String name = entry.getName();
+			if (name.endsWith(".class") && name.startsWith(prefix)) {
+				name = name.substring(0, name.length() - 6);
+				cpath = name.substring(0, name.lastIndexOf("/"));
+				for (String suf : suffixs) {
+					if (cpath.endsWith(suf)) {
+						String clzzName = name.replaceAll("/", "\\.");
+						try {
+							className.add(Class.forName(clzzName));
+						} catch (ClassNotFoundException e) {
+							throw new RuntimeException("¿‡º”‘ÿ¥ÌŒÛ£¨¥ÌŒÛpath:" + clzzName, e);
+						}
 						break;
 					}
 				}
 			}
 		}
 		return className;
+	}
+
+	@Override
+	public void autoScan() {
+		String prefix = "";
+		String jarpath = JarScan.class.getResource("").getPath();
+		if (clzz != null) {
+			String allname = clzz.getName();
+			String simpleName = clzz.getSimpleName();
+			prefix = allname.substring(0, allname.length() - simpleName.length()).replaceAll("\\.", "/");
+			jarpath = clzz.getResource("").getPath();
+		}
+		jarpath = jarpath.substring(6, jarpath.indexOf(".jar!") + 4);
+		JarFile jarFile = null;
+
+		try {
+			jarFile = new JarFile(jarpath);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Enumeration<JarEntry> entrys = jarFile.entries();
+		try {
+			while (entrys.hasMoreElements()) {
+				JarEntry entry = entrys.nextElement();
+				String name = entry.getName();
+				if (name.endsWith(".class") && name.startsWith(prefix)) {
+					name = name.substring(0, name.length() - 6);
+					String clzzName = name.replaceAll("/", "\\.");
+					Class<?> fileClass = Class.forName(clzzName);
+					if (fileClass.isAnnotationPresent(Controller.class))
+						controllerClass.add(fileClass);
+					else if (fileClass.isAnnotationPresent(Service.class))
+						serviceClass.add(fileClass);
+					else if (fileClass.isAnnotationPresent(Repository.class)
+							|| fileClass.isAnnotationPresent(Mapper.class))
+						repositoryClass.add(fileClass);
+					else if (fileClass.isAnnotationPresent(Component.class)
+							|| fileClass.isAnnotationPresent(BeanFactory.class))
+						componentClass.add(fileClass);
+					else if (fileClass.isAnnotationPresent(Aspect.class) || Point.class.isAssignableFrom(fileClass))
+						aspectClass.add(fileClass);
+					else
+						continue;
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

@@ -4,20 +4,31 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import com.lucky.jacklamb.annotation.aop.Aspect;
+import com.lucky.jacklamb.annotation.ioc.BeanFactory;
+import com.lucky.jacklamb.annotation.ioc.Component;
+import com.lucky.jacklamb.annotation.ioc.Controller;
+import com.lucky.jacklamb.annotation.ioc.Repository;
+import com.lucky.jacklamb.annotation.ioc.Service;
+import com.lucky.jacklamb.annotation.orm.mapper.Mapper;
+import com.lucky.jacklamb.aop.proxy.Point;
 
 /**
  * 不做配置时的默认包扫描
  * @author fk-7075
  *
  */
-public class PackageScan implements Scan {
-
+public class PackageScan extends Scan {
+	
 	private String projectPath;
 	
+	private String fileProjectPath;
 	
 	public PackageScan() {
-		projectPath=this.getClass().getClassLoader().getResource("").getPath();
+		super();
+		projectPath=PackageScan.class.getClassLoader().getResource("").getPath();
+		fileProjectPath=projectPath.substring(1);
 		projectPath=projectPath.replaceAll("\\\\", "/").substring(1,projectPath.length()-1);
 	}
 	
@@ -26,7 +37,7 @@ public class PackageScan implements Scan {
 	 * @param components
 	 * @param suffix
 	 */
-	public void loadComponent(List<String> components,String...suffix) {
+	public void loadComponent(List<Class<?>> components,String...suffix) {
 		List<String> clist=new ArrayList<>();
 		findDafaultFolder(clist,projectPath,suffix);
 		addClassPath(components,clist);
@@ -37,14 +48,14 @@ public class PackageScan implements Scan {
 	 * @param suffix 自定义的包后缀名集合
 	 * @return
 	 */
-	public List<String> loadComponent(List<String> suffixlist) {
+	public List<Class<?>> loadComponent(List<String> suffixlist) {
 		String[] suffix=new String[suffixlist.size()];
 		suffixlist.toArray(suffix);
-		List<String> components=new ArrayList<>();
+		List<Class<?>> components=new ArrayList<>();
 		List<String> clist=new ArrayList<>();
 		findDafaultFolder(clist,projectPath,suffix);
 		addClassPath(components,clist);
-		return components.stream().map(entry->entry.substring(0, entry.length()-6)).collect(Collectors.toList());
+		return components;
 	}
 	
 	
@@ -52,7 +63,7 @@ public class PackageScan implements Scan {
 	 * 找到所有Mapper组件所在文件夹的绝对路径，并存入到的集合中
 	 * @param mappers mapper接口组件
 	 */
-	public void loadMapper(List<String> mappers,String...suffix) {
+	public void loadMapper(List<Class<?>> mappers,String...suffix) {
 		List<String> mlist=new ArrayList<>();
 		findDafaultFolder(mlist,projectPath,suffix);
 		addClassPath(mappers,mlist);
@@ -63,7 +74,7 @@ public class PackageScan implements Scan {
 	 * @param components 容器
 	 * @param paths 组件所在文件夹的绝对路径
 	 */
-	private void addClassPath(List<String> components,List<String> paths) {
+	private void addClassPath(List<Class<?>> components,List<String> paths) {
 		for(String path:paths) {
 			File file=new File(path);
 			File[] listFiles = file.listFiles();
@@ -74,7 +85,12 @@ public class PackageScan implements Scan {
 					String u=(projectPath+"/").replaceAll("/", "\\\\");
 					clzzpath=clzzpath.replace(u, "");
 					clzzpath=clzzpath.replaceAll("\\\\", "\\.");
-					components.add(clzzpath);
+					clzzpath=clzzpath.substring(0, clzzpath.length()-6);
+					try {
+						components.add(Class.forName(clzzpath));
+					} catch (ClassNotFoundException e) {
+						throw new RuntimeException("类加载错误，错误path:"+clzzpath, e);
+					}
 				}
 			}
 				
@@ -115,6 +131,44 @@ public class PackageScan implements Scan {
 		}
 		return false;
 	}
+	
+	@Override
+	public void autoScan() {
+		try {
+			fileScan(fileProjectPath);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void fileScan(String path) throws ClassNotFoundException {
+		File bin=new File(path);
+		File[] listFiles = bin.listFiles();
+		for(File file:listFiles) {
+			if(file.isDirectory()) {
+				fileScan(path+"/"+file.getName());
+			}else if(file.getAbsolutePath().endsWith(".class")) {
+				file.getAbsolutePath();
+				String className=file.getAbsolutePath().replaceAll("\\\\", "/").replaceAll(fileProjectPath, "").replaceAll("/", "\\.");
+				className=className.substring(0,className.length()-6);
+				Class<?> fileClass=Class.forName(className);
+				if(fileClass.isAnnotationPresent(Controller.class))
+					controllerClass.add(fileClass);
+				else if(fileClass.isAnnotationPresent(Service.class))
+					serviceClass.add(fileClass);
+				else if(fileClass.isAnnotationPresent(Repository.class)||fileClass.isAnnotationPresent(Mapper.class))
+					repositoryClass.add(fileClass);
+				else if(fileClass.isAnnotationPresent(Component.class)||fileClass.isAnnotationPresent(BeanFactory.class))
+					componentClass.add(fileClass);
+				else if(fileClass.isAnnotationPresent(Aspect.class)||Point.class.isAssignableFrom(fileClass))
+					aspectClass.add(fileClass);
+				else
+					continue;
+			}
+		}
+		
+	} 
 }
 
 

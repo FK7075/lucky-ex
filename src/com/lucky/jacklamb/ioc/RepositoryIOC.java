@@ -131,11 +131,10 @@ public class RepositoryIOC extends ComponentFactory {
 	 * @throws InvocationTargetException 
 	 * @throws IllegalArgumentException 
 	 */
-	public void initRepositoryIOC(List<String> repositoryClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+	public void initRepositoryIOC(List<Class<?>> repositoryClass) throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		boolean first = true;
 		String beanID;
-		for (String clzz : repositoryClass) {
-			Class<?> repository = Class.forName(clzz);
+		for (Class<?> repository : repositoryClass) {
 			if (repository.isAnnotationPresent(Repository.class)) {
 				Repository rep = repository.getAnnotation(Repository.class);
 				if (!"".equals(rep.value()))

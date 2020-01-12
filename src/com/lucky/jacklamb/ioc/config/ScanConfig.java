@@ -15,6 +15,11 @@ import com.lucky.jacklamb.enums.Logo;
 public class ScanConfig {
 
 	private static ScanConfig scanfig;
+	
+	/**
+	 * 是否开启自动扫描
+	 */
+	private boolean autoScan;
 
 	/**
 	 * Controller组件所在包的后缀
@@ -278,6 +283,17 @@ public class ScanConfig {
 		pojoPackSuffix.addAll(Arrays.asList(suffix));
 	}
 	
+	public boolean isAutoScan() {
+		return autoScan;
+	}
+	
+	/**
+	 * 是否开启自动扫描
+	 * @param autoScan
+	 */
+	public void setAutoScan(boolean autoScan) {
+		this.autoScan = autoScan;
+	}
 	public static ScanConfig defaultScanConfig() {
 		if (scanfig == null) {
 			scanfig = new ScanConfig();
@@ -287,6 +303,7 @@ public class ScanConfig {
 			scanfig.addComponentPackSuffix("component", "bean");
 			scanfig.addAspectPackSuffix("aspect","aop");
 			scanfig.addPojoPackSuffix("pojo", "entity");
+			scanfig.setAutoScan(false);
 			scanfig.setLogo(Logo.LUCKY);
 			scanfig.setDefaultDB("db.properties");
 		}

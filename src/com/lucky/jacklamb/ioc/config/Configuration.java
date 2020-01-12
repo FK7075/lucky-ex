@@ -1,11 +1,5 @@
 package com.lucky.jacklamb.ioc.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.lucky.jacklamb.ioc.ScacFactory;
-import com.lucky.jacklamb.ioc.Scan;
-
 public class Configuration {
 	
 	private static Configuration configuration;
@@ -22,30 +16,23 @@ public class Configuration {
 		scancfg = ScanConfig.defaultScanConfig();
 		webcfg=WebConfig.defauleWebConfig();
 		servercfg=ServerConfig.defaultServerConfig();
-		Scan ps = ScacFactory.createScan();
-		List<String> cfgsuffix = new ArrayList<>();
-		cfgsuffix.add("appconfig");
-		List<String> cfgClass = ps.loadComponent(cfgsuffix);
 		try {
-			for (String clzz : cfgClass) {
-				Class<?> cfg = Class.forName(clzz);
-				if (ApplicationConfig.class.isAssignableFrom(cfg)) {
-					ApplicationConfig cfConfig = (ApplicationConfig) cfg.newInstance();
-					cfConfig.scanPackConfig(scancfg);
-					cfConfig.serverConfig(servercfg);
-					cfConfig.webConfig(webcfg);
-					break;
-				} else {
-					continue;
-				}
-			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			Class<?> applicationClass=Class.forName("app.appconfig");
+			if(!ApplicationConfig.class.isAssignableFrom(applicationClass))
+				throw new RuntimeException("app.appconfig配置类必须继承com.lucky.jacklamb.ioc.config.ApplicationConfig类！");
+			ApplicationConfig appconfig=(ApplicationConfig)applicationClass.newInstance();
+			appconfig.scanPackConfig(scancfg);
+			appconfig.serverConfig(servercfg);
+			appconfig.webConfig(webcfg);
+		} catch (ClassNotFoundException e1) {
+			System.err.println("HELPFUL HINTS：没有发现app.appconfig配置类，将使用默认约定！");
 		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}	
 	}
 	
 	public static Configuration getConfiguration() {

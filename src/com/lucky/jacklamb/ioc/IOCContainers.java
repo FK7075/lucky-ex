@@ -18,7 +18,6 @@ import com.lucky.jacklamb.annotation.ioc.Autowired;
 import com.lucky.jacklamb.annotation.ioc.Value;
 import com.lucky.jacklamb.exception.InjectionPropertiesException;
 import com.lucky.jacklamb.ioc.config.Configuration;
-import com.lucky.jacklamb.ioc.config.ScanConfig;
 import com.lucky.jacklamb.servlet.Model;
 import com.lucky.jacklamb.tcconversion.typechange.JavaConversion;
 import com.lucky.jacklamb.utils.ArrayCast;
@@ -39,8 +38,6 @@ public final class IOCContainers {
 	private ComponentIOC appIOC;
 	
 	private ControllerIOC controllerIOC;
-	
-	private ScanConfig scanConfig;
 	
 	public void init() {
 		
@@ -67,9 +64,6 @@ public final class IOCContainers {
 			initControllerIOC();
 			initServiceIOC();
 			initRepositoryIOC();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -156,29 +150,29 @@ public final class IOCContainers {
 	 * 得到有关包扫描的配置信息
 	 */
 	public void scanConfigToComponentIOC() {
-		scanConfig=Configuration.getConfiguration().getScanConfig();
+		Configuration.getConfiguration().getScanConfig();
 	}
 	
-	public void initComponentIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public void initComponentIOC() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		appIOC=new ComponentIOC();
-		appIOC.initComponentIOC(ScacFactory.createScan().loadComponent(scanConfig.getComponentPackSuffix()));
+		appIOC.initComponentIOC(ScacFactory.createScan().getComponentClass("component"));
 	}
 	
-	public void initControllerIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+	public void initControllerIOC() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		controllerIOC=new ControllerIOC();
-		controllerIOC.initControllerIOC(ScacFactory.createScan().loadComponent(scanConfig.getControllerPackSuffix()));
+		controllerIOC.initControllerIOC(ScacFactory.createScan().getComponentClass("controller"));
 		controllerIOC.methodHanderSetting();
 		
 	}
 	
-	public void initServiceIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+	public void initServiceIOC() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		serviceIOC=new ServiceIOC();
-		serviceIOC.initServiceIOC(ScacFactory.createScan().loadComponent(scanConfig.getServicePackSuffix()));
+		serviceIOC.initServiceIOC(ScacFactory.createScan().getComponentClass("service"));
 	}
 	
-	public void initRepositoryIOC() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+	public void initRepositoryIOC() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		repositoryIOC=new RepositoryIOC();
-		repositoryIOC.initRepositoryIOC(ScacFactory.createScan().loadComponent(scanConfig.getRepositoryPackSuffix()));
+		repositoryIOC.initRepositoryIOC(ScacFactory.createScan().getComponentClass("repository"));
 	}
 	
 	/**

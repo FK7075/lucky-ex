@@ -147,8 +147,14 @@ public class ReadProperties {
 		if (createTable != null && createTable != "") {
 			dataSource.getCaeateTable().clear();
 			String[] split = createTable.replaceAll(" ", "").split(",");
-			for (String st : split)
-				dataSource.getCaeateTable().add(property.getProperty(st));
+			for (String st : split) {
+				try {
+					dataSource.getCaeateTable().add(Class.forName(property.getProperty(st)));
+				} catch (ClassNotFoundException e) {
+					throw new NoDataSourceException("不正确的自动建表配置信息，无法执行建表程序，请检查classpath下的db.properties配置文件中的'create.table'属性的配置信息。err=>"+property.getProperty(st));
+				}
+				
+			}
 		}
 		if (otherproperties != null && otherproperties != "") {
 			String[] split = otherproperties.replaceAll(" ", "").split(",");
