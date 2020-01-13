@@ -4,8 +4,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import com.lucky.jacklamb.exception.IllegalExpressionException;
-
 /**
  * 表达式解析引擎
  * @author fk-7075
@@ -86,7 +84,7 @@ public class ExpressionEngine {
             String result = String.valueOf(scriptEngine.eval(expression));
             return result;
         } catch (ScriptException e) {
-        	throw new IllegalExpressionException("非法表达式,您的表达式中含有无法识别的符号！err:"+expression);
+        	return expression;
         }
     }
 	

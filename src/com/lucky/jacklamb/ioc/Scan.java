@@ -35,7 +35,7 @@ public abstract class Scan {
 	
 	public void init() {
 		configuration=Configuration.getConfiguration();
-		if(configuration.getScanConfig().isAutoScan()) {
+		if(configuration.getScanConfig().getScanMode()==com.lucky.jacklamb.enums.Scan.AUTO_SCAN) {
 			System.err.println("SCAN-MODE£º[AUTO SCAN]");
 			autoScan();
 		}else {

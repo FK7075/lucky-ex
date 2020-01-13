@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.lucky.jacklamb.enums.Logo;
+import com.lucky.jacklamb.enums.Scan;
 
 /**
  * IOC组件的默认位置后缀配置
@@ -13,13 +14,13 @@ import com.lucky.jacklamb.enums.Logo;
  *
  */
 public class ScanConfig {
-
+	
 	private static ScanConfig scanfig;
 	
 	/**
-	 * 是否开启自动扫描
+	 * 设置扫描模式
 	 */
-	private boolean autoScan;
+	private Scan scanMode;
 
 	/**
 	 * Controller组件所在包的后缀
@@ -283,17 +284,18 @@ public class ScanConfig {
 		pojoPackSuffix.addAll(Arrays.asList(suffix));
 	}
 	
-	public boolean isAutoScan() {
-		return autoScan;
+	public Scan getScanMode() {
+		return scanMode;
 	}
 	
 	/**
-	 * 是否开启自动扫描
-	 * @param autoScan
+	 * 设置扫描模式(默认为自动扫描)
+	 * @param scanMode
 	 */
-	public void setAutoScan(boolean autoScan) {
-		this.autoScan = autoScan;
+	public void setScanMode(Scan scanMode) {
+		this.scanMode = scanMode;
 	}
+	
 	public static ScanConfig defaultScanConfig() {
 		if (scanfig == null) {
 			scanfig = new ScanConfig();
@@ -303,7 +305,7 @@ public class ScanConfig {
 			scanfig.addComponentPackSuffix("component", "bean");
 			scanfig.addAspectPackSuffix("aspect","aop");
 			scanfig.addPojoPackSuffix("pojo", "entity");
-			scanfig.setAutoScan(false);
+			scanfig.setScanMode(Scan.AUTO_SCAN);
 			scanfig.setLogo(Logo.LUCKY);
 			scanfig.setDefaultDB("db.properties");
 		}

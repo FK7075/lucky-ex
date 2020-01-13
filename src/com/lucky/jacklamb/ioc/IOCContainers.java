@@ -39,6 +39,54 @@ public final class IOCContainers {
 	
 	private ControllerIOC controllerIOC;
 	
+	public AspectAOP getAspectIOC() {
+		return AspectIOC;
+	}
+
+	public void setAspectIOC(AspectAOP AspectIOC) {
+		this.AspectIOC = AspectIOC;
+	}
+
+	public RepositoryIOC getRepositoryIOC() {
+		return repositoryIOC;
+	}
+
+	public void setRepositoryIOC(RepositoryIOC repositoryIOC) {
+		this.repositoryIOC = repositoryIOC;
+	}
+
+	public ServiceIOC getServiceIOC() {
+		return serviceIOC;
+	}
+
+	public void setServiceIOC(ServiceIOC serviceIOC) {
+		this.serviceIOC = serviceIOC;
+	}
+
+	public ComponentIOC getAppIOC() {
+		return appIOC;
+	}
+
+	public void setAppIOC(ComponentIOC appIOC) {
+		this.appIOC = appIOC;
+	}
+	
+	public void addComponent(String key,Object value) {
+		this.appIOC.addAppMap(key, value);
+	}
+
+	public ControllerIOC getControllerIOC() {
+		return controllerIOC;
+	}
+
+	public void setControllerIOC(ControllerIOC controllerIOC) {
+		this.controllerIOC = controllerIOC;
+	}
+	
+	
+	/**
+	 *  1.加载配置->2.得到所有增强->3.IOC+AOP->4.DI
+	 */
 	public void init() {
 		
 		//得到配置信息
@@ -101,50 +149,6 @@ public final class IOCContainers {
 		}
 		
 	}
-	
-	public AspectAOP getAspectIOC() {
-		return AspectIOC;
-	}
-
-	public void setAspectIOC(AspectAOP AspectIOC) {
-		this.AspectIOC = AspectIOC;
-	}
-
-	public RepositoryIOC getRepositoryIOC() {
-		return repositoryIOC;
-	}
-
-	public void setRepositoryIOC(RepositoryIOC repositoryIOC) {
-		this.repositoryIOC = repositoryIOC;
-	}
-
-	public ServiceIOC getServiceIOC() {
-		return serviceIOC;
-	}
-
-	public void setServiceIOC(ServiceIOC serviceIOC) {
-		this.serviceIOC = serviceIOC;
-	}
-
-	public ComponentIOC getAppIOC() {
-		return appIOC;
-	}
-
-	public void setAppIOC(ComponentIOC appIOC) {
-		this.appIOC = appIOC;
-	}
-	
-	public void addComponent(String key,Object value) {
-		this.appIOC.addAppMap(key, value);
-	}
-
-	public ControllerIOC getControllerIOC() {
-		return controllerIOC;
-	}
-
-	public void setControllerIOC(ControllerIOC controllerIOC) {
-		this.controllerIOC = controllerIOC;
-	}
 
 	/**
 	 * 得到有关包扫描的配置信息
@@ -153,11 +157,29 @@ public final class IOCContainers {
 		Configuration.getConfiguration().getScanConfig();
 	}
 	
+	/**
+	 * 初始化Component组件
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 */
 	public void initComponentIOC() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		appIOC=new ComponentIOC();
 		appIOC.initComponentIOC(ScacFactory.createScan().getComponentClass("component"));
 	}
 	
+	/**
+	 * 初始化Controller组件
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	public void initControllerIOC() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		controllerIOC=new ControllerIOC();
 		controllerIOC.initControllerIOC(ScacFactory.createScan().getComponentClass("controller"));
@@ -165,11 +187,29 @@ public final class IOCContainers {
 		
 	}
 	
+	/**
+	 * 初始化Service组件
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	public void initServiceIOC() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		serviceIOC=new ServiceIOC();
 		serviceIOC.initServiceIOC(ScacFactory.createScan().getComponentClass("service"));
 	}
 	
+	/**
+	 * 初始化Repository组件
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	public void initRepositoryIOC() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		repositoryIOC=new RepositoryIOC();
 		repositoryIOC.initRepositoryIOC(ScacFactory.createScan().getComponentClass("repository"));
@@ -204,7 +244,7 @@ public final class IOCContainers {
 	}
 	
 	/**
-	 * 组件的属性注入
+	 * 组件的属性注入(@Value和@Autowired)
 	 * @param componentMap
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
