@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.lucky.jacklamb.annotation.mvc.Download;
 import com.lucky.jacklamb.enums.RequestMethod;
+import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.ControllerAndMethod;
 import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.WebConfig;
@@ -29,8 +30,10 @@ public class LuckyDispatherServlet extends HttpServlet {
 	private WebConfig webCfg;
 	private UrlParsMap urlParsMap;
 	private ResponseControl responseControl;
+	
 
 	public void init(ServletConfig config) {
+		ApplicationBeans.createApplicationBeans();
 		anop = new AnnotationOperation();
 		webCfg=Configuration.getConfiguration().getWebConfig();
 		urlParsMap=new UrlParsMap();
@@ -119,12 +122,4 @@ public class LuckyDispatherServlet extends HttpServlet {
 			urlParsMap.closeLuckyWebContext();
 		}
 	}
-
-	@Override
-	public void destroy() {
-		Jacklabm.over();
-		super.destroy();
-	}
-	
-	
 }
