@@ -53,6 +53,7 @@ public class LuckyMapperProxy {
 
 	private SqlCore sqlCore;
 	private Map<String,String> sqlMap;
+	private Class<?> LuckyMapperGeneric;
 
 	public LuckyMapperProxy(SqlCore sql) {
 		sqlCore = sql;
@@ -237,7 +238,7 @@ public class LuckyMapperProxy {
 			String sql = sel.value();
 			if ("".equals(sql)) {
 				if (sel.sResults().length==0&&sel.hResults().length==0) {
-					if (c.isAssignableFrom(List.class)) {
+					if (List.class.isAssignableFrom(c)) {
 						return sqlCore.getList(args[0]);
 					} else {
 						return sqlCore.getObject(args[0]);
@@ -253,7 +254,7 @@ public class LuckyMapperProxy {
 						query.addResult(sel.sResults());
 					if(sel.hResults().length!=0)
 						query.hiddenResult(sel.hResults());
-					if (c.isAssignableFrom(List.class)) {
+					if (List.class.isAssignableFrom(c)) {
 						Class<?> listGeneric = getListGeneric(method);
 						return sqlCore.query(query,listGeneric);
 					} else {
@@ -270,7 +271,7 @@ public class LuckyMapperProxy {
 					if(method.getParameterCount()==3)
 						pageParam(method,args);
 					SqlAndArray sqlArr = noSqlTo(args[0],sql);
-					if (c.isAssignableFrom(List.class)) {
+					if (List.class.isAssignableFrom(c)) {
 						Class<?> listGeneric = getListGeneric(method);
 						if(method.isAnnotationPresent(Change.class)) {
 							SqlAndObject so = sql_fp.filterSql(sqlArr.getSql(),sqlArr.getArray());
@@ -309,7 +310,7 @@ public class LuckyMapperProxy {
 					}
 				} else {
 					pageParam(method,args);
-					if (c.isAssignableFrom(List.class)) {
+					if (List.class.isAssignableFrom(c)) {
 						Class<?> listGeneric = getListGeneric(method);
 						if(method.isAnnotationPresent(Change.class)) {
 							SqlAndObject so = sql_fp.filterSql(sql, args);
@@ -424,7 +425,7 @@ public class LuckyMapperProxy {
 	}
 	
 	/**
-	 * 处理被@Join注解标注的接口方法
+	 * 处理被@Query注解标注的接口方法
 	 * @param method 接口方法
 	 * @param args 参数列表
 	 * @return Object
@@ -434,7 +435,11 @@ public class LuckyMapperProxy {
 		Parameter[] parameters = method.getParameters();
 		ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
 		Type[] entry = type.getActualTypeArguments();
-		Class<?> cla = (Class<?>) entry[0];
+		Class<?> cla;
+		if(LuckyMapperGeneric!=null&&"query".equals(method.getName()))
+			cla=LuckyMapperGeneric;
+		else
+			cla = (Class<?>) entry[0];
 		if(query.queryBuilder()) {
 			if(parameters.length!=1)
 				throw new RuntimeException("@Query参数数量溢出异常  size:"+parameters.length+"！@Query注解的\"queryBuilder\"模式下的参数只能是唯一，而且类型必须是 com.lucky.jacklamb.query.QueryBuilder！错误位置："+method);
@@ -527,11 +532,29 @@ public class LuckyMapperProxy {
 	 * @throws IllegalAccessException
 	 */
 	public <T> T getMapperProxyObject(Class<T> clazz) throws InstantiationException, IllegalAccessException {
+		Type[] genericInterfaces = clazz.getGenericInterfaces();
+		if(LuckyMapper.class.isAssignableFrom(clazz)&&genericInterfaces.length==1) {
+			ParameterizedType interfacePtype=(ParameterizedType) genericInterfaces[0];
+			LuckyMapperGeneric=(Class<?>) interfacePtype.getActualTypeArguments()[0];
+		}
 		initSqlMap(clazz);
 		initSqlMapProperty(clazz);
 		Enhancer enhancer=new Enhancer();
 		enhancer.setSuperclass(clazz);
 		MethodInterceptor interceptor=(object,method,params,methodProxy)->{
+			
+			/*
+			  用户自定义的Mapper如果继承了LuckyMapper<T>,代理selectById和deleteById方法
+			 这两个方法的执行依赖LuckyMapper接口的泛型类型，所以需要特殊处理
+			*/
+			if(LuckyMapperGeneric!=null&&"selectById".equals(method.getName())) {
+				return sqlCore.getOne(LuckyMapperGeneric, params[0]);
+			}
+			if(LuckyMapperGeneric!=null&&"deleteById".equals(method.getName())) {
+				return sqlCore.delete(LuckyMapperGeneric, params[0]);
+			}
+			
+			//用户自定义Mapper接口方法的代理
 			SqlFragProce sql_fp = SqlFragProce.getSqlFP();
 			if (method.isAnnotationPresent(Select.class))
 				return select(method,params,sql_fp);
