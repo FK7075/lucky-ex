@@ -10,6 +10,11 @@ import com.lucky.jacklamb.annotation.orm.mapper.Select;
 import com.lucky.jacklamb.annotation.orm.mapper.Update;
 import com.lucky.jacklamb.query.QueryBuilder;
 
+/**
+ * 单表操作的Mapper接口模板，可以用来简化Mapper接口开发
+ * @author fk-7075
+ * @param <T> 表对应的实体类
+ */
 public interface LuckyMapper<T> {
 	
 	/**
@@ -30,31 +35,31 @@ public interface LuckyMapper<T> {
 
 	/**
 	 * 查询操作
-	 * @param pojo
-	 * @return
+	 * @param pojo 包含查询信息的pojo对象
+	 * @return 对应类型的查询结果
 	 */
 	@Select
 	public T select(T pojo);
 	
 	/**
 	 * 查询操作
-	 * @param pojo
-	 * @return
+	 * @param pojo 包含查询信息的pojo对象
+	 * @return  对应类型集合的查询结果
 	 */
 	@Select
 	public List<T> selectList(T pojo);
 	
 	/**
 	 * 更新操作
-	 * @param pojo
-	 * @return
+	 * @param pojo 包含更新信息的pojo对象
+	 * @return 
 	 */
 	@Update
 	public boolean update(T pojo);
 	
 	/**
 	 * 添加操作，并自动获取自增ID
-	 * @param pojo
+	 * @param pojo 包含添加信息的pojo对象
 	 * @return
 	 */
 	@Insert(setautoId=true)
@@ -62,7 +67,7 @@ public interface LuckyMapper<T> {
 	
 	/**
 	 * 添加操作
-	 * @param pojo
+	 * @param pojo 包含添加信息的pojo对象
 	 * @return
 	 */
 	@Insert
@@ -70,7 +75,7 @@ public interface LuckyMapper<T> {
 	
 	/**
 	 * 批量添加操作
-	 * @param pojos
+	 * @param pojos 包含添加信息的List[pojo]集合
 	 * @return
 	 */
 	@Insert(batch=true)
@@ -78,9 +83,9 @@ public interface LuckyMapper<T> {
 	
 	/**
 	 * 分页操作
-	 * @param pojo
-	 * @param page
-	 * @param rows
+	 * @param pojo 包含查询信息的pojo对象
+	 * @param page 页码
+	 * @param rows 每页显示的条数
 	 * @return
 	 */
 	@Query(limit=true)
@@ -88,7 +93,7 @@ public interface LuckyMapper<T> {
 	
 	/**
 	 * QueryBuilder查询模式
-	 * @param queryBuilder
+	 * @param queryBuilder QueryBuilder对象
 	 * @return
 	 */
 	@Query(queryBuilder=true)
@@ -96,10 +101,10 @@ public interface LuckyMapper<T> {
 	
 	/**
 	 * Count操作
-	 * @param t
+	 * @param pojo 包含查询信息的pojo对象
 	 * @return
 	 */
 	@Count
-	public int count(T t);
+	public int count(T pojo);
 	
 }
