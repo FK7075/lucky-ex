@@ -436,7 +436,7 @@ public class LuckyMapperProxy {
 		ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
 		Type[] entry = type.getActualTypeArguments();
 		Class<?> cla;
-		if(LuckyMapperGeneric!=null&&"query".equals(method.getName()))
+		if(LuckyMapperGeneric!=null&&("query".equals(method.getName())||"selectLimit".equals(method.getName())))
 			cla=LuckyMapperGeneric;
 		else
 			cla = (Class<?>) entry[0];

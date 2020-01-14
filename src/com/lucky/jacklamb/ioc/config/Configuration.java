@@ -1,5 +1,7 @@
 package com.lucky.jacklamb.ioc.config;
 
+import com.lucky.jacklamb.utils.LuckyUtils;
+
 public class Configuration {
 	
 	private static Configuration configuration;
@@ -20,12 +22,13 @@ public class Configuration {
 			Class<?> applicationClass=Class.forName("app.appconfig");
 			if(!ApplicationConfig.class.isAssignableFrom(applicationClass))
 				throw new RuntimeException("app.appconfig配置类必须继承com.lucky.jacklamb.ioc.config.ApplicationConfig类！");
+			System.err.println(LuckyUtils.showtime()+"[HELPFUL HINTS]  发现app.appconfig配置类，将使用类中的配置初始化LUCKY...");
 			ApplicationConfig appconfig=(ApplicationConfig)applicationClass.newInstance();
 			appconfig.scanPackConfig(scancfg);
 			appconfig.serverConfig(servercfg);
 			appconfig.webConfig(webcfg);
-		} catch (ClassNotFoundException e1) {
-			System.err.println("HELPFUL HINTS：没有发现app.appconfig配置类，将使用默认约定！");
+		} catch (ClassNotFoundException e) {
+			
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

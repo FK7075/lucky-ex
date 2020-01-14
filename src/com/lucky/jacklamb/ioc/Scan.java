@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.ScanConfig;
+import com.lucky.jacklamb.utils.LuckyUtils;
 
 public abstract class Scan {
 	
@@ -36,10 +37,10 @@ public abstract class Scan {
 	public void init() {
 		configuration=Configuration.getConfiguration();
 		if(configuration.getScanConfig().getScanMode()==com.lucky.jacklamb.enums.Scan.AUTO_SCAN) {
-			System.err.println("SCAN-MODE£º[AUTO SCAN]");
+			System.err.println(LuckyUtils.showtime()+"[ SCAN-MODE                 ~ ]  AUTO_SCAN");
 			autoScan();
 		}else {
-			System.err.println("SCAN-MODE: [SUFFIX SCAN]");
+			System.err.println(LuckyUtils.showtime()+"[ SCAN-MODE                 - ]  SUFFIX_SCAN");
 			suffixScan();
 		}
 		componentClassMap.put("controller", controllerClass);

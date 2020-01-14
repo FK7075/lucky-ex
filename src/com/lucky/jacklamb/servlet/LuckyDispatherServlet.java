@@ -119,4 +119,12 @@ public class LuckyDispatherServlet extends HttpServlet {
 			urlParsMap.closeLuckyWebContext();
 		}
 	}
+
+	@Override
+	public void destroy() {
+		Jacklabm.over();
+		super.destroy();
+	}
+	
+	
 }

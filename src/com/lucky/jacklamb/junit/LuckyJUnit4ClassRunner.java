@@ -29,7 +29,6 @@ public class LuckyJUnit4ClassRunner extends BlockJUnit4ClassRunner{
 	protected final Object createTest() throws Exception {
 		Object createTest = super.createTest();
 		applicationBeans=ApplicationBeans.createApplicationBeans();
-		applicationBeans.printBeans();
 		return createTestObject(applicationBeans,createTest);
 	}
 	

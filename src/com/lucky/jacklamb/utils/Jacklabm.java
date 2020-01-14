@@ -433,4 +433,13 @@ public class Jacklabm {
 		System.out.println(str13());
 	}
 	
+	public static void over() {
+		System.err.println(":)_> github");
+		System.err.println("_www.github.com/FK7075/Lucky_");
+		System.err.println(":)_> email ");
+		System.err.println("_1814375626@qq.com_");
+		System.err.println(":)_> wechat ");
+		System.err.println("_Fk-7075_");
+	}
+	
 }

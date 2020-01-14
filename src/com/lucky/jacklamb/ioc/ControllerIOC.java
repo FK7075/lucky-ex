@@ -190,10 +190,10 @@ public class ControllerIOC extends ComponentFactory{
 					uRLAndRequestMethod.setUrl(url_c + url_m);
 					uRLAndRequestMethod.addMethods(mappingRequestMethod);
 					addHanderMap(uRLAndRequestMethod, come);
-					ip=come.getIps().isEmpty()?"":"\nIP£º"+come.getIps().toString();
-					ips=come.getIpSection().length==0?"":"\nIP¶Î£º"+Arrays.toString(come.getIpSection());
-					rest="\nRest:"+come.getRest().toString();
-					mappingSet.add("RequestMethod£º"+uRLAndRequestMethod.getMethods()+"\nURL: "+ url_c +url_m +ip+ips+rest+"\nMethod£º"+method);
+					ip=come.getIps().isEmpty()?"":" , IP: "+come.getIps().toString();
+					ips=come.getIpSection().length==0?"":" , IP¶Î: "+Arrays.toString(come.getIpSection());
+					rest=" , Rest: "+come.getRest().toString();
+					mappingSet.add("[ URL-MAPPING               M ]  { "+"URL: ["+ url_c +url_m+"] , RequestMethod: "+uRLAndRequestMethod.getMethods() +ip+ips+rest+" , Method: "+method+"}");
 				} else {
 					continue;
 				}
