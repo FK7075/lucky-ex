@@ -24,9 +24,7 @@ public class Configuration {
 				throw new RuntimeException("app.appconfig配置类必须继承com.lucky.jacklamb.ioc.config.ApplicationConfig类！");
 			System.err.println(LuckyUtils.showtime()+"[HELPFUL HINTS]  发现app.appconfig配置类，将使用类中的配置初始化LUCKY...");
 			ApplicationConfig appconfig=(ApplicationConfig)applicationClass.newInstance();
-			appconfig.scanPackConfig(scancfg);
-			appconfig.serverConfig(servercfg);
-			appconfig.webConfig(webcfg);
+			appconfig.init(scancfg, webcfg, servercfg);
 		} catch (ClassNotFoundException e) {
 			
 		} catch (InstantiationException e) {

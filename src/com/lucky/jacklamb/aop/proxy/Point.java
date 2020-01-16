@@ -10,9 +10,14 @@ import java.lang.reflect.Method;
 public abstract class Point {
 	
 	/**
-	 * 当前执行的目标方法的实例
+	 * 当前执行的目标方法的代理实例
 	 */
-	protected Object target;
+	protected Object aspectObject;
+	
+	/**
+	 * 目标对象的Class
+	 */
+	protected Class<?> targetClass;
 	
 	/**
 	 * 当前执行的目标方法的Method对象
@@ -23,6 +28,19 @@ public abstract class Point {
 	 * 当前执行的目标方执行时的参数列表
 	 */
 	protected Object[] params;
+	
+	/**
+	 * 当前方法的签名信息
+	 */
+	protected TargetMethodSignature targetMethodSignature;
+	
+	protected void init(TargetMethodSignature targetMethodSignature) {
+		this.targetMethodSignature=targetMethodSignature;
+		aspectObject=targetMethodSignature.getAspectObject();
+		method=targetMethodSignature.getCurrMethod();
+		params=targetMethodSignature.getParams();
+		targetClass=targetMethodSignature.getTargetClass();
+	}
 	
 	
 	/**

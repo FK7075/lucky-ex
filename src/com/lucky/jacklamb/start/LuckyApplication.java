@@ -26,11 +26,7 @@ public class LuckyApplication {
 		run();
 	}
 	
-	/**
-	 * 在使用java -jar运行jar包时，Lucky会使用JarFile的方法去遍历classpath下所有的.class文件来寻找组件
-	 * 效率较低，applicationClass类的位置没有限制
-	 */
-	public static void run() {
+	private static void run() {
 		ServerConfig serverCfg=Configuration.getConfiguration().getServerConfig();
 		long start= System.currentTimeMillis();
 		Tomcat tomcat = new Tomcat();
@@ -68,7 +64,9 @@ public class LuckyApplication {
 			tomcat.start();
 			long end= System.currentTimeMillis();
 			ApplicationBeans.createApplicationBeans();
-			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  - ]  内嵌Tomcat启动成功！ [http-nio-"+serverCfg.getPort()+"] ,用时"+(end-start)+"ms!");
+			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  D ]  Starting DocBase [path: "+serverCfg.getDocBase().substring(1)+"]");
+			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  P ]  Starting ProtocolHandler [http-nio-"+serverCfg.getPort()+"]");
+			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  - ]  Tomcat启动成功！用时"+(end-start)+"ms!");
 			tomcat.getServer().await();
 		} catch (LifecycleException e) {
 			e.printStackTrace();

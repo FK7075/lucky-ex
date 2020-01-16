@@ -70,6 +70,10 @@ public class LuckyDispatherServlet extends HttpServlet {
 			urlParsMap.setLuckyWebContext(model);
 			String context = req.getContextPath();
 			String path = uri.replace(context, "");
+			if(webCfg.isOpenStaticResourceManage()&&StaticResourceManage.isStaticResource(resp,path)) {
+				StaticResourceManage.response(req, resp, uri);
+				return;
+			}
 			if (path.endsWith(".do")||path.endsWith(".xfl")||path.endsWith(".fk")||path.endsWith(".cad")||path.endsWith(".lcl")) {
 				path = path.substring(0, path.lastIndexOf("."));
 			}

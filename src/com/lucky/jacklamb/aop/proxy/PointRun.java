@@ -13,7 +13,6 @@ import com.lucky.jacklamb.annotation.aop.Before;
 import com.lucky.jacklamb.enums.Location;
 import com.lucky.jacklamb.exception.IllegaAopparametersException;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
-import com.lucky.jacklamb.tcconversion.typechange.JavaConversion;
 
 public class PointRun {
 	
@@ -197,7 +196,7 @@ public class PointRun {
 		int indexOf = pointcut.indexOf("(");
 		String methodNameStr;
 		boolean pass=true;
-		String[] methodParamStr=pointcut.substring(indexOf+1, pointcut.length()-1).split(",");
+		String[] methodParamStr=pointcut.substring(indexOf+1, pointcut.length()-1).split(" ");
 		if(pointcut.startsWith("!")) {
 			if(methodParamStr.length!=parameters.length)
 				return true;
@@ -268,8 +267,12 @@ public class PointRun {
 				Parameter[] parameters = expandMethod.getParameters();
 				Object[] expandParams=new Object[parameters.length];
 				for(int i=0;i<parameters.length;i++) {
+					if(TargetMethodSignature.class.isAssignableFrom(parameters[i].getType())) {
+						expandParams[i]=targetMethodSignature;
+						continue;
+					}
 					if(!parameters[i].isAnnotationPresent(AopParam.class))
-						throw new IllegaAopparametersException("无法识别的AOP参数，前置增强或后置增强中存在无法识别的参数，错误原因：可能没有使用@AopParam注解标注参数！错误位置："+expandMethod);
+						throw new IllegaAopparametersException("无法识别的AOP参数，前置增强或后置增强中存在无法识别的参数，错误原因：没有使用@AopParam注解标注参数！错误位置："+expandMethod);
 					aopParamValue=parameters[i].getAnnotation(AopParam.class).value();
 					if(aopParamValue.startsWith("ref:")) {//取IOC容器中的值
 						if("ref:".equals(aopParamValue.trim())) 
@@ -284,17 +287,19 @@ public class PointRun {
 						}catch(NumberFormatException e) {
 							throw new RuntimeException("错误的表达式，参数表达式中的索引不合法，索引只能为整数！错误位置："+expandMethod+"@AopParam("+aopParamValue+")=>err");
 						}
-						if(index<1||index>params.length)
+						if(!targetMethodSignature.containsIndex(index))
 							throw new RuntimeException("错误的表达式，参数表达式中的索引超出参数列表索引范围！错误位置："+expandMethod+"@AopParam("+aopParamValue+")=>err");
-						expandParams[i]=params[index-1];	
+						expandParams[i]=targetMethodSignature.getParamByIndex(index);	
 					} else if(aopParamValue.equals("[params]")){//整个参数列表
-						expandParams[i]=params;
+						expandParams[i]=targetMethodSignature.getParameters();
 					}else if(aopParamValue.equals("[method]")) {//Method对象
-						expandParams[i]=method;
-					}else if(aopParamValue.equals("[target]")) {//目标类的一个具体实例
-						expandParams[i]=target;
-					} else{//普通值
-						expandParams[i]=JavaConversion.strToBasic(aopParamValue, parameters[i].getType());
+						expandParams[i]=targetMethodSignature.getCurrMethod();
+					}else if(aopParamValue.equals("[target]")) {//目标类的Class
+						expandParams[i]=targetMethodSignature.getTargetClass();
+					} else {//根据参数名得到具体参数
+						if(!targetMethodSignature.containsParamName(aopParamValue))
+							throw new RuntimeException("错误的参数名配置，在目标方法中找不到参数名为\""+aopParamValue+"\"的参数，请检查配置信息!(注：使用方法名配置必须保证JDK版本不得低于JDK8,另外还需确保开启了\"-parameters\"！)错误位置："+expandMethod+"@AopParam("+aopParamValue+")=>err");
+						expandParams[i]=targetMethodSignature.getParamByName(aopParamValue);
 					}
 				}
 				return expandParams;

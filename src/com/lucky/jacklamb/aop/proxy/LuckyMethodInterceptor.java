@@ -15,6 +15,7 @@ public class LuckyMethodInterceptor implements MethodInterceptor {
 	
 	
 	private List<PointRun> pointRuns;//关于某一个类的所有增强的执行节点
+	private TargetMethodSignature targetMethodSignature;
 	
 	/**
 	 * 回调函数构造器，得到一个真实对象的的所有执行方法(MethodRun)和环绕执行节点集合(PointRun)，
@@ -39,17 +40,15 @@ public class LuckyMethodInterceptor implements MethodInterceptor {
 	@Override
 	public Object intercept(Object target, Method method, Object[] params, MethodProxy methodProxy) throws Throwable {
 		List<Point> points=new ArrayList<>();
-		
+		targetMethodSignature=new TargetMethodSignature(target,method,params);
 		//被@Cacheable注解标注的方法优先执行缓存代理
 		if(method.isAnnotationPresent(Cacheable.class)) {
 			Point cacheExpandPoint = new CacheExpandPoint();
-			cacheExpandPoint.method=method;
-			cacheExpandPoint.params=params;
-			cacheExpandPoint.target=target;
+			cacheExpandPoint.init(targetMethodSignature);
 			points.add(cacheExpandPoint);
 		}
 		//得到所有自定义的的环绕增强节点
-		pointRuns.stream().filter(a->a.standard(method)).forEach((a)->{Point p=a.getPoint();p.target=target;p.method=method;p.params=params;points.add(p);});
+		pointRuns.stream().filter(a->a.standard(method)).forEach((a)->{Point p=a.getPoint();p.init(targetMethodSignature);points.add(p);});
 		
 		//将所的环绕增强节点组成一个执行链
 		Chain chain=new Chain(points,target,params,methodProxy);

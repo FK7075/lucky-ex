@@ -168,7 +168,8 @@ public class PackageScan extends Scan {
 			}
 		}
 		
-	} 
+	}
+
 }
 
 

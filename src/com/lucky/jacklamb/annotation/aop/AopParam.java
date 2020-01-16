@@ -30,7 +30,7 @@ public @interface AopParam {
 	 * &nbsp;&nbsp;&nbsp;&nbsp;
 	 * [params]:表示将真实方法的参数列表作为增强对象的参数，此位置的参数类型必须为Object[]<br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;
-	 * [target]:表示将真实对象的参数，此位置的参数类型必须为Object<br>
+	 * [target]:表示将真实类的Class作为参数，此位置的参数类型必须为Class<br>
 	 * @return
 	 */
 	String value();

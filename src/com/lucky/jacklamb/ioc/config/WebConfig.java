@@ -15,9 +15,12 @@ public class WebConfig {
 	
 	private List<String> handerPrefixAndSuffix;
 	
+	private boolean openStaticResourceManage;
+	
 	
 	private WebConfig() {
 		encoding="ISO-8859-1";
+		openStaticResourceManage=false;
 		handerPrefixAndSuffix=new ArrayList<>();;
 		handerPrefixAndSuffix.add("");handerPrefixAndSuffix.add("");
 		staticHander=new HashMap<>();
@@ -31,6 +34,18 @@ public class WebConfig {
 
 	public String getEncoding() {
 		return encoding;
+	}
+	
+	public boolean isOpenStaticResourceManage() {
+		return openStaticResourceManage;
+	}
+
+	/**
+	 * 是否开启静态文件处理器(默认关闭 false)
+	 * @param openStaticResourceManage
+	 */
+	public void openStaticResourceManage(boolean openStaticResourceManage) {
+		this.openStaticResourceManage = openStaticResourceManage;
 	}
 
 	/**
@@ -67,7 +82,8 @@ public class WebConfig {
 	 */
 	public void setHanderPrefixAndSuffix(String prefix,String suffix) {
 		handerPrefixAndSuffix.clear();
-		handerPrefixAndSuffix.add(prefix);handerPrefixAndSuffix.add(suffix);
+		handerPrefixAndSuffix.add(prefix);
+		handerPrefixAndSuffix.add(suffix);
 	}
 	
 }

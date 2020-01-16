@@ -21,6 +21,12 @@ public class ServerConfig {
 	
 	private int port;
 	
+	private boolean defa=true;
+	
+	private static String projectPath;
+	
+	private static boolean first=true;
+	
 	private String contextPath;
 	
 	private String webapp;
@@ -32,15 +38,36 @@ public class ServerConfig {
 	private List<FilterMapping> filterlist;
 	
 	public String getDocBase() {
-		docBase+="tomcat."+port+"/work/Tomcat/localhost/Lucky/";
-		File doc=new File(docBase);
-		if(!doc.isDirectory())
-			doc.mkdirs();
+		if(first) {
+			if(defa) {
+				docBase=projectPath+"tomcat."+serverConfig.getPort()+"/work/Tomcat/localhost/Lucky/";
+			}
+			File doc=new File(docBase);
+			if(!doc.isDirectory())
+				doc.mkdirs();
+			first=false;
+		}
 		return docBase;
 	}
 
+	/**
+	 * 设置一个静态文件的储存库(绝对路径)
+	 * @param docBase
+	 */
 	public void setDocBase(String docBase) {
+		if(defa)
+			defa=false;
 		this.docBase = docBase;
+	}
+	
+	/**
+	 * 设置一个静态文件的储存库(项目路径的相对路径)
+	 * @param relativeProjectPath
+	 */
+	public void setDocBaseRelativeProject(String relativeProjectPath) {
+		if(defa)
+			defa=false;
+		this.docBase=projectPath+relativeProjectPath;
 	}
 
 	public ServerConfig() {
@@ -52,6 +79,10 @@ public class ServerConfig {
 		return port;
 	}
 
+	/**
+	 * 设置Tomcat服务器的启动端口
+	 * @param port
+	 */
 	public void setPort(int port) {
 		this.port = port;
 	}
@@ -114,12 +145,12 @@ public class ServerConfig {
 			if(ServerConfig.class.getResource("/")!=null) {
 				String path=ServerConfig.class.getResource("/").getPath();
 				path=path.replaceAll("/bin/", "/");
-				serverConfig.setDocBase(path);
+				projectPath=path;
 			}else {
 				String path=ServerConfig.class.getResource("").getPath();
 				path=path.substring(6,path.indexOf(".jar!"));
 				path=path.substring(0,path.lastIndexOf("/"))+"/";
-				serverConfig.setDocBase(path);
+				projectPath=path;
 			}
 			serverConfig.addServlet(new LuckyDispatherServlet(), "/");
 		}

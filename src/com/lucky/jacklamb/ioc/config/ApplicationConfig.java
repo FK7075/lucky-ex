@@ -2,11 +2,18 @@ package com.lucky.jacklamb.ioc.config;
 
 public abstract class ApplicationConfig {
 	
+	protected final void init(ScanConfig scan,WebConfig web,ServerConfig server) {
+		scanPackConfig(scan);
+		webConfig(web);
+		serverConfig(server);
+	}
+	
+	
 	/**
 	 * 包扫描相关配置
 	 * @param scan
 	 */
-	public void scanPackConfig(ScanConfig scan) {
+	protected void scanPackConfig(ScanConfig scan) {
 		
 	}
 	
@@ -14,7 +21,7 @@ public abstract class ApplicationConfig {
 	 * Web层相关配置
 	 * @param web
 	 */
-	public void webConfig(WebConfig web) {
+	protected void webConfig(WebConfig web) {
 		
 	}
 	
@@ -22,7 +29,7 @@ public abstract class ApplicationConfig {
 	 * 内嵌toncat服务器的配置
 	 * @param server
 	 */
-	public void serverConfig(ServerConfig server) {
+	protected void serverConfig(ServerConfig server) {
 		
 	}
 

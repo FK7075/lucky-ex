@@ -67,5 +67,6 @@ public abstract class Scan {
 	
 	public abstract void autoScan();
 	
+	
 
 }
