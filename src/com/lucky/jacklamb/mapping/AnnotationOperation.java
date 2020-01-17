@@ -200,7 +200,7 @@ public class AnnotationOperation {
 						fileMap.put(str, upload(model, str, savePaths[x++], types, maxSize));
 					}
 				}	
-			}catch(NullPointerException e) {
+			}catch(NullPointerException | IllegalStateException e) {
 				Map<String, String> fieldAndFolder=new HashMap<>();
 				if(savePaths.length == 1) {
 					for(String file:files)

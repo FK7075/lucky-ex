@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.servlet;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -296,6 +297,36 @@ public class Model {
 	 */
 	public String getRealPath(String file) {
 		return req.getServletContext().getRealPath(file);
+	}
+	
+	/**
+	 * 返回项目发布后file文件(夹)的File对象
+	 * @param file
+	 * @return
+	 */
+	public File getRealFile(String file) {
+		String path=getRealPath(file);
+		if(path!=null) {
+			File fileF=new File(path);
+			return fileF;
+		}
+		return null;
+	}
+	
+	/**
+	 * 删除DocBase文件中的某个文件
+	 * @param file
+	 * @return
+	 */
+	public boolean delRealFile(String file) {
+		if(file==null||file==""||file=="/")
+			return false;
+		File delFile=getRealFile(file);
+		if(delFile!=null&&delFile.exists()) {
+			delFile.delete();
+			return true;
+		}
+		return false;
 	}
 
 	/**

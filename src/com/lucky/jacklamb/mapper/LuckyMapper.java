@@ -32,6 +32,14 @@ public interface LuckyMapper<T> {
 	 */
 	@Delete(byid=true)
 	public boolean deleteById(Object id);
+	
+	/**
+	 * 对象删除
+	 * @param pojo
+	 * @return
+	 */
+	@Delete
+	public boolean delete(T pojo);
 
 	/**
 	 * 查询操作
