@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.mapping;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,27 +78,27 @@ public class UrlParsMap {
 
 	/**
 	 * 根据POST请求参数"_method"的值改变请求的类型
-	 * @param requestRequest对象
-	 * @param method当前的请求类型
+	 * @param requestRequest 对象
+	 * @param method 当前的请求类型
+	 * @param postChange 是否有权限执行改变
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public RequestMethod chagenMethod(HttpServletRequest request, HttpServletResponse response, RequestMethod method)
+	public RequestMethod chagenMethod(HttpServletRequest request, HttpServletResponse response, RequestMethod method,boolean postChange)
 			throws UnsupportedEncodingException {
 		request.setCharacterEncoding("utf8");
 		response.setCharacterEncoding("utf8");
 		response.setHeader("Content-Type", "text/html;charset=utf-8");
-		if (method == RequestMethod.POST) {
+		if (postChange&&method == RequestMethod.POST) {
 			String hihMeth = request.getParameter("_method");
 			if (hihMeth != null) {
-				hihMeth = hihMeth.toUpperCase();
-				if ("POST".equals(hihMeth))
+				if ("POST".equalsIgnoreCase(hihMeth))
 					return RequestMethod.POST;
-				else if ("GET".equals(hihMeth))
+				else if ("GET".equalsIgnoreCase(hihMeth))
 					return RequestMethod.GET;
-				else if ("PUT".equals(hihMeth))
+				else if ("PUT".equalsIgnoreCase(hihMeth))
 					return RequestMethod.PUT;
-				else if ("DELETE".equals(hihMeth))
+				else if ("DELETE".equalsIgnoreCase(hihMeth))
 					return RequestMethod.DELETE;
 			} else {
 				return method;
@@ -110,10 +111,11 @@ public class UrlParsMap {
 	 * 根据一个请求的URL找到一个与之对应的ControllerAndMethod,如果找不到对应则返回null
 	 * @param url 当前请求的URL
 	 * @return ControllerAndMethod对象
+	 * @throws IOException 
 	 */
-	public ControllerAndMethod pars(String url,RequestMethod requestMethod) {
+	public ControllerAndMethod pars(Model model,String url,RequestMethod requestMethod) throws IOException {
 		ControllerAndMethod come = new ControllerAndMethod();
-		URLAndRequestMethod iocURM=getURLAndRequestMethod(url,requestMethod);
+		URLAndRequestMethod iocURM=getURLAndRequestMethod(model,url,requestMethod);
 		if(iocURM==null)
 			return null;
 		come = ApplicationBeans.createApplicationBeans().getHanderMethods().get(iocURM);
@@ -151,17 +153,12 @@ public class UrlParsMap {
 		return restKV;
 	}
 	
-	public URLAndRequestMethod getURLAndRequestMethod(String currUrl,RequestMethod currRequestMethod) {
+	public URLAndRequestMethod getURLAndRequestMethod(Model model,String currUrl,RequestMethod currRequestMethod) throws IOException {
 		URLAndRequestMethod urm= new URLAndRequestMethod();
 		urm.setUrl(currUrl);
 		urm.addMethod(currRequestMethod);
 		List<URLAndRequestMethod> urlList = ApplicationBeans.createApplicationBeans().getHanderMethods().getUrlList();
-		for(URLAndRequestMethod iocURM:urlList) {
-			if(iocURM.equalsTemplate(urm))
-				return iocURM;
-		}
-		return null;
-		
+		return urm.findUrl(model, urlList);
 	}
 	
 	private String[] participle(String url) {

@@ -134,14 +134,6 @@ public class ControllerAndMethod {
 		this.requestMethods = requestMethods;
 	}
 	
-	public boolean requestMethodISCorrect(RequestMethod method) {
-		for(RequestMethod curr:requestMethods) {
-			if(method.equals(curr))
-				return true;
-		}
-		return false;
-	}
-	
 	public boolean ipISCorrect(String currip) {
 		if(ips.isEmpty())
 			return true;
@@ -176,7 +168,7 @@ public class ControllerAndMethod {
 			return true;
 		for(String hfip:ipSection) {
 			if(hfip.startsWith("!")) {//判断该ip是否属于非法IP段
-				if(IpUtil.ipExistsInRange(ip,hfip.substring(1)))
+				if(IpUtil.ipExistsInRange(ip,hfip.substring(1))) 
 					return false;
 			}else if(IpUtil.ipExistsInRange(ip,hfip)){//判断该ip是否属性合法ip段
 				return true;
@@ -184,6 +176,7 @@ public class ControllerAndMethod {
 		}
 		return false;//非非法ip段也非合法ip段，即为未注册ip，不给予通过
 	}
+	
 	public void addIds(String[] ips) {
 		for(String ip:ips) {
 			addIp(ip);

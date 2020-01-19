@@ -63,7 +63,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
 			String encoding=webCfg.getEncoding();
-			this.method=urlParsMap.chagenMethod(req,resp,this.method);
+			this.method=urlParsMap.chagenMethod(req,resp,this.method,webCfg.isPostChangeMethod());
 			String uri = req.getRequestURI();
 			uri=java.net.URLDecoder.decode(new String(uri.getBytes(encoding), req.getCharacterEncoding()), req.getCharacterEncoding());
 			Model model=new Model(req,resp,this.method,encoding);
@@ -71,33 +71,27 @@ public class LuckyDispatherServlet extends HttpServlet {
 			String context = req.getContextPath();
 			String path = uri.replace(context, "");
 			if(webCfg.isOpenStaticResourceManage()&&StaticResourceManage.isStaticResource(resp,path)) {
+				//静态资源处理
 				StaticResourceManage.response(req, resp, uri);
 				return;
 			}
 			if (path.endsWith(".do")||path.endsWith(".xfl")||path.endsWith(".fk")||path.endsWith(".cad")||path.endsWith(".lcl")) {
+				//Lucky默认可以使用的后缀
 				path = path.substring(0, path.lastIndexOf("."));
 			}
 			if(webCfg.getStaticHander().containsKey(path)) {
+				//扫描并执行配置中的映射
 				String forwardurl=webCfg.getHanderPrefixAndSuffix().get(0)+webCfg.getStaticHander().get(path)+webCfg.getHanderPrefixAndSuffix().get(1);
 				req.getRequestDispatcher(forwardurl).forward(req, resp);
 			}else {
-				ControllerAndMethod controllerAndMethod = urlParsMap.pars(path,this.method);
-				if(controllerAndMethod==null) {
-					resp.getWriter().print(Jacklabm.exception("HTTP Status 404 Not Found", "不正确的url："+req.getRequestURI(), "找不与请求相匹配的映射资,请检查您的URL是否正确！"));
+				ControllerAndMethod controllerAndMethod = urlParsMap.pars(model,path,this.method);
+				if(controllerAndMethod==null)
+					return;
+				if(!controllerAndMethod.ipExistsInRange(req.getRemoteAddr())||!controllerAndMethod.ipISCorrect(req.getRemoteAddr())) {
+					resp.getWriter().print(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+req.getRemoteAddr(),"该ip地址没有被注册，服务器拒绝响应！"));
 					return;
 				}
-				if(!controllerAndMethod.ipExistsInRange(req.getRemoteAddr())) {
-					resp.getWriter().print(Jacklabm.exception("HTTP Status 500 Internal Server Error","不合法的请求ip："+req.getRemoteAddr(),"该ip地址没有被注册，当前方法拒绝响应！"));
-					return;
-				}
-				if(!controllerAndMethod.ipISCorrect(req.getRemoteAddr())) {
-					resp.getWriter().print(Jacklabm.exception("HTTP Status 500 Internal Server Error","不合法的请求ip："+req.getRemoteAddr(),"该ip地址没有被注册，当前方法拒绝响应！"));
-					return;
-				}
-				if(!controllerAndMethod.requestMethodISCorrect(this.method)) {
-					resp.getWriter().print(Jacklabm.exception("HTTP Status 500 Internal Server Error","不合法的请求类型"+this.method,"您的请求类型"+this.method+",当前方法并不支持！"));
-					return;
-				}else {
+				else {
 					model.setRestMap(controllerAndMethod.getRestKV());
 					urlParsMap.setCross(req,resp, controllerAndMethod);
 					Method method = controllerAndMethod.getMethod();

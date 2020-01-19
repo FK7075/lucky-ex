@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.ioc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -8,6 +9,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import com.lucky.jacklamb.enums.RequestMethod;
+import com.lucky.jacklamb.servlet.Model;
+import com.lucky.jacklamb.utils.Jacklabm;
 
 public class URLAndRequestMethod {
 	
@@ -52,16 +55,26 @@ public class URLAndRequestMethod {
 		return false;
 	}
 	
-	public boolean equalsTemplate(URLAndRequestMethod uRLAndRequestMethod) {
-		if(uRLAndRequestMethod==null)
-			return false;
-		if(!isConform(url,uRLAndRequestMethod.getUrl()))
-			return false;
-		for(RequestMethod urmRM:uRLAndRequestMethod.getMethods()) {
-			if(methods.contains(urmRM))
-				return true;
+	public URLAndRequestMethod findUrl(Model model,List<URLAndRequestMethod> urlList) throws IOException {
+		boolean isPass=false;
+		URLAndRequestMethod tempURLAndRequestMethod = null;
+		for(URLAndRequestMethod temp:urlList) {
+			if(isConform(temp.getUrl(),url)) {
+				isPass=true;
+				tempURLAndRequestMethod=temp;
+				break;
+			}
 		}
-		return false;
+		if(!isPass) {
+			model.responseWriter(Jacklabm.exception("HTTP Status 404 Not Found", "不正确的url："+url, "找不与请求相匹配的映射资,请检查您的URL是否正确！"));
+			return null;
+		}
+		for(RequestMethod currmethod : methods)
+			if(!tempURLAndRequestMethod.getMethods().contains(currmethod)) {
+				model.responseWriter(Jacklabm.exception("HTTP Status 500 Internal Server Error","不合法的请求类型"+this.methods,"您的请求类型"+this.methods+",当前方法并不支持！"));
+				return null;
+			}
+		return tempURLAndRequestMethod;
 	}
 	
 	/**

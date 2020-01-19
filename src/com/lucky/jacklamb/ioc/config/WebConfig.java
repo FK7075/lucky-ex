@@ -17,10 +17,13 @@ public class WebConfig {
 	
 	private boolean openStaticResourceManage;
 	
+	private boolean postChangeMethod;
+	
 	
 	private WebConfig() {
 		encoding="ISO-8859-1";
 		openStaticResourceManage=false;
+		postChangeMethod=false;
 		handerPrefixAndSuffix=new ArrayList<>();;
 		handerPrefixAndSuffix.add("");handerPrefixAndSuffix.add("");
 		staticHander=new HashMap<>();
@@ -85,5 +88,19 @@ public class WebConfig {
 		handerPrefixAndSuffix.add(prefix);
 		handerPrefixAndSuffix.add(suffix);
 	}
+
+	public boolean isPostChangeMethod() {
+		return postChangeMethod;
+	}
+
+	/**
+	 * 是否开启POST请求变换(在POST请求下使用_method改变请求的类型！[_method=get/post/put/delete])
+	 * @param postChangeMethod
+	 */
+	public void postChangeMethod(boolean postChangeMethod) {
+		this.postChangeMethod = postChangeMethod;
+	}
+	
+	
 	
 }
