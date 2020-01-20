@@ -242,21 +242,33 @@ public abstract class SqlCore implements UniqueSqlCore {
 	}
 
 	@Override
-	public <T> boolean insert(T t, boolean... addId) {
+	public <T> boolean insert(T t) {
+		if(PojoManage.getIdType(t.getClass())==PrimaryType.AUTO_UUID)
+			setNextUUID(t);
 		generalObjectCore.insert(t);
-		if(addId.length!=0&&addId[0]) {
-			if(PojoManage.getIdType(t.getClass())==PrimaryType.AUTO_INT)
-				setNextId(t);
-			else if(PojoManage.getIdType(t.getClass())==PrimaryType.AUTO_UUID)
-				setNextUUID(t);
-		}
+		return true;
+	}
+	
+	@Override
+	public <T> boolean insertSetId(T t) {
+		insert(t);
+		if(PojoManage.getIdType(t.getClass())==PrimaryType.AUTO_INT)
+			setNextId(t);
 		return true;
 	}
 
 	@Override
-	public boolean insertBatchByArray(boolean addId, Object... obj) {
+	public boolean insertBatchByArray(Object... obj) {
 		for(Object pojo:obj) {
-			insert(pojo,addId);
+			insert(pojo);
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean insertSetIdBatchByArray( Object... obj) {
+		for(Object pojo:obj) {
+			insertSetId(pojo);
 		}
 		return true;
 	}
@@ -265,7 +277,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 		Field idField=PojoManage.getIdField(pojo.getClass());
 		idField.setAccessible(true);
 		try {
-			idField.set(pojo, UUID.randomUUID().toString().replaceAll("-", ""));
+			idField.set(pojo, UUID.randomUUID().toString());
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -56,10 +56,23 @@ public interface UniqueSqlCore {
 	/**
 	 * 添加数据
 	 * @param t 包含添加信息的包装类的对象
-	 * @param addId 是否为每个对象设置自增主键(缺省表示不添加)
 	 * @return
 	 */
-	<T> boolean insert(T t,boolean...addId);
+	<T> boolean insert(T t);
+	
+	/**
+	 * 添加数据,并为每个对象设置自增主键
+	 * @param t
+	 * @return
+	 */
+	<T> boolean insertSetId(T t);
+	
+	/**
+	 * 批量保存-数组模式,并为每个对象设置自增主键
+	 * @param obj 需要添加到数据库的实体类对象
+	 * @return
+	 */
+	<T> boolean insertSetIdBatchByArray(Object... obj);
 	
 	/**
 	 * 批量保存-集合模式
@@ -71,11 +84,10 @@ public interface UniqueSqlCore {
 
 	/**
 	 * 批量保存-数组模式
-	 * @param addId 是否为每个对象设置自增主键
 	 * @param obj 需要添加到数据库的实体类对象
 	 * @return
 	 */
-	boolean insertBatchByArray(boolean addId,Object...obj);
+	boolean insertBatchByArray(Object...obj);
 	
 	void setNextId(Object pojo);
 	

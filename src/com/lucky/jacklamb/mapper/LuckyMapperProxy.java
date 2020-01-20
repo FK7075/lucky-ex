@@ -417,7 +417,11 @@ public class LuckyMapperProxy {
 			if(ins.batch()) {
 				return sqlCore.insertBatchByList((List<T>) args[0]);
 			}else {
-				return sqlCore.insert(args[0],ins.setautoId());
+				if(ins.setautoId()) {
+					return sqlCore.insertSetId(args[0]);
+				}else {
+					return sqlCore.insert(args[0]);
+				}
 			}
 		} else {
 			return updateSql(method,args,sql_fp,sql);
