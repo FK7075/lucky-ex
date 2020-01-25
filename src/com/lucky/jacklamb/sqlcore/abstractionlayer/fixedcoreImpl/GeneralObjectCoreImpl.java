@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.sqlcore.abstractionlayer.fixedcoreImpl;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.GeneralObjectCore;
@@ -62,8 +63,8 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 		return true;
 	}
 	
-	public <T> boolean deleteBatchByList(List<T> list) {
-		for(T o:list)
+	public <T> boolean deleteBatchByCollection(Collection<T> collection) {
+		for(T o:collection)
 			delete(o);
 		return true;
 	}
@@ -74,8 +75,8 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 		return true;
 	}
 
-	public <T> boolean updateBatchByList(List<T> list) {
-		for(Object o:list)
+	public <T> boolean updateBatchByCollection(Collection<T> collection) {
+		for(Object o:collection)
 			update(o);
 		return true;
 	}

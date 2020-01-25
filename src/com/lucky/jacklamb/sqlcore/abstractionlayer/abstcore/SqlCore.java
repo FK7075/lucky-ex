@@ -1,6 +1,7 @@
 package com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -119,21 +120,21 @@ public abstract class SqlCore implements UniqueSqlCore {
 	
 	/**
 	 * 批量删除-集合模式
-	 * @param pojolist 要操作的对象所组成的集合
+	 * @param pojoCollection 要操作的对象所组成的集合
 	 * @return false or true
 	 */
-	public <T> boolean deleteBatchByList(List<T> pojolist) {
-		return generalObjectCore.deleteBatchByList(pojolist);
+	public <T> boolean deleteBatchByCollection(Collection<T> pojoCollection) {
+		return generalObjectCore.deleteBatchByCollection(pojoCollection);
 	}
 	
 	
 	/**
 	 * 批量更新-集合模式
-	 * @param pojolist 要操作的对象所组成的集合
+	 * @param pojoCollection 要操作的对象所组成的集合
 	 * @return false or true
 	 */
-	public <T> boolean updateBatchByList(List<T> pojolist) {
-		return generalObjectCore.updateBatchByList(pojolist);
+	public <T> boolean updateBatchByCollection(Collection<T> pojoCollection) {
+		return generalObjectCore.updateBatchByCollection(pojoCollection);
 	}
 	
 	/**

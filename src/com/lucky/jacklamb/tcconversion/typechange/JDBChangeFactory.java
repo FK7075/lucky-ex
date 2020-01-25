@@ -3,14 +3,14 @@ package com.lucky.jacklamb.tcconversion.typechange;
 import com.lucky.jacklamb.exception.NotSupportDataBasesException;
 import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
 
-public class JDChangeFactory {
+public class JDBChangeFactory {
 	
 	/**
 	 * 获取数据库的类型转换工具
 	 * @param jdbcDriver
 	 * @return
 	 */
-	public static TypeConversion jDChangeFactory(String dbname) {
+	public static TypeConversion jDBChangeFactory(String dbname) {
 		String jdbcDriver=ReadProperties.getDataSource(dbname).getDriverClass();
 		if(jdbcDriver.contains("mysql"))
 			return new MySqlJavaChange();

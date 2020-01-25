@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.mapper;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.lucky.jacklamb.annotation.orm.mapper.Count;
@@ -87,7 +88,7 @@ public interface LuckyMapper<T> {
 	 * @return
 	 */
 	@Insert(batch=true)
-	public boolean batchInsert(List<T> pojos);
+	public boolean batchInsert(Collection<T> pojos);
 	
 	/**
 	 * ·ÖÒ³²Ù×÷

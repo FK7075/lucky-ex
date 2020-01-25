@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucky.jacklamb.tcconversion.typechange.JDChangeFactory;
+import com.lucky.jacklamb.tcconversion.typechange.JDBChangeFactory;
 import com.lucky.jacklamb.tcconversion.typechange.TypeConversion;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
@@ -96,7 +96,7 @@ public class TableStructure {
 	 * @param tableName ±íÃû
 	 */
 	public TableStructure(String dbname,String tableName) {
-		TypeConversion jDChangeFactory = JDChangeFactory.jDChangeFactory(dbname);
+		TypeConversion jDChangeFactory = JDBChangeFactory.jDBChangeFactory(dbname);
 		TableStructure.dbname=dbname;
 		this.tableName=LuckyUtils.TableToClass(tableName);
 		ResultSet rs=LuckyUtils.getResultSet(dbname,"DESCRIBE "+tableName);

@@ -20,7 +20,7 @@ public @interface RequestParam {
 	 * 设置一个默认值，支持基本类型和Ioc容器值
 	 * @return
 	 */
-	String def() default "";
+	String def() default "LCL*#*$FK%_58314@XFL_*#*LCL";
 	
 	/**
 	 * 请求中的参数名

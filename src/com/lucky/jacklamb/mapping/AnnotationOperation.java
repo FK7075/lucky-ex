@@ -411,7 +411,6 @@ public class AnnotationOperation {
 				if (!model.restMapContainsKey(restKey))
 					throw new NotFindRequestException("缺少请求参数：" + restKey+",错误位置："+method);
 				args[i] = JavaConversion.strToBasic(model.getRestMap().get(restKey), parameters[i].getType());
-
 			} else {
 				String reqParaName = getParamName(parameters[i]);
 				String defparam = getRequeatParamDefValue(parameters[i]);
@@ -506,7 +505,7 @@ public class AnnotationOperation {
 		if (param.isAnnotationPresent(RequestParam.class)) {
 			RequestParam rp = param.getAnnotation(RequestParam.class);
 			String defValue = rp.def();
-			if ("".equals(defValue))
+			if ("LCL*#*$FK%_58314@XFL_*#*LCL".equals(defValue))
 				return null;
 			return defValue;
 		} else {

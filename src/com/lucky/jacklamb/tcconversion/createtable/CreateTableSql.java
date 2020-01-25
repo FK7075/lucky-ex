@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
-import com.lucky.jacklamb.tcconversion.typechange.JDChangeFactory;
+import com.lucky.jacklamb.tcconversion.typechange.JDBChangeFactory;
 import com.lucky.jacklamb.tcconversion.typechange.TypeConversion;
 
 /**
@@ -24,39 +24,40 @@ public class CreateTableSql {
 	 * @return
 	 */
 	public static String getCreateTable(String dbname,Class<?> clzz) {
-		TypeConversion jDChangeFactory = JDChangeFactory.jDChangeFactory(dbname);
-		String sql = "CREATE TABLE IF NOT EXISTS " + PojoManage.getTable(clzz)+ " (";
+		TypeConversion jDChangeFactory = JDBChangeFactory.jDBChangeFactory(dbname);
+		StringBuilder sql=new StringBuilder("CREATE TABLE IF NOT EXISTS ");
+		sql.append(PojoManage.getTable(clzz)).append(" (");
 		Field[] fields = clzz.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
 			String fieldType=fields[i].getType().getSimpleName();
 			if (i < fields.length - 1) {
 				if (PojoManage.getTableField(fields[i]).equals(PojoManage.getIdString(clzz)))
-					sql += PojoManage.getIdString(clzz) + " " + jDChangeFactory.javaTypeToDb(fieldType) + "("+PojoManage.getLength(fields[i])+")"
-							+ " NOT NULL "+isAutoInt(clzz)+" PRIMARY KEY,";
+					sql.append(PojoManage.getIdString(clzz)).append(" ").append(jDChangeFactory.javaTypeToDb(fieldType)).append("(").append(PojoManage.getLength(fields[i])).append(")")
+					.append(" NOT NULL ").append(isAutoInt(clzz)).append(" PRIMARY KEY,");
 				else if (!("double".equals(jDChangeFactory.javaTypeToDb(fieldType))
 						|| "datetime".equals(jDChangeFactory.javaTypeToDb(fieldType))
 						|| "date".equals(jDChangeFactory.javaTypeToDb(fieldType)))) {
-					sql += PojoManage.getTableField(fields[i]) + " " + jDChangeFactory.javaTypeToDb(fieldType) + "("+PojoManage.getLength(fields[i])+") "
-							+ allownull(fields[i])+",";
+					sql.append(PojoManage.getTableField(fields[i])).append(" ").append(jDChangeFactory.javaTypeToDb(fieldType)).append("(").append(PojoManage.getLength(fields[i])).append(") ")
+					.append(allownull(fields[i])).append(",");
 				} else {
-					sql += PojoManage.getTableField(fields[i]) + " " + jDChangeFactory.javaTypeToDb(fieldType) + allownull(fields[i])+",";
+					sql.append(PojoManage.getTableField(fields[i])).append(" ").append(jDChangeFactory.javaTypeToDb(fieldType)).append(allownull(fields[i])).append(",");
 				}
 			} else {
 				if (PojoManage.getTableField(fields[i]).equals(PojoManage.getIdString(clzz)))
-					sql += PojoManage.getTableField(fields[i]) + " " + jDChangeFactory.javaTypeToDb(fieldType) + "("+PojoManage.getLength(fields[i])+")"
-							+ " NOT NULL AUTO_INCREMENT PRIMARY KEY";
+					sql.append(PojoManage.getTableField(fields[i])).append(" ").append(jDChangeFactory.javaTypeToDb(fieldType)).append("(").append(PojoManage.getLength(fields[i])).append(")")
+					.append(" NOT NULL AUTO_INCREMENT PRIMARY KEY");
 				else if (!("double".equals(jDChangeFactory.javaTypeToDb(fieldType))
 						|| "datetime".equals(jDChangeFactory.javaTypeToDb(fieldType))
 						|| "date".equals(jDChangeFactory.javaTypeToDb(fieldType)))) {
-					sql += PojoManage.getTableField(fields[i]) + " " + jDChangeFactory.javaTypeToDb(fieldType) + "("+PojoManage.getLength(fields[i])+") "
-							+allownull(fields[i]);
+					sql.append(PojoManage.getTableField(fields[i])).append(" ").append(jDChangeFactory.javaTypeToDb(fieldType)).append("(").append(PojoManage.getLength(fields[i])).append(") ")
+					.append(allownull(fields[i]));
 				} else {
-					sql += PojoManage.getTableField(fields[i]) + " " + jDChangeFactory.javaTypeToDb(fieldType) + allownull(fields[i]);
+					sql.append(PojoManage.getTableField(fields[i])).append(" ").append(jDChangeFactory.javaTypeToDb(fieldType)).append(allownull(fields[i]));
 				}
 			}
 		}
-		sql += ") ENGINE=InnoDB DEFAULT CHARSET=UTF8";
-		return sql;
+		sql.append(") ENGINE=InnoDB DEFAULT CHARSET=UTF8");
+		return sql.toString();
 	}
 
 	/**

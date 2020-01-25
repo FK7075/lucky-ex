@@ -78,6 +78,8 @@ public class ExpressionEngine {
 	}
 	
 	public static String calculate(String expression) {
+		if("".equals(expression))
+			return "";
         ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
         ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("nashorn");
         try {

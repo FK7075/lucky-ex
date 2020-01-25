@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -94,18 +95,18 @@ public interface GeneralObjectCore {
 	
 	/**
 	 * 批量删除-集合模式
-	 * @param list 要操作的对象所组成的集合
+	 * @param collection 要操作的对象所组成的集合
 	 * @return false or true
 	 */
-	<T> boolean deleteBatchByList(List<T> list);
+	<T> boolean deleteBatchByCollection(Collection<T> collection);
 	
 	
 	/**
 	 * 批量更新-集合模式
-	 * @param list 要操作的对象所组成的集合
+	 * @param collection 要操作的对象所组成的集合
 	 * @return false or true
 	 */
-	<T> boolean updateBatchByList(List<T> list);
+	<T> boolean updateBatchByCollection(Collection<T> collection);
 	
 
 	/**
