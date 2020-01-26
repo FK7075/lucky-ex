@@ -3,6 +3,7 @@ package com.lucky.jacklamb.tcconversion.createtable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
@@ -131,17 +132,7 @@ public class CreateTableSql {
 	 * @return
 	 */
 	private static String getRandomStr() {
-		String[] st = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
-				"t", "u", "v", "w", "x", "y", "z" };
-		int[] i = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, };
-		int a = (int) (Math.random() * ((st.length - 1) - 0 + 1));
-		int b = (int) (Math.random() * ((st.length - 1) - 0 + 1));
-		int c = (int) (Math.random() * ((i.length - 1) - 0 + 1));
-		int x = (int) (Math.random() * ((st.length - 1) - 0 + 1));
-		int y = (int) (Math.random() * ((st.length - 1) - 0 + 1));
-		int z = (int) (Math.random() * ((i.length - 1) - 0 + 1));
-		String m = st[a] + st[b] + st[x] + st[y] + i[z] + i[c];
-		return m;
+		return UUID.randomUUID().toString();
 	}
 	
 	/**

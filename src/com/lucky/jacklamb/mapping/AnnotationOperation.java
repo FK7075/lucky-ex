@@ -143,7 +143,7 @@ public class AnnotationOperation {
 					throw new RuntimeException("上传的文件格式" + suffix + "不合法！合法的文件格式为：" + type);
 				}
 			}
-			String filename = UUID.randomUUID().toString().replaceAll("-", "")+ suffix;
+			String filename = UUID.randomUUID().toString()+ suffix;
 			InputStream is = part.getInputStream();
 			FileInputStream fis = (FileInputStream) is;
 			if (maxSize != 0) {
