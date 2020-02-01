@@ -40,7 +40,7 @@ public class ScanConfig {
 	/**
 	 * Aspect组件所在包的后缀
 	 */
-	private List<String> AspectPackSuffix;
+	private List<String> aspectPackSuffix;
 
 	/**
 	 * 普通组件所在包的后缀
@@ -62,11 +62,6 @@ public class ScanConfig {
 	 */
 	private String customLogo;
 
-	/**
-	 * dataSource的默认读取路径(class:db.properties)
-	 */
-	private String defaultDB;
-	
 	public static ScanConfig getScanfig() {
 		return scanfig;
 	}
@@ -78,22 +73,9 @@ public class ScanConfig {
 		controllerPackSuffix = new ArrayList<>();
 		servicePackSuffix = new ArrayList<>();
 		repositoryPackSuffix = new ArrayList<>();
-		AspectPackSuffix = new ArrayList<>();
+		aspectPackSuffix = new ArrayList<>();
 		componentPackSuffix = new ArrayList<>();
 		pojoPackSuffix = new ArrayList<>();
-	}
-
-	public String getDefaultDB() {
-		return defaultDB;
-	}
-
-	/**
-	 * 重置dataSource的默认读取路径(默认class:db.properties)
-	 * 
-	 * @param defaultDB
-	 */
-	public void setDefaultDB(String defaultDB) {
-		this.defaultDB = defaultDB;
 	}
 
 	public String getCustomLogo() {
@@ -204,7 +186,7 @@ public class ScanConfig {
 	}
 
 	public List<String> getAspectPackSuffix() {
-		return AspectPackSuffix;
+		return aspectPackSuffix;
 	}
 
 	/**
@@ -213,7 +195,7 @@ public class ScanConfig {
 	 * @param suffix
 	 */
 	public void addAspectPackSuffix(String... suffix) {
-		AspectPackSuffix.addAll(Arrays.asList(suffix));
+		aspectPackSuffix.addAll(Arrays.asList(suffix));
 	}
 
 	/**
@@ -222,12 +204,12 @@ public class ScanConfig {
 	 * @param suffix
 	 */
 	public void emptyAddAspectPackSuffix(String... suffix) {
-		AspectPackSuffix.clear();
-		AspectPackSuffix.addAll(Arrays.asList(suffix));
+		aspectPackSuffix.clear();
+		aspectPackSuffix.addAll(Arrays.asList(suffix));
 	}
 
 	public void setAspectPackSuffix(List<String> AspectPackSuffix) {
-		this.AspectPackSuffix = AspectPackSuffix;
+		this.aspectPackSuffix = AspectPackSuffix;
 	}
 
 	public List<String> getComponentPackSuffix() {
@@ -307,7 +289,6 @@ public class ScanConfig {
 			scanfig.addPojoPackSuffix("pojo", "entity");
 			scanfig.setScanMode(Scan.AUTO_SCAN);
 			scanfig.setLogo(Logo.LUCKY);
-			scanfig.setDefaultDB("db.properties");
 		}
 		return scanfig;
 	}

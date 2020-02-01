@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.lucky.jacklamb.ioc.ScacFactory;
+import com.lucky.jacklamb.ioc.ScanFactory;
 import com.lucky.jacklamb.ioc.config.Configuration;
 
 public class DataSource {
@@ -51,7 +51,6 @@ public class DataSource {
 
 	private List<Class<?>> caeateTable;
 	
-	private List<String> otherproperties;
 	
 	public boolean isFormatSqlLog() {
 		return formatSqlLog;
@@ -275,14 +274,6 @@ public class DataSource {
 		}
 	}
 
-	public List<String> getOtherproperties() {
-		return otherproperties;
-	}
-
-	public void setOtherproperties(List<String> otherproperties) {
-		this.otherproperties = otherproperties;
-	}
-
 	public DataSource() {
 		checkoutTimeout=0;
 		acquireIncrement=3;
@@ -295,12 +286,11 @@ public class DataSource {
 		maxStatementsPerConnection=0;
 		List<String> suffixlist = new ArrayList<>();
 		suffixlist.addAll(Configuration.getConfiguration().getScanConfig().getPojoPackSuffix());
-		caeateTable=ScacFactory.createScan().loadComponent(suffixlist);
+		caeateTable=ScanFactory.createScan().loadComponent(suffixlist);
 		log=false;
 		cache=false;
 		poolMethod=false;
 		formatSqlLog=false;
-		otherproperties=new ArrayList<>();
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.lucky.jacklamb.servlet;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.servlet.ServletConfig;
@@ -15,6 +14,7 @@ import com.lucky.jacklamb.annotation.mvc.Download;
 import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.ControllerAndMethod;
+import com.lucky.jacklamb.ioc.ExceptionHand;
 import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.WebConfig;
 import com.lucky.jacklamb.mapping.AnnotationOperation;
@@ -30,6 +30,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 	private WebConfig webCfg;
 	private UrlParsMap urlParsMap;
 	private ResponseControl responseControl;
+	private Model model;
 	
 
 	public void init(ServletConfig config) {
@@ -60,17 +61,28 @@ public class LuckyDispatherServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp){
 		try {
 			String encoding=webCfg.getEncoding();
 			this.method=urlParsMap.chagenMethod(req,resp,this.method,webCfg.isPostChangeMethod());
 			String uri = req.getRequestURI();
 			uri=java.net.URLDecoder.decode(new String(uri.getBytes(encoding), req.getCharacterEncoding()), req.getCharacterEncoding());
-			Model model=new Model(req,resp,this.method,encoding);
+			model=new Model(req,resp,this.method,encoding);
 			urlParsMap.setLuckyWebContext(model);
 			String context = req.getContextPath();
 			String path = uri.replace(context, "");
-			if(webCfg.isOpenStaticResourceManage()&&StaticResourceManage.isStaticResource(resp,path)) {
+			String currIp=req.getRemoteAddr();
+			//全局资源的IP限制
+			if(!webCfg.getGlobalResourcesIpRestrict().isEmpty()&&!webCfg.getGlobalResourcesIpRestrict().contains(currIp)) {
+				resp.getWriter().print(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
+				return;
+			}
+			//指定资源的IP限制
+			if(!webCfg.getSpecifiResourcesIpRestrict().isEmpty()&&(webCfg.getSpecifiResourcesIpRestrict().containsKey(path)&&!webCfg.getSpecifiResourcesIpRestrict().get(path).contains(currIp))) {
+				resp.getWriter().print(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
+				return;
+			}
+			if(webCfg.isOpenStaticResourceManage()&&StaticResourceManage.isStaticResource(webCfg,currIp,resp,path)) {
 				//静态资源处理
 				StaticResourceManage.response(req, resp, uri);
 				return;
@@ -87,8 +99,8 @@ public class LuckyDispatherServlet extends HttpServlet {
 				ControllerAndMethod controllerAndMethod = urlParsMap.pars(model,path,this.method);
 				if(controllerAndMethod==null)
 					return;
-				if(!controllerAndMethod.ipExistsInRange(req.getRemoteAddr())||!controllerAndMethod.ipISCorrect(req.getRemoteAddr())) {
-					resp.getWriter().print(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+req.getRemoteAddr(),"该ip地址没有被注册，服务器拒绝响应！"));
+				if(!controllerAndMethod.ipExistsInRange(currIp)||!controllerAndMethod.ipISCorrect(currIp)) {
+					resp.getWriter().print(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
 					return;
 				}
 				else {
@@ -107,14 +119,14 @@ public class LuckyDispatherServlet extends HttpServlet {
 					responseControl.jump(model,controllerAndMethod, method, obj1);
 				}
 			}
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			ApplicationBeans application=ApplicationBeans.createApplicationBeans();
+			if(application.containsComponent("exceptionHand")) {
+				ExceptionHand exceptionHand=(ExceptionHand) application.getComponentBean("exceptionHand");
+				exceptionHand.exceptionHand(model, e);
+			}else {
+				e.printStackTrace();
+			}
 		} finally {
 			this.method=RequestMethod.POST;
 			urlParsMap.closeLuckyWebContext();

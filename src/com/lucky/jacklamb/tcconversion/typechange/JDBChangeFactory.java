@@ -1,7 +1,7 @@
 package com.lucky.jacklamb.tcconversion.typechange;
 
 import com.lucky.jacklamb.exception.NotSupportDataBasesException;
-import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadIni;
 
 public class JDBChangeFactory {
 	
@@ -11,7 +11,7 @@ public class JDBChangeFactory {
 	 * @return
 	 */
 	public static TypeConversion jDBChangeFactory(String dbname) {
-		String jdbcDriver=ReadProperties.getDataSource(dbname).getDriverClass();
+		String jdbcDriver=ReadIni.getDataSource(dbname).getDriverClass();
 		if(jdbcDriver.contains("mysql"))
 			return new MySqlJavaChange();
 		if(jdbcDriver.contains("db2"))

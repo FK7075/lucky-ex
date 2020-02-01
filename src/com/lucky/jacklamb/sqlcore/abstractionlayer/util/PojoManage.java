@@ -13,7 +13,7 @@ import com.lucky.jacklamb.annotation.orm.Key;
 import com.lucky.jacklamb.annotation.orm.Table;
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.exception.NotFindFlieException;
-import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadIni;
 
 /**
  * 实体类管理工具
@@ -23,7 +23,7 @@ import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
 public class PojoManage {
 	
 	public static String getIpPort(String dbname){
-		String url = ReadProperties.getDataSource(dbname).getJdbcUrl();
+		String url = ReadIni.getDataSource(dbname).getJdbcUrl();
 		return url.substring(url.indexOf("//"),url.lastIndexOf("/")+1);
 		
 	}
@@ -34,7 +34,7 @@ public class PojoManage {
 	 * @return
 	 */
 	public static String getDatabaseType(String dbname) {
-		String jdbcDriver=ReadProperties.getDataSource(dbname).getDriverClass();
+		String jdbcDriver=ReadIni.getDataSource(dbname).getDriverClass();
 		if(jdbcDriver.contains("mysql"))
 			return "MySql";
 		if(jdbcDriver.contains("db2"))
@@ -58,7 +58,7 @@ public class PojoManage {
 	 * @return
 	 */
 	public static String getDatabaseName(String dbname) {
-		String url = ReadProperties.getDataSource(dbname).getJdbcUrl();
+		String url = ReadIni.getDataSource(dbname).getJdbcUrl();
 		String databasename=url.substring((url.lastIndexOf("/")+1),url.length());
 		if(databasename.contains("?")) {
 			databasename=databasename.substring(0, databasename.indexOf("?"));

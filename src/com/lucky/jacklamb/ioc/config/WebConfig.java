@@ -4,20 +4,51 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class WebConfig {
 	
 	private static WebConfig webConfig;
 	
+	/**
+	 * 请求参数编码格式
+	 */
 	private String encoding;
 	
+	/**
+	 * 静态资源映射配置
+	 */
 	private Map<String,String> staticHander;
 	
+	/**
+	 * 全局的响应前后缀配置
+	 */
 	private List<String> handerPrefixAndSuffix;
 	
+	/**
+	 * 是否开启Lucky的静态资源管理器
+	 */
 	private boolean openStaticResourceManage;
 	
+	/**
+	 * 是否开启post请求的请求类型转换
+	 */
 	private boolean postChangeMethod;
+	
+	/**
+	 * 全局资源的IP限制
+	 */
+	private List<String> globalResourcesIpRestrict;
+	
+	/**
+	 * 静态资源的IP限制
+	 */
+	private List<String> staticResourcesIpRestrict;
+	
+	/**
+	 * 指定资源的IP限制
+	 */
+	private Map<String,List<String>> specifiResourcesIpRestrict;
 	
 	
 	private WebConfig() {
@@ -27,6 +58,10 @@ public class WebConfig {
 		handerPrefixAndSuffix=new ArrayList<>();;
 		handerPrefixAndSuffix.add("");handerPrefixAndSuffix.add("");
 		staticHander=new HashMap<>();
+		globalResourcesIpRestrict=new ArrayList<>();
+		staticResourcesIpRestrict=new ArrayList<>();
+		specifiResourcesIpRestrict=new HashMap<>();
+		
 	}
 	
 	public static WebConfig defauleWebConfig() {
@@ -41,6 +76,30 @@ public class WebConfig {
 	
 	public boolean isOpenStaticResourceManage() {
 		return openStaticResourceManage;
+	}
+	
+	public List<String> getGlobalResourcesIpRestrict() {
+		return globalResourcesIpRestrict;
+	}
+
+	public void addGlobalResourcesIpRestrict(String... ips) {
+		Stream.of(ips).forEach(globalResourcesIpRestrict::add);
+	}
+
+	public List<String> getStaticResourcesIpRestrict() {
+		return staticResourcesIpRestrict;
+	}
+
+	public void addStaticResourcesIpRestrict(String... ips) {
+		Stream.of(ips).forEach(staticResourcesIpRestrict::add);
+	}
+
+	public Map<String, List<String>> getSpecifiResourcesIpRestrict() {
+		return specifiResourcesIpRestrict;
+	}
+
+	public void setSpecifiResourcesIpRestrict(Map<String, List<String>> specifiResourcesIpRestrict) {
+		this.specifiResourcesIpRestrict = specifiResourcesIpRestrict;
 	}
 
 	/**

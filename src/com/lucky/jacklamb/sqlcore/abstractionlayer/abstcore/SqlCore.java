@@ -11,7 +11,7 @@ import com.lucky.jacklamb.sqlcore.abstractionlayer.fixedcoreImpl.GeneralObjectCo
 import com.lucky.jacklamb.sqlcore.abstractionlayer.fixedcoreImpl.StatementCoreImpl;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
-import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadIni;
 
 /**
  * 对所有关系型数据库操作的抽象，本抽象类聚合对StatementCore接口和GeneralObjectCore接口的所有实现，
@@ -32,7 +32,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	
 	public SqlCore(String dbname) {
 		this.dbname=dbname;
-		this.dataSource=ReadProperties.getDataSource(dbname);
+		this.dataSource=ReadIni.getDataSource(dbname);
 		this.statementCore=new StatementCoreImpl(dataSource);
 		this.generalObjectCore=new GeneralObjectCoreImpl(this.statementCore);
 	}

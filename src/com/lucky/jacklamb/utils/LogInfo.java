@@ -4,7 +4,7 @@ import static com.lucky.jacklamb.utils.LuckyUtils.*;
 
 import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
-import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadIni;
 
 /**
  * 日志管理类
@@ -22,7 +22,7 @@ public class LogInfo {
 	private SqlFormatUtil sqlFormatUtil;
 	
 	public LogInfo(String dbname) {
-		dataSource=ReadProperties.getDataSource(dbname);
+		dataSource=ReadIni.getDataSource(dbname);
 		log=dataSource.isLog();
 		dataName=PojoManage.getDatabaseName(dataSource.getName());
 		dataType=PojoManage.getDatabaseType(dbname);

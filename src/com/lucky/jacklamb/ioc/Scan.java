@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.lucky.jacklamb.ioc.config.ApplicationConfig;
 import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.ScanConfig;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 public abstract class Scan {
+	
 	
 	protected Map<String, List<Class<?>>> componentClassMap;
 	
@@ -23,7 +25,11 @@ public abstract class Scan {
 	
 	protected List<Class<?>> aspectClass;
 	
+	protected ApplicationConfig appConfig;
+	
 	private Configuration configuration;
+	
+	protected boolean isFirst=true;
 	
 	public Scan() {
 		componentClassMap=new HashMap<>();
@@ -63,8 +69,29 @@ public abstract class Scan {
 		aspectClass=loadComponent(scanConfig.getAspectPackSuffix());
 	}
 	
+	public ApplicationConfig getApplicationConfig() {
+		if(isFirst) {
+			findAppConfig();
+			isFirst=false;
+		}
+		return appConfig;
+	}
+	
+	/**
+	 * 找到ApplicationConfig配置类
+	 */
+	public abstract void findAppConfig();
+	
+	/**
+	 * 后缀扫描
+	 * @param suffixs
+	 * @return
+	 */
 	public abstract List<Class<?>> loadComponent(List<String> suffixs);
 	
+	/**
+	 * 自动扫描
+	 */
 	public abstract void autoScan();
 	
 	

@@ -31,7 +31,7 @@ public class SqlOperation {
 	public SqlOperation(String dbname) {
 		conn=C3p0Util.getConnecion(dbname);
 		this.dbname=dbname;
-		this.poolMethod=ReadProperties.getDataSource(dbname).isPoolMethod();
+		this.poolMethod=ReadIni.getDataSource(dbname).isPoolMethod();
 		log=new LogInfo(dbname);
 	}
 	/**

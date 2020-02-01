@@ -14,7 +14,7 @@ import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlCore;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.util.SqlCoreFactory;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
-import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadIni;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class RepositoryIOC extends ComponentFactory {
@@ -144,7 +144,7 @@ public class RepositoryIOC extends ComponentFactory {
 				addRepositoryMap(beanID, PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "repository", beanID, repository));
 			} else if (repository.isAnnotationPresent(Mapper.class)) {
 				if (first) {
-					List<DataSource> datalist=ReadProperties.getAllDataSource();
+					List<DataSource> datalist=ReadIni.getAllDataSource();
 					for(DataSource data:datalist) {
 						SqlCore sqlCore=SqlCoreFactory.createSqlCore(data.getName());
 						addRepositoryMap("lucky#$jacklamb#$&58314@SqlCore-"+data.getName(), sqlCore);

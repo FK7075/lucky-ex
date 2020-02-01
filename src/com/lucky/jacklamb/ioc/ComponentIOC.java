@@ -10,6 +10,7 @@ import java.util.Map;
 import com.lucky.jacklamb.annotation.ioc.Bean;
 import com.lucky.jacklamb.annotation.ioc.BeanFactory;
 import com.lucky.jacklamb.annotation.ioc.Component;
+import com.lucky.jacklamb.annotation.mvc.ExceptionHandling;
 import com.lucky.jacklamb.aop.util.PointRunFactory;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
@@ -111,6 +112,8 @@ public class ComponentIOC extends ComponentFactory {
 						
 					}
 				}
+			}else if(component.isAnnotationPresent(ExceptionHandling.class)) {
+				addAppMap("exceptionHand",PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "component", "exceptionHand", component));
 			}
 		}
 	}

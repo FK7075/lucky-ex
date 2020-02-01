@@ -11,8 +11,10 @@ import com.lucky.jacklamb.annotation.ioc.Component;
 import com.lucky.jacklamb.annotation.ioc.Controller;
 import com.lucky.jacklamb.annotation.ioc.Repository;
 import com.lucky.jacklamb.annotation.ioc.Service;
+import com.lucky.jacklamb.annotation.mvc.ExceptionHandling;
 import com.lucky.jacklamb.annotation.orm.mapper.Mapper;
 import com.lucky.jacklamb.aop.proxy.Point;
+import com.lucky.jacklamb.ioc.config.ApplicationConfig;
 
 /**
  * 不做配置时的默认包扫描
@@ -142,6 +144,44 @@ public class PackageScan extends Scan {
 		}
 	}
 	
+	
+	@Override
+	public void findAppConfig() {
+		try {
+			findConfig(fileProjectPath);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void findConfig(String path) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		File bin=new File(path);
+		File[] listFiles = bin.listFiles();
+		for(File file:listFiles) {
+			if(!file.isDirectory()&&file.getAbsolutePath().endsWith(".class")) {
+				file.getAbsolutePath();
+				String className=file.getAbsolutePath().replaceAll("\\\\", "/").replaceAll(fileProjectPath, "").replaceAll("/", "\\.");
+				className=className.substring(0,className.length()-6);
+				Class<?> fileClass=Class.forName(className);
+				if(ApplicationConfig.class.isAssignableFrom(fileClass)) {
+					appConfig=(ApplicationConfig) fileClass.newInstance();
+					break;
+				}
+			}else if(file.isDirectory()){
+				findConfig(path+"/"+file.getName());
+			}else {
+				continue;
+			}
+		}
+	}
+
 	private void fileScan(String path) throws ClassNotFoundException {
 		File bin=new File(path);
 		File[] listFiles = bin.listFiles();
@@ -159,7 +199,7 @@ public class PackageScan extends Scan {
 					serviceClass.add(fileClass);
 				else if(fileClass.isAnnotationPresent(Repository.class)||fileClass.isAnnotationPresent(Mapper.class))
 					repositoryClass.add(fileClass);
-				else if(fileClass.isAnnotationPresent(Component.class)||fileClass.isAnnotationPresent(BeanFactory.class))
+				else if(fileClass.isAnnotationPresent(Component.class)||fileClass.isAnnotationPresent(BeanFactory.class)||fileClass.isAnnotationPresent(ExceptionHandling.class))
 					componentClass.add(fileClass);
 				else if(fileClass.isAnnotationPresent(Aspect.class)||Point.class.isAssignableFrom(fileClass))
 					aspectClass.add(fileClass);

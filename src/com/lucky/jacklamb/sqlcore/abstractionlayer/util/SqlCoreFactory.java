@@ -9,7 +9,7 @@ import com.lucky.jacklamb.sqlcore.abstractionlayer.dynamiccoreImpl.OracleCore;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.dynamiccoreImpl.PostgreSqlCore;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.dynamiccoreImpl.SqlServerCore;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.dynamiccoreImpl.SybaseCore;
-import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadIni;
 
 public class SqlCoreFactory {
 	
@@ -35,7 +35,7 @@ public class SqlCoreFactory {
 		case "Access":
 			return new AccessSqlCore(dbname);
 		default:
-			throw new RuntimeException("Lucky目前还不支持该类型的数据库，我们正在拼命更新中！DatabaseType:"+ReadProperties.getDataSource(dbname).getDriverClass());
+			throw new RuntimeException("Lucky目前还不支持该类型的数据库，我们正在拼命更新中！DatabaseType:"+ReadIni.getDataSource(dbname).getDriverClass());
 		}
 	}
 }

@@ -168,7 +168,7 @@ public final class IOCContainers {
 	 */
 	public void initComponentIOC() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		appIOC=new ComponentIOC();
-		appIOC.initComponentIOC(ScacFactory.createScan().getComponentClass("component"));
+		appIOC.initComponentIOC(ScanFactory.createScan().getComponentClass("component"));
 	}
 	
 	/**
@@ -182,7 +182,7 @@ public final class IOCContainers {
 	 */
 	public void initControllerIOC() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		controllerIOC=new ControllerIOC();
-		controllerIOC.initControllerIOC(ScacFactory.createScan().getComponentClass("controller"));
+		controllerIOC.initControllerIOC(ScanFactory.createScan().getComponentClass("controller"));
 		controllerIOC.methodHanderSetting();
 		
 	}
@@ -198,7 +198,7 @@ public final class IOCContainers {
 	 */
 	public void initServiceIOC() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		serviceIOC=new ServiceIOC();
-		serviceIOC.initServiceIOC(ScacFactory.createScan().getComponentClass("service"));
+		serviceIOC.initServiceIOC(ScanFactory.createScan().getComponentClass("service"));
 	}
 	
 	/**
@@ -212,7 +212,7 @@ public final class IOCContainers {
 	 */
 	public void initRepositoryIOC() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		repositoryIOC=new RepositoryIOC();
-		repositoryIOC.initRepositoryIOC(ScacFactory.createScan().getComponentClass("repository"));
+		repositoryIOC.initRepositoryIOC(ScanFactory.createScan().getComponentClass("repository"));
 	}
 	
 	/**

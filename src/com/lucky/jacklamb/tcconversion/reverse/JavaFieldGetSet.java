@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
-import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadIni;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**
@@ -46,7 +46,7 @@ public class JavaFieldGetSet {
 		JavaFieldGetSet.dbname=dbname;
 		String Id="";
 		String key="";
-		data=ReadProperties.getDataSource(dbname);
+		data=ReadIni.getDataSource(dbname);
 		if(id.equals(field)) {
 			Id="\t@Id\n";
 		}

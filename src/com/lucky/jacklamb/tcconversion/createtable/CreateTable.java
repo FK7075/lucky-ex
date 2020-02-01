@@ -2,7 +2,7 @@ package com.lucky.jacklamb.tcconversion.createtable;
 
 import java.util.List;
 
-import com.lucky.jacklamb.sqlcore.c3p0.ReadProperties;
+import com.lucky.jacklamb.sqlcore.c3p0.ReadIni;
 import com.lucky.jacklamb.sqlcore.c3p0.SqlOperation;
 import com.lucky.jacklamb.utils.LuckyManager;
 
@@ -13,7 +13,7 @@ public class CreateTable {
 	
 	public CreateTable(String dbname) {
 		this.dbname=dbname;
-		classlist=ReadProperties.getDataSource(dbname).getCaeateTable();
+		classlist=ReadIni.getDataSource(dbname).getCaeateTable();
 		sqlop = LuckyManager.getSqlOperation(dbname);
 	}
 

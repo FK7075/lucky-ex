@@ -9,9 +9,13 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.lucky.jacklamb.ioc.config.WebConfig;
+
 public class StaticResourceManage {
 	
-	public static boolean isStaticResource(HttpServletResponse resp,String uri) {
+	public static boolean isStaticResource(WebConfig webCfg,String currIp,HttpServletResponse resp,String uri) {
+		if(!webCfg.getStaticResourcesIpRestrict().isEmpty()&&!webCfg.getStaticResourcesIpRestrict().contains(currIp))
+			return false;
 		String lowercaseUri=uri.toLowerCase();
 		if(lowercaseUri.endsWith(".jpg")||lowercaseUri.endsWith(".jfif")||lowercaseUri.endsWith(".jpe")||lowercaseUri.endsWith(".jpeg")) {
 			resp.setContentType("image/jpeg");

@@ -19,7 +19,7 @@ public class C3p0Util {
 	
 	public static void init() {
 		dbMap=new HashMap<>();
-		datalist=ReadProperties.getAllDataSource();
+		datalist=ReadIni.getAllDataSource();
 		for(DataSource data:datalist) {
 			ComboPooledDataSource db=new ComboPooledDataSource();
 			try {

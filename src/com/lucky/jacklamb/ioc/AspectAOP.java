@@ -34,7 +34,7 @@ public class AspectAOP {
 		try {
 			aspectMap=new HashMap<>();
 			aspectIDS=new ArrayList<>();
-			initAspectIOC(ScacFactory.createScan().getComponentClass("aspect"));
+			initAspectIOC(ScanFactory.createScan().getComponentClass("aspect"));
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
