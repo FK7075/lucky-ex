@@ -24,7 +24,7 @@ public class ReadIni {
 	public static List<DataSource> readList() {
 		List<DataSource> dataList = new ArrayList<>();
 		iniFilePars=IniFilePars.getIniFilePars();
-		if(!iniFilePars.iniExist()||!iniFilePars.isHasSection("SECTION_JDBC"))
+		if(!iniFilePars.iniExist()||!iniFilePars.isHasSection(SECTION_JDBC))
 			return null;
 		if(!iniFilePars.isHasSection(SECTION_JDBC))
 			throw new NotFindBeanPropertyException("在calsspath:appconfig.ini的配置文件中找不到必须的节["+SECTION_JDBC+"]！");

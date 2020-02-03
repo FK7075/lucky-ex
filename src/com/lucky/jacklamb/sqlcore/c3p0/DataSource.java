@@ -58,7 +58,8 @@ public class DataSource {
 
 	public void setFormatSqlLog(boolean formatSqlLog) {
 		this.formatSqlLog = formatSqlLog;
-		this.log=formatSqlLog;
+		if(!this.log)
+			this.log=formatSqlLog;
 	}
 
 	public String getName() {

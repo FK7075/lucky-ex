@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -74,6 +75,13 @@ public class Model {
 		req =request;
 		resp =response;
 		this.requestMethod=requestMethod;
+		this.parameterMap=getRequestParameterMap();
+		restMap=new HashMap<>();
+	}
+	
+	public Model(HttpServletRequest request,HttpServletResponse response) throws IOException {
+		req =request;
+		resp =response;
 		this.parameterMap=getRequestParameterMap();
 		restMap=new HashMap<>();
 	}
@@ -438,6 +446,25 @@ public class Model {
 	@SuppressWarnings("unchecked")
 	public <T> T getRestParam(String key,Class<T> clzz) {
 		return (T) JavaConversion.strToBasic(restMap.get(key), clzz);
+	}
+	
+	/**
+	 * 转发
+	 * @param address
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	public void forward(String address) throws ServletException, IOException {
+		req.getRequestDispatcher(address).forward(req, resp);
+	}
+	
+	/**
+	 * 重定向
+	 * @param address
+	 * @throws IOException
+	 */
+	public void redirect(String address) throws IOException {
+		resp.sendRedirect(address);
 	}
 
 }

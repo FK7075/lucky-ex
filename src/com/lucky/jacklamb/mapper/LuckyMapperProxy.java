@@ -481,7 +481,7 @@ public class LuckyMapperProxy {
 						sqlCore.setNextId(args[0]);
 					else if(id.type()==PrimaryType.AUTO_UUID){
 						idField.setAccessible(true);
-						idField.set(args[0], UUID.randomUUID().toString().replaceAll("-", ""));
+						idField.set(args[0], UUID.randomUUID().toString());
 					}
 				}
 				SqlAndArray sqlArr = noSqlTo(args[0],sqlStr);

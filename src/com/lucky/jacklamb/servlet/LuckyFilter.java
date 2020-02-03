@@ -11,27 +11,54 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public abstract class LuckyFilter implements Filter {
+import com.lucky.jacklamb.ioc.config.Configuration;
+import com.lucky.jacklamb.ioc.config.WebConfig;
 
+public abstract class LuckyFilter implements Filter {
+	
+	protected FilterConfig filterConfig;
+	
+	protected Model model;
+	
+	protected FilterChain filterChain;
+	
+	protected WebConfig webConfig;
+	
+	protected String uri;
+	
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
-	public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain arg2)
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException{
-		HttpServletRequest request=(HttpServletRequest) arg0;
-		HttpServletResponse response=(HttpServletResponse) arg1;
-		isRelease(request,response,arg2);
+		HttpServletRequest request=(HttpServletRequest) req;
+		HttpServletResponse response=(HttpServletResponse) resp;
+		String encoding=webConfig.getEncoding();
+		uri = request.getRequestURI();
+		uri=java.net.URLDecoder.decode(new String(uri.getBytes(encoding), req.getCharacterEncoding()), req.getCharacterEncoding());
+		if(webConfig.isOpenStaticResourceManage()) {
+			//静态资源处理
+			StaticResourceManage.response(request, response, uri);
+			return;
+		}
+		model=new Model(request,response);
+		filterChain=chain;
+		isRelease();
 	}
-	public abstract void isRelease(HttpServletRequest request,HttpServletResponse response,FilterChain chain)throws IOException, ServletException;
+	
+	public abstract void isRelease()throws IOException, ServletException;
 
 	@Override
 	public void init(FilterConfig arg0) throws ServletException {
-		// TODO Auto-generated method stub
-
+		filterConfig=arg0;
+		webConfig=Configuration.getConfiguration().getWebConfig();
+	}
+	
+	protected void release() throws IOException, ServletException {
+		filterChain.doFilter(model.getRequest(), model.getResponse());
 	}
 
 }

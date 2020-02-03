@@ -23,7 +23,7 @@ public class ServerConfig {
 	
 	private boolean defa=true;
 	
-	private static String projectPath;
+	public static String projectPath;
 	
 	private static boolean first=true;
 	

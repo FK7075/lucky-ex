@@ -32,17 +32,17 @@ public class ResponseControl {
 			info=info.replaceAll("page:", "");
 			topage=model.getRequest().getContextPath()+pre_suf.get(0)+info+pre_suf.get(1);
 			topage=topage.replaceAll(" ", "");
-			model.getResponse().sendRedirect(topage);
+			model.redirect(topage);
 		}else if(info.contains("forward:")) {//转发到本Controller的某个方法
 			info=info.replaceAll("forward:", "");
-			model.getRequest().getRequestDispatcher(info).forward(model.getRequest(), model.getResponse());
+			model.forward(info);
 		}else if(info.contains("redirect:")) {//重定向到本Controller的某个方法
 			info=info.replaceAll("redirect:", "");
-			model.getResponse().sendRedirect(info);
+			model.redirect(info);
 		}else {//转发到页面
 			topage=pre_suf.get(0)+info+pre_suf.get(1);
 			topage=topage.replaceAll(" ", "");
-			model.getRequest().getRequestDispatcher(topage).forward(model.getRequest(), model.getResponse());
+			model.forward(topage);
 		}
 	}
 

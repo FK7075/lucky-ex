@@ -95,11 +95,15 @@ public class LuckyUtils {
 	
 	public static String showtime() {
 	     String id=null;
+	     id="["+time()+"]  ";
+	     return id;
+	}
+	
+	public static String time() {
 	     Date date=new Date();
 	     SimpleDateFormat sf=
 	    	 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	     id="["+sf.format(date)+"]  ";
-	     return id;
+	     return sf.format(date);
 	}
 	
 	
