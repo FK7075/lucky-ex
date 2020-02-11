@@ -21,6 +21,8 @@ public class ServerConfig {
 	
 	private int port;
 	
+	private int sessionTimeout;
+	
 	private boolean defa=true;
 	
 	public static String projectPath;
@@ -48,6 +50,18 @@ public class ServerConfig {
 			first=false;
 		}
 		return docBase;
+	}
+	
+	public int getSessionTimeout() {
+		return sessionTimeout;
+	}
+
+	/**
+	 * 设置Session超时时间
+	 * @param sessionTimeout
+	 */
+	public void setSessionTimeout(int sessionTimeout) {
+		this.sessionTimeout = sessionTimeout;
 	}
 
 	/**
@@ -140,6 +154,7 @@ public class ServerConfig {
 		if(serverConfig==null) {
 			serverConfig=new ServerConfig();
 			serverConfig.setPort(8080);
+			serverConfig.setSessionTimeout(30);
 			serverConfig.setContextPath("");
 			serverConfig.setWebapp("/WebContent/");
 			if(ServerConfig.class.getResource("/")!=null) {

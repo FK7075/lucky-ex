@@ -2,7 +2,6 @@ package com.lucky.jacklamb.servlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,7 +33,7 @@ public class Model {
 	/**
 	 * 解码方式
 	 */
-	private String encod;
+	private String encod="ISO-8859-1";
 	
 	/**
 	 * Request对象
@@ -60,7 +60,7 @@ public class Model {
 	 */
 	private Map<String,String> restMap;
 	
-	private PrintWriter out;
+	private ServletOutputStream outputStream;
 
 	/**
 	 *  Model构造器
@@ -102,6 +102,9 @@ public class Model {
 		this.restMap = restMap;
 	}
 
+	public void addParameter(String key,String[] values) {
+		parameterMap.put(key, values);
+	}
 
 	/**
 	 * 得到所有页面参数集合RequestParameterMap
@@ -228,44 +231,6 @@ public class Model {
 		return req.getSession().getAttribute(name);
 	}
 
-	/**
-	 * 使用response对象的printIn方法写出数据
-	 * @param info
-	 * @throws IOException
-	 */
-	public void responsePrintIn(String info) throws IOException{
-		if(out==null)
-			out=resp.getWriter();
-		out.println(info);
-	}
-
-	/**
-	 * 使用response对象的printIn方法将对象模型写出为JSON格式数据
-	 * @param pojo(数组，对象，Collection,Map)
-	 * @throws IOException
-	 */
-	public void printJson(Object pojo) throws IOException{
-		LSON lson = new LSON(pojo);
-		responsePrintIn(lson.getJsonStr());
-	}
-	
-	/**
-	 * 使用response对象的printIn方法将对象模型写出为Xml格式数据
-	 * @param pojo(数组，对象，Collection,Map)
-	 * @throws IOException
-	 */
-	public void printXml(Object pojo) throws IOException{
-		LXML lson = new LXML(pojo);
-		responsePrintIn(HEAD+lson.getXmlStr());
-	}
-	
-	/**
-	 * 关闭PrintWriter
-	 */
-	public void closeWriter() {
-		if(out!=null)
-			out.close();
-	}
 
 	/**
 	 * 使用response对象的Writer方法将对象模型写出为JSON格式数据
@@ -274,7 +239,7 @@ public class Model {
 	 */
 	public void witerJson(Object pojo) throws IOException{
 		LSON lson = new LSON(pojo);
-		responseWriter(lson.getJsonStr());
+		writer(lson.getJsonStr());
 	}
 	
 	/**
@@ -284,7 +249,7 @@ public class Model {
 	 */
 	public void witerXml(Object pojo) throws IOException{
 		LXML lson = new LXML(pojo);
-		responseWriter(HEAD+lson.getXmlStr());
+		writer(HEAD+lson.getXmlStr());
 	}
 
 	/**
@@ -292,10 +257,10 @@ public class Model {
 	 * @param info
 	 * @throws IOException
 	 */
-	public void responseWriter(String info) throws IOException{
-		if(out==null)
-			out=resp.getWriter();
-		out.write(info);
+	public void writer(String info) throws IOException{
+		if(outputStream==null)
+			outputStream=resp.getOutputStream();
+		outputStream.write(info.getBytes("UTF-8"));
 	}
 
 	/**

@@ -61,17 +61,14 @@ public class ResponseControl {
 		if (obj != null) {
 			if(controllerAndMethod.getRest()==Rest.JSON) {
 				model.witerJson(obj);
-				model.closeWriter();
 				return;
 			}
 			if(controllerAndMethod.getRest()==Rest.XML) {
 				model.witerXml(obj);
-				model.closeWriter();
 				return;
 			}
 			if(controllerAndMethod.getRest()==Rest.TXT) {
-				model.responseWriter(obj.toString());
-				model.closeWriter();
+				model.writer(obj.toString());
 				return;
 			}
 			if(controllerAndMethod.getRest()==Rest.NO) {

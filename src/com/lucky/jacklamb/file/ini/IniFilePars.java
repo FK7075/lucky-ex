@@ -272,6 +272,9 @@ public class IniFilePars {
 		if(sectionMap.containsKey("port")) {
 			server.setPort(Integer.parseInt(sectionMap.get("port")));
 		}
+		if(sectionMap.containsKey("sessionTimeout")) {
+			server.setSessionTimeout(Integer.parseInt(sectionMap.get("sessionTimeout")));
+		}
 		if(sectionMap.containsKey("docBase")) {
 			String docStr=sectionMap.get("docBase");
 			if(docStr.contains(":")) {

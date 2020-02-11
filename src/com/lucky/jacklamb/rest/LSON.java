@@ -1,6 +1,9 @@
 package com.lucky.jacklamb.rest;
 
 import java.lang.reflect.Field;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -60,7 +63,12 @@ public class LSON {
 					e.printStackTrace();
 				}
 			}else {
-				jsonStr="\""+jsonObject.toString()+"\"";
+				if(String.class.isAssignableFrom(clzz)||Character.class.isAssignableFrom(clzz)
+				   ||Date.class.isAssignableFrom(clzz)||Time.class.isAssignableFrom(clzz)
+				   ||Timestamp.class.isAssignableFrom(clzz))
+					jsonStr="\""+jsonObject.toString()+"\"";
+				else
+					jsonStr=jsonObject.toString();
 			}
 		}
 

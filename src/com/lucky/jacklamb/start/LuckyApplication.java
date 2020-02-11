@@ -33,6 +33,7 @@ public class LuckyApplication {
 		tomcat.setPort(serverCfg.getPort());
 		tomcat.getHost().setAutoDeploy(false);
         StandardContext context = new StandardContext();
+        context.setSessionTimeout(serverCfg.getSessionTimeout());
         context.setPath(serverCfg.getContextPath());
         context.setDocBase(serverCfg.getDocBase());
         context.addLifecycleListener(new Tomcat.FixContextListener());

@@ -112,6 +112,11 @@ public class AnnotationOperation {
 						MultipartFile mfp=new MultipartFile(in,model.getRealPath("/"),suffix);
 						resultsMap.put(field, mfp);
 					}
+				}else {
+					if(!model.parameterMapContainsKey(item.getFieldName())) {
+						String[] values= {new String(item.get(),"UTF-8")};
+						model.addParameter(item.getFieldName(),values);
+					}
 				}
 			}
 		}catch (Exception e) {
@@ -247,7 +252,7 @@ public class AnnotationOperation {
 								throw new RuntimeException("上传的文件格式" + suffix + "不合法！合法的文件格式为：" + type);
 						String pathSave=fieldAndFolder.get(field);
 						File file = new File(savePath+pathSave);
-						filename = UUID.randomUUID().toString().replaceAll("-", "")+suffix;
+						filename = UUID.randomUUID().toString()+suffix;
 						InputStream in = item.getInputStream();
 						if (maxSize != 0) {
 							int size = in.available();
@@ -277,6 +282,11 @@ public class AnnotationOperation {
 						item.delete();
 						resultsMap.put(field, filename);
 					}
+				}else {
+					if(!model.parameterMapContainsKey(item.getFieldName())) {
+						String[] values= {new String(item.get(),"UTF-8")};
+						model.addParameter(item.getFieldName(),values);
+					}
 				}
 			}
 		}catch (Exception e) {
@@ -302,7 +312,8 @@ public class AnnotationOperation {
 		Map<String, Object> map = new HashMap<>();
 		Parameter[] parameters = method.getParameters();
 		for (Parameter param : parameters) {
-			if (!MultipartFile.class.isAssignableFrom(param.getType()) && param.getType().getClassLoader() != null
+			if (!MultipartFile.class.isAssignableFrom(param.getType()) 
+					&& param.getType().getClassLoader() != null
 					&& !ServletRequest.class.isAssignableFrom(param.getType())
 					&& !ServletResponse.class.isAssignableFrom(param.getType())
 					&& !HttpSession.class.isAssignableFrom(param.getType())

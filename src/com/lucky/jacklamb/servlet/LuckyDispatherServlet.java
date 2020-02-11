@@ -20,17 +20,16 @@ import com.lucky.jacklamb.ioc.config.WebConfig;
 import com.lucky.jacklamb.mapping.AnnotationOperation;
 import com.lucky.jacklamb.mapping.UrlParsMap;
 import com.lucky.jacklamb.utils.Jacklabm;
+import com.lucky.jacklamb.utils.LuckyUtils;
 
 @MultipartConfig
 public class LuckyDispatherServlet extends HttpServlet {
 	
-	private RequestMethod method=RequestMethod.POST;
 	private static final long serialVersionUID = 3808567874497317419L;
 	private AnnotationOperation anop;
 	private WebConfig webCfg;
 	private UrlParsMap urlParsMap;
 	private ResponseControl responseControl;
-	private Model model;
 	
 
 	public void init(ServletConfig config) {
@@ -44,46 +43,49 @@ public class LuckyDispatherServlet extends HttpServlet {
 	
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		this.method=RequestMethod.DELETE;
-		this.doPost(req, resp);
+		this.luckyResponse(req, resp,RequestMethod.DELETE);
 	}
 
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		this.method=RequestMethod.PUT;
-		this.doPost(req, resp);
+		this.luckyResponse(req, resp,RequestMethod.PUT);
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		this.method=RequestMethod.GET;
-		this.doPost(req, resp);
+		this.luckyResponse(req, resp,RequestMethod.GET);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp){
+		this.luckyResponse(req,resp,RequestMethod.POST);
+	}
+	
+	private void luckyResponse(HttpServletRequest req, HttpServletResponse resp,RequestMethod requestMethod) {
+		Model model = null;
 		try {
 			String encoding=webCfg.getEncoding();
-			this.method=urlParsMap.chagenMethod(req,resp,this.method,webCfg.isPostChangeMethod());
+			requestMethod=urlParsMap.chagenMethod(req,resp,requestMethod,webCfg.isPostChangeMethod());
 			String uri = req.getRequestURI();
 			uri=java.net.URLDecoder.decode(new String(uri.getBytes(encoding), req.getCharacterEncoding()), req.getCharacterEncoding());
-			model=new Model(req,resp,this.method,encoding);
+			model=new Model(req,resp,requestMethod,encoding);
 			urlParsMap.setLuckyWebContext(model);
 			String context = req.getContextPath();
 			String path = uri.replace(context, "");
 			String currIp=req.getRemoteAddr();
 			//全局资源的IP限制
 			if(!webCfg.getGlobalResourcesIpRestrict().isEmpty()&&!webCfg.getGlobalResourcesIpRestrict().contains(currIp)) {
-				resp.getWriter().print(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
+				model.writer(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
 				return;
 			}
 			//指定资源的IP限制
 			if(!webCfg.getSpecifiResourcesIpRestrict().isEmpty()&&(webCfg.getSpecifiResourcesIpRestrict().containsKey(path)&&!webCfg.getSpecifiResourcesIpRestrict().get(path).contains(currIp))) {
-				resp.getWriter().print(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
+				model.writer(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
 				return;
 			}
-			if(webCfg.isOpenStaticResourceManage()&&StaticResourceManage.isStaticResource(webCfg,currIp,resp,path)) {
+			if(webCfg.isOpenStaticResourceManage()&&StaticResourceManage.isLegalRequest(webCfg,currIp,resp,path)) {
 				//静态资源处理
+				System.err.println(LuckyUtils.showtime()+"[ STATIC-REQUEST          S-R ]  ["+requestMethod+"] #SR#=> "+uri);
 				StaticResourceManage.response(req, resp, uri);
 				return;
 			}
@@ -96,14 +98,15 @@ public class LuckyDispatherServlet extends HttpServlet {
 				String forwardurl=webCfg.getHanderPrefixAndSuffix().get(0)+webCfg.getStaticHander().get(path)+webCfg.getHanderPrefixAndSuffix().get(1);
 				req.getRequestDispatcher(forwardurl).forward(req, resp);
 			}else {
-				ControllerAndMethod controllerAndMethod = urlParsMap.pars(model,path,this.method);
+				ControllerAndMethod controllerAndMethod = urlParsMap.pars(model,path,requestMethod);
 				if(controllerAndMethod==null)
 					return;
 				if(!controllerAndMethod.ipExistsInRange(currIp)||!controllerAndMethod.ipISCorrect(currIp)) {
-					resp.getWriter().print(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
+					model.writer(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
 					return;
 				}
 				else {
+					System.err.println(LuckyUtils.showtime()+"[ DYNAMIC-REQUEST         D-R ]  ["+requestMethod+"] @DR@=> "+uri);
 					model.setRestMap(controllerAndMethod.getRestKV());
 					urlParsMap.setCross(req,resp, controllerAndMethod);
 					Method method = controllerAndMethod.getMethod();
@@ -127,8 +130,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 			}else {
 				e.printStackTrace();
 			}
-		} finally {
-			this.method=RequestMethod.POST;
+		}finally {
 			urlParsMap.closeLuckyWebContext();
 		}
 	}

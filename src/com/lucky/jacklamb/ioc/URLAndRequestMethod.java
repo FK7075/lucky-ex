@@ -66,12 +66,12 @@ public class URLAndRequestMethod {
 			}
 		}
 		if(!isPass) {
-			model.responseWriter(Jacklabm.exception("HTTP Status 404 Not Found", "不正确的url："+url, "找不与请求相匹配的映射资,请检查您的URL是否正确！"));
+			model.writer(Jacklabm.exception("HTTP Status 404 Not Found", "不正确的url："+url, "找不与请求相匹配的映射资,请检查您的URL是否正确！"));
 			return null;
 		}
 		for(RequestMethod currmethod : methods)
 			if(!tempURLAndRequestMethod.getMethods().contains(currmethod)) {
-				model.responseWriter(Jacklabm.exception("HTTP Status 500 Internal Server Error","不合法的请求类型"+this.methods,"您的请求类型"+this.methods+",当前方法并不支持！"));
+				model.writer(Jacklabm.exception("HTTP Status 500 Internal Server Error","不合法的请求类型"+this.methods,"您的请求类型"+this.methods+",当前方法并不支持！"));
 				return null;
 			}
 		return tempURLAndRequestMethod;

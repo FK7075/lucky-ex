@@ -13,9 +13,17 @@ import com.lucky.jacklamb.ioc.config.WebConfig;
 
 public class StaticResourceManage {
 	
-	public static boolean isStaticResource(WebConfig webCfg,String currIp,HttpServletResponse resp,String uri) {
+	public static boolean isLegalIp(WebConfig webCfg,String currIp) {
 		if(!webCfg.getStaticResourcesIpRestrict().isEmpty()&&!webCfg.getStaticResourcesIpRestrict().contains(currIp))
 			return false;
+		return true;
+	}
+	
+	public static boolean isLegalRequest(WebConfig webCfg,String currIp,HttpServletResponse resp,String uri) {
+		return isLegalIp(webCfg,currIp)&&isStaticResource(resp,uri);
+	}
+	
+	public static boolean isStaticResource(HttpServletResponse resp,String uri) {
 		String lowercaseUri=uri.toLowerCase();
 		if(lowercaseUri.endsWith(".jpg")||lowercaseUri.endsWith(".jfif")||lowercaseUri.endsWith(".jpe")||lowercaseUri.endsWith(".jpeg")) {
 			resp.setContentType("image/jpeg");
@@ -38,7 +46,7 @@ public class StaticResourceManage {
 		}else if(lowercaseUri.endsWith(".js")) {
 			resp.setContentType("application/javascript");
 			return true;
-		}else if(lowercaseUri.endsWith(".css")) {
+		}else if(lowercaseUri.endsWith(".css")||lowercaseUri.endsWith(".css.map")) {
 			resp.setContentType("text/css");
 			return true;
 		}else if(lowercaseUri.endsWith(".xml")||lowercaseUri.endsWith(".xsl")||lowercaseUri.endsWith(".xquery")||lowercaseUri.endsWith(".svg")) {
@@ -47,7 +55,7 @@ public class StaticResourceManage {
 		}else if(lowercaseUri.endsWith(".html")||lowercaseUri.endsWith(".htm")) {
 			resp.setContentType("text/html");
 			return true;
-		}else if(lowercaseUri.endsWith(".txt")) {
+		}else if(lowercaseUri.endsWith(".txt")||lowercaseUri.endsWith(".woff2")||lowercaseUri.endsWith(".woff")||lowercaseUri.endsWith(".ttf")) {
 			resp.setContentType("text/plain");
 			return true;
 		}else if(lowercaseUri.endsWith(".doc")||lowercaseUri.endsWith(".docx")) {

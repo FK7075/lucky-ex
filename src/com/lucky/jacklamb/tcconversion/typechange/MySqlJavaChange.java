@@ -18,7 +18,7 @@ public class MySqlJavaChange extends TypeConversion {
 		if("byte[]".equals(javaType))
 			return "blob";
 		if("Timestamp".equals(javaType))
-			return "data";
+			return "date";
 		if("Time".equals(javaType))
 			return "time";
 		throw new NotSupportDataBasesException("Lucky目前还不支持该Java的该类型字段与Mysql数据库字段的转化"+javaType);
