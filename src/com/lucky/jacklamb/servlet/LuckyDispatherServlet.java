@@ -1,6 +1,7 @@
 package com.lucky.jacklamb.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.servlet.ServletConfig;
@@ -14,9 +15,9 @@ import com.lucky.jacklamb.annotation.mvc.Download;
 import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.ControllerAndMethod;
-import com.lucky.jacklamb.ioc.ExceptionHand;
 import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.WebConfig;
+import com.lucky.jacklamb.ioc.exception.LuckyExceptionHand;
 import com.lucky.jacklamb.mapping.AnnotationOperation;
 import com.lucky.jacklamb.mapping.UrlParsMap;
 import com.lucky.jacklamb.utils.Jacklabm;
@@ -63,6 +64,9 @@ public class LuckyDispatherServlet extends HttpServlet {
 	
 	private void luckyResponse(HttpServletRequest req, HttpServletResponse resp,RequestMethod requestMethod) {
 		Model model = null;
+		Method method=null;
+		Object controllerObj=null;
+		Object[] args = null;
 		try {
 			String encoding=webCfg.getEncoding();
 			requestMethod=urlParsMap.chagenMethod(req,resp,requestMethod,webCfg.isPostChangeMethod());
@@ -109,24 +113,29 @@ public class LuckyDispatherServlet extends HttpServlet {
 					System.err.println(LuckyUtils.showtime()+"[ DYNAMIC-REQUEST         D-R ]  ["+requestMethod+"] @DR@=> "+uri);
 					model.setRestMap(controllerAndMethod.getRestKV());
 					urlParsMap.setCross(req,resp, controllerAndMethod);
-					Method method = controllerAndMethod.getMethod();
+					method = controllerAndMethod.getMethod();
 					boolean isDownload = method.isAnnotationPresent(Download.class);
-					Object obj = controllerAndMethod.getController();
-					urlParsMap.autowReqAdnResp(obj,model);
-					Object[] args;
+					controllerObj=controllerAndMethod.getController();
+					urlParsMap.autowReqAdnResp(controllerObj,model);
 					Object obj1 = new Object();
 					args = (Object[]) anop.getControllerMethodParam(model,method);
-					obj1 = method.invoke(obj, args);
+					obj1 = method.invoke(controllerObj, args);
 					if (isDownload == true)//下载操作
 						anop.download(model, method);
 					responseControl.jump(model,controllerAndMethod, method, obj1);
 				}
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			ApplicationBeans application=ApplicationBeans.createApplicationBeans();
-			if(application.containsComponent("exceptionHand")) {
-				ExceptionHand exceptionHand=(ExceptionHand) application.getComponentBean("exceptionHand");
-				exceptionHand.exceptionHand(model, e);
+			if(application.containsComponent("@%#LuckyExceptionHand@FK7075")) {
+				LuckyExceptionHand exceptionHand=(LuckyExceptionHand) application.getComponentBean("@%#LuckyExceptionHand@FK7075");
+				exceptionHand.initialize(model, controllerObj, method, args);
+				exceptionHand.exceptionHand();
+				if(e instanceof InvocationTargetException) {
+					exceptionHand.exceptionRole(e.getCause());
+				}else {
+					exceptionHand.exceptionRole(e);
+				}
 			}else {
 				e.printStackTrace();
 			}

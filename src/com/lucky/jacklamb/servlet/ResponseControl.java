@@ -26,7 +26,7 @@ public class ResponseControl {
 	 * @throws IOException
 	 * @throws ServletException
 	 */
-	private void toPage(Model model,String info,List<String> pre_suf) throws IOException, ServletException {
+	private void toPage(Model model,String info,List<String> pre_suf) {
 		String topage="";
 		if(info.contains("page:")) {//重定向到页面
 			info=info.replaceAll("page:", "");
@@ -57,7 +57,7 @@ public class ResponseControl {
 	 * @throws ServletException
 	 */
 	public void jump(Model model,ControllerAndMethod controllerAndMethod, Method method, Object obj)
-			throws IOException, ServletException {
+			{
 		if (obj != null) {
 			if(controllerAndMethod.getRest()==Rest.JSON) {
 				model.witerJson(obj);

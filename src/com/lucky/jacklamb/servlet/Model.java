@@ -23,71 +23,79 @@ import com.lucky.jacklamb.utils.ArrayCast;
 
 /**
  * mvc的核心中转类
+ * 
  * @author fk-7075
  *
  */
 public class Model {
-	
-	private final String HEAD="<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+
+	private final String HEAD = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
 	/**
 	 * 解码方式
 	 */
-	private String encod="ISO-8859-1";
-	
+	private String encod = "ISO-8859-1";
+
 	/**
 	 * Request对象
 	 */
 	private HttpServletRequest req;
-	
+
 	/**
 	 * Response对象
 	 */
 	private HttpServletResponse resp;
-	
+
 	/**
 	 * url请求的方法
 	 */
 	private RequestMethod requestMethod;
-	
+
 	/**
 	 * 页面参数集合Map<String,String[]>
 	 */
 	private Map<String, String[]> parameterMap;
-	
+
 	/**
 	 * Rest风格的参数集合Map<String,String>
 	 */
-	private Map<String,String> restMap;
-	
+	private Map<String, String> restMap;
+
 	private ServletOutputStream outputStream;
 
 	/**
-	 *  Model构造器
-	 * @param request Request对象
-	 * @param response Response对象
-	 * @param requestMethod url请求的方法
-	 * @param encod  解码方式
-	 * @throws IOException 
+	 * Model构造器
+	 * 
+	 * @param request
+	 *            Request对象
+	 * @param response
+	 *            Response对象
+	 * @param requestMethod
+	 *            url请求的方法
+	 * @param encod
+	 *            解码方式
+	 * @throws IOException
 	 */
-	public Model(HttpServletRequest request,HttpServletResponse response,RequestMethod requestMethod,String encod) throws IOException {
-		this.encod=encod;
-		req =request;
-		resp =response;
-		this.requestMethod=requestMethod;
-		this.parameterMap=getRequestParameterMap();
-		restMap=new HashMap<>();
+	public Model(HttpServletRequest request, HttpServletResponse response, RequestMethod requestMethod, String encod)
+			throws IOException {
+		this.encod = encod;
+		req = request;
+		resp = response;
+		this.requestMethod = requestMethod;
+		this.parameterMap = getRequestParameterMap();
+		restMap = new HashMap<>();
 	}
-	
-	public Model(HttpServletRequest request,HttpServletResponse response) throws IOException {
-		req =request;
-		resp =response;
-		this.parameterMap=getRequestParameterMap();
-		restMap=new HashMap<>();
+
+	public Model(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		req = request;
+		resp = response;
+		this.parameterMap = getRequestParameterMap();
+		restMap = new HashMap<>();
 	}
-	
+
 	/**
 	 * 得到所有的Rest风格的参数集合RestParamMap
+	 * 
 	 * @return
 	 */
 	public Map<String, String> getRestMap() {
@@ -96,28 +104,29 @@ public class Model {
 
 	/**
 	 * 设置RestParamMap
+	 * 
 	 * @param restMap
 	 */
 	protected void setRestMap(Map<String, String> restMap) {
 		this.restMap = restMap;
 	}
 
-	public void addParameter(String key,String[] values) {
+	public void addParameter(String key, String[] values) {
 		parameterMap.put(key, values);
 	}
 
 	/**
 	 * 得到所有页面参数集合RequestParameterMap
+	 * 
 	 * @return parameterMap--><Map<String,String[]>>
 	 */
 	public Map<String, String[]> getParameterMap() {
 		return parameterMap;
 	}
 
-
-
 	/**
 	 * 得到当前请求的请求类型
+	 * 
 	 * @return
 	 */
 	public RequestMethod getRequestMethod() {
@@ -126,6 +135,7 @@ public class Model {
 
 	/**
 	 * 设置当前请求的请求类型
+	 * 
 	 * @param requestMethod
 	 */
 	protected void setRequestMethod(RequestMethod requestMethod) {
@@ -134,9 +144,13 @@ public class Model {
 
 	/**
 	 * 将文本信息写入Cookie
-	 * @param name "K"
-	 * @param value "V"
-	 * @param maxAge  内容的最长保存时间
+	 * 
+	 * @param name
+	 *            "K"
+	 * @param value
+	 *            "V"
+	 * @param maxAge
+	 *            内容的最长保存时间
 	 */
 	public void setCookieContent(String name, String value, int maxAge) {
 		Cookie cookie = new Cookie(name, value);
@@ -146,15 +160,18 @@ public class Model {
 
 	/**
 	 * 根据"name"获取Cookit中的文本信息,并转化为指定的编码格式
-	 * @param name NAME
-	 * @param encoding 编码方式
+	 * 
+	 * @param name
+	 *            NAME
+	 * @param encoding
+	 *            编码方式
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
 	public String getCookieContent(String name, String encoding) throws UnsupportedEncodingException {
 		String info = null;
 		Cookie[] cookies = req.getCookies();
-		if(cookies==null)
+		if (cookies == null)
 			return null;
 		for (Cookie cookie : cookies) {
 			if (name.equals(cookie.getName())) {
@@ -167,6 +184,7 @@ public class Model {
 
 	/**
 	 * 根据"name"获取Cookit中的文本信息(UTF-8)
+	 * 
 	 * @param name
 	 * @return
 	 * @throws UnsupportedEncodingException
@@ -174,7 +192,7 @@ public class Model {
 	public String getCookieContent(String name) throws UnsupportedEncodingException {
 		String info = null;
 		Cookie[] cookies = req.getCookies();
-		if(cookies==null)
+		if (cookies == null)
 			return null;
 		for (Cookie cookie : cookies) {
 			if (name.equals(cookie.getName())) {
@@ -187,6 +205,7 @@ public class Model {
 
 	/**
 	 * 向request域对象中存值
+	 * 
 	 * @param name
 	 * @param value
 	 */
@@ -196,6 +215,7 @@ public class Model {
 
 	/**
 	 * 向request域中取Object类型值
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -205,6 +225,7 @@ public class Model {
 
 	/**
 	 * 得到String类型的页面参数
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -212,9 +233,9 @@ public class Model {
 		return req.getParameter(name);
 	}
 
-
 	/**
 	 * 向session域中存值
+	 * 
 	 * @param name
 	 * @param object
 	 */
@@ -224,6 +245,7 @@ public class Model {
 
 	/**
 	 * 向session域中取值
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -231,71 +253,81 @@ public class Model {
 		return req.getSession().getAttribute(name);
 	}
 
-
 	/**
 	 * 使用response对象的Writer方法将对象模型写出为JSON格式数据
+	 * 
 	 * @param pojo(数组，对象，Collection,Map)
 	 * @throws IOException
 	 */
-	public void witerJson(Object pojo) throws IOException{
+	public void witerJson(Object pojo){
 		LSON lson = new LSON(pojo);
 		writer(lson.getJsonStr());
 	}
-	
+
 	/**
 	 * 使用response对象的Writer方法将对象模型写出为XML格式数据
+	 * 
 	 * @param pojo(数组，对象，Collection,Map)
 	 * @throws IOException
 	 */
-	public void witerXml(Object pojo) throws IOException{
+	public void witerXml(Object pojo){
 		LXML lson = new LXML(pojo);
-		writer(HEAD+lson.getXmlStr());
+		writer(HEAD + lson.getXmlStr());
 	}
 
 	/**
 	 * 使用response对象的Writer方法写出数据
+	 * 
 	 * @param info
 	 * @throws IOException
 	 */
-	public void writer(String info) throws IOException{
-		if(outputStream==null)
-			outputStream=resp.getOutputStream();
-		outputStream.write(info.getBytes("UTF-8"));
+	public void writer(Object info) {
+		try {
+			if (outputStream == null)
+				outputStream = resp.getOutputStream();
+			outputStream.write(info.toString().getBytes("UTF-8"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
 	 * 返回项目发布后file文件(夹)的绝对路径
+	 * 
 	 * @param file
 	 * @return
 	 */
 	public String getRealPath(String file) {
 		return req.getServletContext().getRealPath(file);
 	}
-	
+
 	/**
 	 * 返回项目发布后file文件(夹)的File对象
+	 * 
 	 * @param file
 	 * @return
 	 */
 	public File getRealFile(String file) {
-		String path=getRealPath(file);
-		if(path!=null) {
-			File fileF=new File(path);
+		String path = getRealPath(file);
+		if (path != null) {
+			File fileF = new File(path);
 			return fileF;
 		}
 		return null;
 	}
-	
+
 	/**
 	 * 删除DocBase文件中的某个文件
+	 * 
 	 * @param file
 	 * @return
 	 */
 	public boolean delRealFile(String file) {
-		if(file==null||file==""||file=="/")
+		if (file == null || file == "" || file == "/")
 			return false;
-		File delFile=getRealFile(file);
-		if(delFile!=null&&delFile.exists()) {
+		File delFile = getRealFile(file);
+		if (delFile != null && delFile.exists()) {
 			delFile.delete();
 			return true;
 		}
@@ -304,6 +336,7 @@ public class Model {
 
 	/**
 	 * 得到request对象
+	 * 
 	 * @return
 	 */
 	public HttpServletRequest getRequest() {
@@ -312,6 +345,7 @@ public class Model {
 
 	/**
 	 * 得到response对象
+	 * 
 	 * @return
 	 */
 	public HttpServletResponse getResponse() {
@@ -320,6 +354,7 @@ public class Model {
 
 	/**
 	 * 得到session对象
+	 * 
 	 * @return
 	 */
 	public HttpSession getSession() {
@@ -328,20 +363,21 @@ public class Model {
 
 	/**
 	 * 得到RequestParameterMap
+	 * 
 	 * @return parameterMap--><Map<String,String[]>>
 	 */
-	private Map<String, String[]> getRequestParameterMap(){
+	private Map<String, String[]> getRequestParameterMap() {
 		HttpServletRequest request = getRequest();
-		Map<String, String[]>res=new HashMap<>();
+		Map<String, String[]> res = new HashMap<>();
 		Map<String, String[]> parameterMap = request.getParameterMap();
 		for (Entry<String, String[]> entry : parameterMap.entrySet()) {
 			String[] mapStr = entry.getValue();
-			String[] mapStr_cpoy =new String[mapStr.length];
+			String[] mapStr_cpoy = new String[mapStr.length];
 			for (int i = 0; i < mapStr.length; i++) {
 				try {
 					String characterEncoding = request.getCharacterEncoding();
 					mapStr_cpoy[i] = new String(mapStr[i].getBytes(encod), characterEncoding);
-					
+
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				}
@@ -350,86 +386,109 @@ public class Model {
 		}
 		return res;
 	}
-	
+
 	/**
 	 * 判断parameterMap中是否存在值为paramName的Key
+	 * 
 	 * @param paramName
 	 * @return
 	 */
 	public boolean parameterMapContainsKey(String paramName) {
 		return parameterMap.containsKey(paramName);
 	}
-	
+
 	public boolean restMapContainsKey(String paramName) {
 		return restMap.containsKey(paramName);
 	}
-	
+
 	/**
 	 * 将String类型的数组转为其他类型的数组String[]->{Integer[],Double[]....}
+	 * 
 	 * @param strArr
 	 * @param changTypeClass
 	 * @return T[]
 	 */
-	public <T> T[] strArrayChange(String[] strArr,Class<T> changTypeClass) {
-		return  ArrayCast.strArrayChange(strArr, changTypeClass);
+	public <T> T[] strArrayChange(String[] strArr, Class<T> changTypeClass) {
+		return ArrayCast.strArrayChange(strArr, changTypeClass);
 	}
-	
+
 	/**
 	 * 得到parameterMap中key对应String[]
-	 * @param key 键
+	 * 
+	 * @param key
+	 *            键
 	 * @return
 	 */
 	public String[] getArray(String key) {
 		return parameterMap.get(key);
 	}
-	
+
 	/**
 	 * 得到parameterMap中key对应String[]转型后的T[]
-	 * @param key 键
-	 * @param clzz 目标类型T的Class
+	 * 
+	 * @param key
+	 *            键
+	 * @param clzz
+	 *            目标类型T的Class
 	 * @return
 	 */
-	public <T> T[] getArray(String key,Class<T> clzz){
+	public <T> T[] getArray(String key, Class<T> clzz) {
 		return (T[]) ArrayCast.strArrayChange(parameterMap.get(key), clzz);
 	}
-	
+
 	/**
 	 * 得到RestParamMap中key对应Value
+	 * 
 	 * @param key
 	 * @return
 	 */
 	public String getRestParam(String key) {
 		return restMap.get(key);
 	}
-	
+
 	/**
 	 * 得到RestParamMap中key对应的String转型后的T
-	 * @param key 键
-	 * @param clzz 目标类型T的Class
+	 * 
+	 * @param key
+	 *            键
+	 * @param clzz
+	 *            目标类型T的Class
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T getRestParam(String key,Class<T> clzz) {
+	public <T> T getRestParam(String key, Class<T> clzz) {
 		return (T) JavaConversion.strToBasic(restMap.get(key), clzz);
 	}
-	
+
 	/**
 	 * 转发
+	 * 
 	 * @param address
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public void forward(String address) throws ServletException, IOException {
-		req.getRequestDispatcher(address).forward(req, resp);
+	public void forward(String address) {
+		try {
+			req.getRequestDispatcher(address).forward(req, resp);
+		} catch (ServletException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-	
+
 	/**
 	 * 重定向
+	 * 
 	 * @param address
 	 * @throws IOException
 	 */
-	public void redirect(String address) throws IOException {
-		resp.sendRedirect(address);
+	public void redirect(String address) {
+		try {
+			resp.sendRedirect(address);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -11,7 +11,7 @@ import com.lucky.jacklamb.annotation.ioc.Component;
 import com.lucky.jacklamb.annotation.ioc.Controller;
 import com.lucky.jacklamb.annotation.ioc.Repository;
 import com.lucky.jacklamb.annotation.ioc.Service;
-import com.lucky.jacklamb.annotation.mvc.ExceptionHandling;
+import com.lucky.jacklamb.annotation.mvc.ExceptionHander;
 import com.lucky.jacklamb.annotation.orm.mapper.Mapper;
 import com.lucky.jacklamb.aop.proxy.Point;
 import com.lucky.jacklamb.ioc.config.ApplicationConfig;
@@ -199,7 +199,7 @@ public class PackageScan extends Scan {
 					serviceClass.add(fileClass);
 				else if(fileClass.isAnnotationPresent(Repository.class)||fileClass.isAnnotationPresent(Mapper.class))
 					repositoryClass.add(fileClass);
-				else if(fileClass.isAnnotationPresent(Component.class)||fileClass.isAnnotationPresent(BeanFactory.class)||fileClass.isAnnotationPresent(ExceptionHandling.class))
+				else if(fileClass.isAnnotationPresent(Component.class)||fileClass.isAnnotationPresent(BeanFactory.class)||fileClass.isAnnotationPresent(ExceptionHander.class))
 					componentClass.add(fileClass);
 				else if(fileClass.isAnnotationPresent(Aspect.class)||Point.class.isAssignableFrom(fileClass))
 					aspectClass.add(fileClass);
