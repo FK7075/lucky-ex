@@ -7,12 +7,17 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.websocket.Endpoint;
+import javax.websocket.server.ServerApplicationConfig;
+import javax.websocket.server.ServerEndpoint;
+
 import com.lucky.jacklamb.annotation.aop.Aspect;
 import com.lucky.jacklamb.annotation.ioc.BeanFactory;
 import com.lucky.jacklamb.annotation.ioc.Component;
 import com.lucky.jacklamb.annotation.ioc.Controller;
 import com.lucky.jacklamb.annotation.ioc.Repository;
 import com.lucky.jacklamb.annotation.ioc.Service;
+import com.lucky.jacklamb.annotation.mvc.ExceptionHander;
 import com.lucky.jacklamb.annotation.orm.mapper.Mapper;
 import com.lucky.jacklamb.aop.proxy.Point;
 import com.lucky.jacklamb.ioc.config.ApplicationConfig;
@@ -104,12 +109,20 @@ public class JarScan extends Scan {
 							|| fileClass.isAnnotationPresent(Mapper.class))
 						repositoryClass.add(fileClass);
 					else if (fileClass.isAnnotationPresent(Component.class)
-							|| fileClass.isAnnotationPresent(BeanFactory.class))
+							|| fileClass.isAnnotationPresent(BeanFactory.class)
+							|| fileClass.isAnnotationPresent(ExceptionHander.class))
 						componentClass.add(fileClass);
 					else if (fileClass.isAnnotationPresent(Aspect.class) || Point.class.isAssignableFrom(fileClass))
 						aspectClass.add(fileClass);
-					else
-						continue;
+					else {
+						try {
+							if(fileClass.isAnnotationPresent(ServerEndpoint.class)||ServerApplicationConfig.class.isAssignableFrom(fileClass)||Endpoint.class.isAssignableFrom(fileClass)) {
+								webSocketClass.add(fileClass);
+							}
+						}catch(Exception e) {
+							continue;
+						}
+					}
 				}
 			}
 		} catch (ClassNotFoundException e) {

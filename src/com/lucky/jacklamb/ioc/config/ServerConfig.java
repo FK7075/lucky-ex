@@ -3,6 +3,7 @@ package com.lucky.jacklamb.ioc.config;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EventListener;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +39,8 @@ public class ServerConfig {
 	private List<ServletMapping> servletlist;
 	
 	private List<FilterMapping> filterlist;
+	
+	private Set<EventListener> listeners;
 	
 	public String getDocBase() {
 		if(first) {
@@ -87,6 +90,7 @@ public class ServerConfig {
 	public ServerConfig() {
 		servletlist=new ArrayList<>();
 		filterlist=new ArrayList<>();
+		listeners=new HashSet<>();
 	}
 	
 	public int getPort() {
@@ -121,6 +125,15 @@ public class ServerConfig {
 		return servletlist;
 	}
 	
+	
+	public Set<EventListener> getListeners() {
+		return listeners;
+	}
+	
+	public void addListener(EventListener listener) {
+		listeners.add(listener);
+	}
+
 	public void addServlet(HttpServlet servlet,String...mappings) {
 		String servletName=LuckyUtils.TableToClass1(servlet.getClass().getSimpleName());
 		Set<String> maps;
@@ -155,7 +168,7 @@ public class ServerConfig {
 			serverConfig=new ServerConfig();
 			serverConfig.setPort(8080);
 			serverConfig.setSessionTimeout(30);
-			serverConfig.setContextPath("");
+			
 			serverConfig.setWebapp("/WebContent/");
 			if(ServerConfig.class.getResource("/")!=null) {
 				String path=ServerConfig.class.getResource("/").getPath();
@@ -168,6 +181,7 @@ public class ServerConfig {
 				projectPath=path;
 			}
 			serverConfig.addServlet(new LuckyDispatherServlet(), "/");
+			serverConfig.setContextPath("");
 		}
 		return serverConfig;
 	}

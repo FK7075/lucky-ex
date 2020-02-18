@@ -338,6 +338,10 @@ public final class IOCContainers {
 			}
 		}
 	}
+
+	public Set<Class<?>> getWebSocketSet() {
+		return new HashSet<Class<?>>(ScanFactory.createScan().getComponentClass("websocket"));
+	}
 }
 
 

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.websocket.Endpoint;
+import javax.websocket.server.ServerApplicationConfig;
+import javax.websocket.server.ServerEndpoint;
+
 import com.lucky.jacklamb.annotation.aop.Aspect;
 import com.lucky.jacklamb.annotation.ioc.BeanFactory;
 import com.lucky.jacklamb.annotation.ioc.Component;
@@ -203,8 +207,16 @@ public class PackageScan extends Scan {
 					componentClass.add(fileClass);
 				else if(fileClass.isAnnotationPresent(Aspect.class)||Point.class.isAssignableFrom(fileClass))
 					aspectClass.add(fileClass);
-				else
-					continue;
+				else {
+					try {
+						if(fileClass.isAnnotationPresent(ServerEndpoint.class)||ServerApplicationConfig.class.isAssignableFrom(fileClass)||Endpoint.class.isAssignableFrom(fileClass)) {
+							webSocketClass.add(fileClass);
+						}
+					}catch(Exception e) {
+						continue;
+					}
+				}
+					
 			}
 		}
 		

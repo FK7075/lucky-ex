@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -166,6 +168,11 @@ public class IniFilePars {
 			sectionMap = this.getSectionMap(SECTION_SERVLET);
 			addServlet(server,sectionMap);
 		}
+		
+		if(this.isHasSection(SECTION_LISTENER)) {
+			sectionMap = this.getSectionMap(SECTION_LISTENER);
+			addListener(server, sectionMap);
+		}
 		if(this.isHasSection(SECTION_FILTER)) {
 			sectionMap = this.getSectionMap(SECTION_FILTER);
 			addFilter(server,sectionMap);
@@ -227,6 +234,24 @@ public class IniFilePars {
 		}
 		if(sectionMap.containsKey("staticResourcesIpRestrict")) {
 			web.addStaticResourcesIpRestrict(sectionMap.get("staticResourcesIpRestrict").trim().split(","));
+		}
+	}
+	
+	private void addListener(ServerConfig server,Map<String, String> sectionMap) {
+		Collection<String> values = sectionMap.values();
+		for(String listener:values) {
+			try {
+				server.addListener((EventListener)Class.forName(listener).newInstance());
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -339,6 +364,14 @@ public class IniFilePars {
 				scan.emptyAddPojoPackSuffix(suffixStr.substring(6).trim().split(","));
 			}else {
 				scan.addPojoPackSuffix(suffixStr.trim().split(","));
+			}
+		}
+		if(sectionMap.containsKey("websocket")) {
+			suffixStr=sectionMap.get("websocket");
+			if(suffixStr.startsWith("reset:")) {
+				scan.emptyAddWebSocketPackSuffix(suffixStr.substring(6).trim().split(","));
+			}else {
+				scan.addWebSocketPackSuffix(suffixStr.trim().split(","));
 			}
 		}
 	}

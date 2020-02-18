@@ -1,13 +1,9 @@
 package com.lucky.jacklamb.start;
 
-import java.nio.charset.Charset;
-import java.util.List;
-
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.tomcat.util.descriptor.web.FilterDef;
-import org.apache.tomcat.util.descriptor.web.FilterMap;
+import org.apache.tomcat.websocket.server.WsSci;
 
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.config.Configuration;
@@ -32,39 +28,19 @@ public class LuckyApplication {
 		Tomcat tomcat = new Tomcat();
 		tomcat.setPort(serverCfg.getPort());
 		tomcat.getHost().setAutoDeploy(false);
-        StandardContext context = new StandardContext();
+        StandardContext context =new StandardContext();
         context.setSessionTimeout(serverCfg.getSessionTimeout());
         context.setPath(serverCfg.getContextPath());
         context.setDocBase(serverCfg.getDocBase());
+        context.addLifecycleListener(new Tomcat.DefaultWebXmlListener());
         context.addLifecycleListener(new Tomcat.FixContextListener());
+        context.addServletContainerInitializer(new WsSci(), ApplicationBeans.createApplicationBeans().getWebSocketSet());
+        context.addServletContainerInitializer(new LuckyServletContainerInitializer(), null);
         tomcat.getHost().addChild(context);
-        List<ServletMapping> servletlist = serverCfg.getServletlist();
-        for(ServletMapping sm:servletlist) {
-            tomcat.addServlet(serverCfg.getContextPath(),sm.getServletName(),sm.getServlet());
-            for(String map:sm.getRequestMapping()) {
-            	context.addServletMappingDecoded(map,sm.getServletName());
-            }
-        }
-        FilterDef filterDef;
-        FilterMap filterMap;
-        List<FilterMapping> filterlist = serverCfg.getFilterlist();
-        for(FilterMapping fm:filterlist) {
-        	filterDef=new FilterDef();
-        	filterMap=new FilterMap();
-        	filterDef.setFilter(fm.getFilter());
-        	filterDef.setFilterName(fm.getFilterName());
-        	filterMap.setFilterName(fm.getFilterName());
-        	for(String filterurl:fm.getRequestMapping())
-        		filterMap.addURLPatternDecoded(filterurl);
-        	 filterMap.setCharset(Charset.forName("UTF-8"));
-        	 context.addFilterDef(filterDef);
-        	 context.addFilterMap(filterMap);
-        }
 		try {
 			tomcat.init();
 			tomcat.start();
 			long end= System.currentTimeMillis();
-			ApplicationBeans.createApplicationBeans();
 			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  D ]  Starting DocBase [path: "+serverCfg.getDocBase().substring(1)+"]");
 			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  P ]  Starting ProtocolHandler [http-nio-"+serverCfg.getPort()+"]");
 			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  - ]  Tomcat启动成功！用时"+(end-start)+"ms!");

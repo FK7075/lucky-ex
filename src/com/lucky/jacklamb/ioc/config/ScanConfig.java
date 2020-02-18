@@ -46,6 +46,11 @@ public class ScanConfig {
 	 * 普通组件所在包的后缀
 	 */
 	private List<String> componentPackSuffix;
+	
+	/**
+	 * WebSocket组件所在的包后缀
+	 */
+	private List<String> webSocketPackSuffix;
 
 	/**
 	 * 实体类所在包的后缀
@@ -76,6 +81,7 @@ public class ScanConfig {
 		aspectPackSuffix = new ArrayList<>();
 		componentPackSuffix = new ArrayList<>();
 		pojoPackSuffix = new ArrayList<>();
+		webSocketPackSuffix = new ArrayList<>();
 	}
 
 	public String getCustomLogo() {
@@ -90,7 +96,33 @@ public class ScanConfig {
 	public void setCustomLogo(String customLogo) {
 		this.customLogo = customLogo;
 	}
+	
+	public List<String> getWebSocketPackSuffix() {
+		return webSocketPackSuffix;
+	}
+	
+	public void setWebSocketPackSuffix(List<String> webSocketPackSuffix) {
+		this.webSocketPackSuffix = webSocketPackSuffix;
+	}
+	
+	/**
+	 * 添加一个装载WebSocket组件的包后缀
+	 * 
+	 * @param suffix
+	 */
+	public void addWebSocketPackSuffix(String... suffix) {
+		webSocketPackSuffix.addAll(Arrays.asList(suffix));
+	}
 
+	/**
+	 * 清空原有的配置后，添加一个装载WebSocket组件的包后缀
+	 * 
+	 * @param suffix
+	 */
+	public void emptyAddWebSocketPackSuffix(String... suffix) {
+		controllerPackSuffix.clear();
+		addWebSocketPackSuffix(suffix);
+	}
 	public Logo getLogo() {
 		return logo;
 	}
@@ -284,7 +316,7 @@ public class ScanConfig {
 			scanfig.addControllerPackSuffix("controller");
 			scanfig.addServicePackSuffix("service");
 			scanfig.addRepositoryPackSuffix("dao", "repository", "mapper");
-			scanfig.addComponentPackSuffix("component", "bean");
+			scanfig.addComponentPackSuffix("component", "bean","websocket","exceptionhander");
 			scanfig.addAspectPackSuffix("aspect","aop");
 			scanfig.addPojoPackSuffix("pojo", "entity");
 			scanfig.setScanMode(Scan.AUTO_SCAN);

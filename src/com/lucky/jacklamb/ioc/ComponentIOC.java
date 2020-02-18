@@ -114,6 +114,8 @@ public class ComponentIOC extends ComponentFactory {
 				}
 			}else if(component.isAnnotationPresent(ExceptionHander.class)) {
 				addAppMap("@%#LuckyExceptionHand@FK7075",PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "component", "exceptionHand", component));
+			}else {
+				continue;
 			}
 		}
 	}

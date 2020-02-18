@@ -253,6 +253,10 @@ public class ApplicationBeans {
 			throw new NotFindBeanException("在IOC容器中找不到ID为--"+beanId+"--的Bean...");
 	}
 	
+	public Set<Class<?>> getWebSocketSet() {
+		return iocContainers.getWebSocketSet();
+	}
+	
 	/**
 	 * 打印容器中组件信息
 	 */
@@ -265,6 +269,7 @@ public class ApplicationBeans {
 		System.err.println(LuckyUtils.showtime()+"[ IOC-REPOSITORY-SCAN-OK    R ]  @Repository    ==> "+getRepositoryBeans());
 		System.err.println(LuckyUtils.showtime()+"[ IOC-MAPPER-SCAN-OK        M ]  @Mapper        ==> "+getMapperTypes());
 		System.err.println(LuckyUtils.showtime()+"[ IOC-COMPONENT-SCAN-OK     C ]  @Component     ==> "+getComponentBeans());
+		System.err.println(LuckyUtils.showtime()+"[ IOC-WEBSOCKET-SCAN-OK     W ]  @WebSocket     ==> "+getWebSocketSet());
 		System.err.println(LuckyUtils.showtime()+"[ IOC-SCAN-END              - ]  IOC组件扫描结束!动态代理结束(IOC-END)");
 		System.err.println(LuckyUtils.showtime()+"[ URL-MAPPING-PARSING-START - ]  开始解析URL映射(URLMAP-START)");
 		System.err.println(LuckyUtils.showtime()+"[ URL-CONTROLLERMETHOD-SCAN-OK]  @RequestMapping ==> URL映射解析完毕，解析结果如下：");

@@ -25,6 +25,8 @@ public abstract class Scan {
 	
 	protected List<Class<?>> aspectClass;
 	
+	protected List<Class<?>> webSocketClass;
+	
 	protected ApplicationConfig appConfig;
 	
 	private Configuration configuration;
@@ -38,6 +40,7 @@ public abstract class Scan {
 		repositoryClass=new ArrayList<>();
 		componentClass=new ArrayList<>();
 		aspectClass=new ArrayList<>();
+		webSocketClass=new ArrayList<>();
 	}
 	
 	public void init() {
@@ -54,6 +57,7 @@ public abstract class Scan {
 		componentClassMap.put("repository", repositoryClass);
 		componentClassMap.put("component", componentClass);
 		componentClassMap.put("aspect", aspectClass);
+		componentClassMap.put("websocket", webSocketClass);
 	}
 	
 	public List<Class<?>> getComponentClass(String iocCode){
@@ -67,6 +71,7 @@ public abstract class Scan {
 		repositoryClass=loadComponent(scanConfig.getRepositoryPackSuffix());
 		componentClass=loadComponent(scanConfig.getComponentPackSuffix());
 		aspectClass=loadComponent(scanConfig.getAspectPackSuffix());
+		webSocketClass=loadComponent(scanConfig.getWebSocketPackSuffix());
 	}
 	
 	public ApplicationConfig getApplicationConfig() {
