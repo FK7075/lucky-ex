@@ -1,6 +1,5 @@
 package com.lucky.jacklamb.ioc.config;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EventListener;
@@ -22,19 +21,25 @@ public class ServerConfig {
 	
 	private int port;
 	
+	private int closePort;
+	
+	private String shutdown;
+	
 	private int sessionTimeout;
 	
-	private boolean defa=true;
+//	private boolean defa=true;
 	
 	public static String projectPath;
 	
-	private static boolean first=true;
+//	private static boolean first=true;
 	
 	private String contextPath;
 	
 	private String webapp;
 	
 	private String docBase;
+	
+	private String baseDir;
 	
 	private List<ServletMapping> servletlist;
 	
@@ -43,20 +48,61 @@ public class ServerConfig {
 	private Set<EventListener> listeners;
 	
 	public String getDocBase() {
-		if(first) {
-			if(defa) {
-				docBase=projectPath+"tomcat."+serverConfig.getPort()+"/work/Tomcat/localhost/Lucky/";
-			}
-			File doc=new File(docBase);
-			if(!doc.isDirectory())
-				doc.mkdirs();
-			first=false;
-		}
 		return docBase;
 	}
 	
 	public int getSessionTimeout() {
 		return sessionTimeout;
+	}
+	
+	public int getClosePort() {
+		return closePort;
+	}
+	
+	public String getShutdown() {
+		return shutdown;
+	}
+
+	public String getBaseDir() {
+		return baseDir;
+	}
+	
+
+	/**
+	 * 设置一个Tomcat的临时文件夹(相对项目路径)
+	 * @param baseDir
+	 */
+	public void setBaseDir(String baseDir) {
+		if(baseDir.startsWith("/")) {
+			this.baseDir = projectPath+baseDir.substring(1);
+		}else {
+			this.baseDir = projectPath+baseDir;
+		}
+	}
+	
+	/**
+	 * 设置一个Tomcat的临时文件夹(绝对路径)
+	 * @param ap_baseDir
+	 */
+	public void setApBaseDir(String ap_baseDir) {
+		this.baseDir = ap_baseDir;
+	}
+	
+
+	/**
+	 * 设置一个用于关闭Tomcat服务的指令
+	 * @param shutdown
+	 */
+	public void setShutdown(String shutdown) {
+		this.shutdown = shutdown;
+	}
+
+	/**
+	 * 设置一个用于关闭Tomcat服务的端口
+	 * @param closePort
+	 */
+	public void setClosePort(int closePort) {
+		this.closePort = closePort;
 	}
 
 	/**
@@ -69,22 +115,22 @@ public class ServerConfig {
 
 	/**
 	 * 设置一个静态文件的储存库(绝对路径)
-	 * @param docBase
+	 * @param ap_docBase
 	 */
-	public void setDocBase(String docBase) {
-		if(defa)
-			defa=false;
-		this.docBase = docBase;
+	public void setApDocBase(String ap_docBase) {
+		this.docBase = ap_docBase;
 	}
 	
 	/**
 	 * 设置一个静态文件的储存库(项目路径的相对路径)
-	 * @param relativeProjectPath
+	 * @param docbase
 	 */
-	public void setDocBaseRelativeProject(String relativeProjectPath) {
-		if(defa)
-			defa=false;
-		this.docBase=projectPath+relativeProjectPath;
+	public void setDocBase(String docbase) {
+		if(docbase.startsWith("/")) {
+			this.docBase=projectPath+docbase.substring(1);
+		}else {
+			this.docBase=projectPath+docbase;
+		}
 	}
 
 	public ServerConfig() {
@@ -167,8 +213,9 @@ public class ServerConfig {
 		if(serverConfig==null) {
 			serverConfig=new ServerConfig();
 			serverConfig.setPort(8080);
+			serverConfig.setClosePort(8005);
+			serverConfig.setShutdown("SHUTDOWN");
 			serverConfig.setSessionTimeout(30);
-			
 			serverConfig.setWebapp("/WebContent/");
 			if(ServerConfig.class.getResource("/")!=null) {
 				String path=ServerConfig.class.getResource("/").getPath();
@@ -182,6 +229,8 @@ public class ServerConfig {
 			}
 			serverConfig.addServlet(new LuckyDispatherServlet(), "/");
 			serverConfig.setContextPath("");
+			serverConfig.setBaseDir("Lucky/tomcat/");
+			serverConfig.setDocBase("Lucky/project/");
 		}
 		return serverConfig;
 	}

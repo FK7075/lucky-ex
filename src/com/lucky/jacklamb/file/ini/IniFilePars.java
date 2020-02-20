@@ -1,6 +1,16 @@
 package com.lucky.jacklamb.file.ini;
 
-import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.*;
+import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_FILTER;
+import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_FILTER_MAPPING;
+import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_HANDERPREFIXANDSUFFIX;
+import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_LISTENER;
+import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_SERVLET;
+import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_SERVLET_MAPPING;
+import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_SPECIFIRESOURCESIPRESTRICT;
+import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_STATICHANDER;
+import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_SUFFIX_SCAN;
+import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_TOMCAT;
+import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_WEB;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -300,13 +310,23 @@ public class IniFilePars {
 		if(sectionMap.containsKey("sessionTimeout")) {
 			server.setSessionTimeout(Integer.parseInt(sectionMap.get("sessionTimeout")));
 		}
+		if(sectionMap.containsKey("closePort")) {
+			server.setClosePort(Integer.parseInt(sectionMap.get("closePort")));
+		}
+		if(sectionMap.containsKey("shutdown")) {
+			server.setShutdown(sectionMap.get("shutdown"));
+		}
 		if(sectionMap.containsKey("docBase")) {
-			String docStr=sectionMap.get("docBase");
-			if(docStr.contains(":")) {
-				server.setDocBase(docStr);
-			}else {
-				server.setDocBaseRelativeProject(docStr);
-			}
+			server.setDocBase(sectionMap.get("docBase"));
+		}
+		if(sectionMap.containsKey("ap-docBase")) {
+			server.setApDocBase(sectionMap.get("ap-docBase"));
+		}
+		if(sectionMap.containsKey("baseDir")) {
+			server.setBaseDir(sectionMap.get("baseDir"));
+		}
+		if(sectionMap.containsKey("ap-baseDir")) {
+			server.setApBaseDir(sectionMap.get("ap-baseDir"));
 		}
 		if(sectionMap.containsKey("contextPath")) {
 			server.setContextPath(sectionMap.get("contextPath"));

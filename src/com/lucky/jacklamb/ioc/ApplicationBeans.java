@@ -6,9 +6,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.websocket.server.ServerApplicationConfig;
+
 import com.lucky.jacklamb.aop.proxy.PointRun;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
+import com.lucky.jacklamb.start.LuckyServerApplicationConfig;
 import com.lucky.jacklamb.utils.Jacklabm;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
@@ -17,6 +20,8 @@ public class ApplicationBeans {
 	public static IOCContainers iocContainers;
 	
 	private static ApplicationBeans applicationBean;
+	
+	private static Set<Class<?>> webSocketSet;
 	
 	static {
 		Jacklabm.welcome();
@@ -254,7 +259,18 @@ public class ApplicationBeans {
 	}
 	
 	public Set<Class<?>> getWebSocketSet() {
-		return iocContainers.getWebSocketSet();
+		if(webSocketSet==null) {
+			webSocketSet = iocContainers.getWebSocketSet();
+			if(!webSocketSet.isEmpty()) {
+				for(Class<?> clzz:webSocketSet) {
+					if(ServerApplicationConfig.class.isAssignableFrom(clzz)) {
+						return webSocketSet;
+					}
+				}
+				webSocketSet.add(LuckyServerApplicationConfig.class);
+			}
+		}
+		return webSocketSet;
 	}
 	
 	/**

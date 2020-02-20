@@ -33,7 +33,7 @@ public @interface Around {
 	 * path:表示增强某个路径下的所有IOC组件，eg:mateClass="path:com.lucky.*" OR mateClass="path:com.lucky.User"<br>
 	 * @return
 	 */
-	String pointCutClass();
+	String pointCutClass() default "ioc:service";
 	
 	/**
 	 * 配置切点(Method)， 增强方法执行的范围，用来定位需要代理的真实类的一些具体方法<br>
@@ -44,6 +44,6 @@ public @interface Around {
 	 * 方法名+参数类型定位：需要增强的方法名+参数列表，eg:mateMethod="method1(String,int),method2(User,Double)"<br>
 	 * @return
 	 */
-	String pointCutMethod();
+	String pointCutMethod() default "public,*";
 	
 }
