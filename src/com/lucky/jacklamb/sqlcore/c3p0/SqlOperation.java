@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.lucky.jacklamb.utils.LogInfo;
+import com.lucky.jacklamb.utils.SqlLog;
 /**
  * JDBC相关操作类
  * @author fk-7075
@@ -14,7 +14,7 @@ import com.lucky.jacklamb.utils.LogInfo;
 public class SqlOperation {
 	private Connection conn;
 	private PreparedStatement ps;
-	private LogInfo log;
+	private SqlLog log;
 	private ResultSet rs;
 	private String dbname;
 	private boolean isOk;
@@ -32,7 +32,7 @@ public class SqlOperation {
 		conn=C3p0Util.getConnecion(dbname);
 		this.dbname=dbname;
 		this.poolMethod=ReadIni.getDataSource(dbname).isPoolMethod();
-		log=new LogInfo(dbname);
+		log=new SqlLog(dbname);
 	}
 	/**
 	 * 实现对表的曾刪改操作

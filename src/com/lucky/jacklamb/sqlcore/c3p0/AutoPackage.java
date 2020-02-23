@@ -2,6 +2,7 @@ package com.lucky.jacklamb.sqlcore.c3p0;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -134,13 +135,18 @@ public class AutoPackage {
 	 */
 	public boolean isExistColumn(ResultSet rs, String columnName) {
 		try {
-			if (rs.findColumn(columnName) > 0) {
-				return true;
+			ResultSetMetaData metaData = rs.getMetaData();
+			int size=metaData.getColumnCount();
+			for(int i=1;i<=size;i++) {
+				if(columnName.equalsIgnoreCase(metaData.getColumnLabel(i))) {
+					return true;
+				}
 			}
+			return false;
 		} catch (SQLException e) {
+			e.printStackTrace();
 			return false;
 		}
-		return false;
 	}
 
 }

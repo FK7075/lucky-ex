@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.lucky.jacklamb.annotation.ioc.Repository;
 import com.lucky.jacklamb.annotation.orm.mapper.Mapper;
 import com.lucky.jacklamb.aop.util.PointRunFactory;
@@ -18,6 +20,8 @@ import com.lucky.jacklamb.sqlcore.c3p0.ReadIni;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class RepositoryIOC extends ComponentFactory {
+	
+	private static Logger log=Logger.getLogger(RepositoryIOC.class);
 
 	private Map<String, Object> repositoryMap;
 
@@ -141,23 +145,34 @@ public class RepositoryIOC extends ComponentFactory {
 					beanID=rep.value();
 				else
 					beanID=LuckyUtils.TableToClass1(repository.getSimpleName());
-				addRepositoryMap(beanID, PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "repository", beanID, repository));
+				Object aspect = PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "repository", beanID, repository);
+				addRepositoryMap(beanID, aspect);
+				log.info("@Repository      =>   [id="+beanID+" class="+aspect+"]");
+				
 			} else if (repository.isAnnotationPresent(Mapper.class)) {
 				if (first) {
 					List<DataSource> datalist=ReadIni.getAllDataSource();
 					for(DataSource data:datalist) {
 						SqlCore sqlCore=SqlCoreFactory.createSqlCore(data.getName());
-						addRepositoryMap("lucky#$jacklamb#$&58314@SqlCore-"+data.getName(), sqlCore);
+						beanID="lucky#$jacklamb#$&58314@SqlCore-"+data.getName();
+						addRepositoryMap(beanID, sqlCore);
+						log.info("@Repository      =>   [type=SqlCore id="+beanID+" class="+sqlCore+"]");
 					}
 					first = false;
 				}
 				Mapper mapper = repository.getAnnotation(Mapper.class);
-				String id="lucky#$jacklamb#$&58314@SqlCore-"+mapper.dbname();
-				SqlCore currSqlCore=(SqlCore) getMaRepBean(id);
-				if (!"".equals(mapper.id()))
-					addMapperMap(mapper.id(), currSqlCore.getMapper(repository));
-				else
-					addMapperMap(LuckyUtils.TableToClass1(repository.getSimpleName()), currSqlCore.getMapper(repository));
+				beanID="lucky#$jacklamb#$&58314@SqlCore-"+mapper.dbname();
+				SqlCore currSqlCore=(SqlCore) getMaRepBean(beanID);
+				if (!"".equals(mapper.id())) {
+					Object mapper2 = currSqlCore.getMapper(repository);
+					addMapperMap(mapper.id(), mapper2);
+					log.info("@Mapper          =>   [type=Mapper id="+mapper.id()+" class="+mapper2.getClass()+"]");
+				}else {
+					beanID = LuckyUtils.TableToClass1(repository.getSimpleName());
+					Object mapper2 = currSqlCore.getMapper(repository);
+					addMapperMap(beanID, mapper2);
+					log.info("@Mapper          =>   [type=Mapper id="+beanID+" class="+mapper2.getClass()+"]");
+				}
 			}
 		}
 	}

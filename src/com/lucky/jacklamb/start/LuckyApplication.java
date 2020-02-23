@@ -5,14 +5,17 @@ import java.io.File;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.log4j.Logger;
 import org.apache.tomcat.websocket.server.WsSci;
 
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.ServerConfig;
-import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class LuckyApplication {
+	
+	private static Logger log=Logger.getLogger(LuckyApplication.class);
+
 	
 	/**
 	 * 在使用java -jar运行jar包时，Lucky会使用JarFile的方法去遍历并筛选classpath下所有的.class文件来寻找组件。
@@ -50,15 +53,16 @@ public class LuckyApplication {
 		try {
 			tomcat.init();
 			tomcat.start();
-			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  S ]  Starting sessionTimeout ["+serverCfg.getSessionTimeout()+"min]");
-			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  S ]  Starting shutdown-port ["+serverCfg.getClosePort()+"]");
-			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  C ]  Starting shutdown-command [\""+serverCfg.getShutdown()+"\"]");
-			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  D ]  Starting BaseDir [path: "+serverCfg.getBaseDir().substring(1)+"]");
-			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  D ]  Starting DocBase [path: "+docBase.substring(1)+"]");
-			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  C ]  Starting contextPath [\""+serverCfg.getContextPath()+"\"]");
-			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  P ]  Starting ProtocolHandler [http-nio-"+serverCfg.getPort()+"]");
 			long end= System.currentTimeMillis();
-			System.err.println(LuckyUtils.showtime()+"[ EMBEDDED-TOMCAT-START-OK  - ]  Tomcat启动成功！用时"+(end-start)+"ms!");
+			StringBuilder sb=new StringBuilder("[Tomcat Config]\n");
+			sb.append("sessionTimeout    : " +serverCfg.getSessionTimeout()+"min\n")
+			.append("shutdown-port     : "+serverCfg.getClosePort()+"\n")
+			.append("shutdown-command  : "+serverCfg.getShutdown()+"\n")
+			.append("baseDir           : "+serverCfg.getBaseDir().substring(1)+"\n")
+			.append("docBase           : "+docBase.substring(1)+"\n")
+			.append("contextPath       : \""+serverCfg.getContextPath()+"\"\n")
+			.append("Starting ProtocolHandler [http-nio-"+serverCfg.getPort()+"],"+"Tomcat启动成功！用时"+(end-start)+"ms!");
+			log.info(sb.toString());
 			tomcat.getServer().await();
 		} catch (LifecycleException e) {
 			e.printStackTrace();

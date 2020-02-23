@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import com.lucky.jacklamb.annotation.mvc.Download;
 import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
@@ -21,12 +23,12 @@ import com.lucky.jacklamb.ioc.exception.LuckyExceptionHand;
 import com.lucky.jacklamb.mapping.AnnotationOperation;
 import com.lucky.jacklamb.mapping.UrlParsMap;
 import com.lucky.jacklamb.utils.Jacklabm;
-import com.lucky.jacklamb.utils.LuckyUtils;
 
 @MultipartConfig
 public class LuckyDispatherServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 3808567874497317419L;
+	private static Logger log=Logger.getLogger(LuckyDispatherServlet.class);
 	private AnnotationOperation anop;
 	private WebConfig webCfg;
 	private UrlParsMap urlParsMap;
@@ -80,16 +82,18 @@ public class LuckyDispatherServlet extends HttpServlet {
 			//全局资源的IP限制
 			if(!webCfg.getGlobalResourcesIpRestrict().isEmpty()&&!webCfg.getGlobalResourcesIpRestrict().contains(currIp)) {
 				model.writer(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
+				log.debug("403 : 不合法的请求ip："+currIp+"该ip地址没有被注册，服务器拒绝响应！");
 				return;
 			}
 			//指定资源的IP限制
 			if(!webCfg.getSpecifiResourcesIpRestrict().isEmpty()&&(webCfg.getSpecifiResourcesIpRestrict().containsKey(path)&&!webCfg.getSpecifiResourcesIpRestrict().get(path).contains(currIp))) {
 				model.writer(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
+				log.debug("403 : 不合法的请求ip："+currIp+"该ip地址没有被注册，服务器拒绝响应！");
 				return;
 			}
 			if(webCfg.isOpenStaticResourceManage()&&StaticResourceManage.isLegalRequest(webCfg,currIp,resp,path)) {
 				//静态资源处理
-				System.err.println(LuckyUtils.showtime()+"[ STATIC-REQUEST          S-R ]  ["+requestMethod+"] #SR#=> "+uri);
+				log.debug("STATIC-REQUEST [静态资源请求]  ["+requestMethod+"]  #SR#=> "+uri);
 				StaticResourceManage.response(req, resp, uri);
 				return;
 			}
@@ -107,10 +111,11 @@ public class LuckyDispatherServlet extends HttpServlet {
 					return;
 				if(!controllerAndMethod.ipExistsInRange(currIp)||!controllerAndMethod.ipISCorrect(currIp)) {
 					model.writer(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
+					log.debug("403 : 不合法的请求ip："+currIp+"该ip地址没有被注册，服务器拒绝响应！");
 					return;
 				}
 				else {
-					System.err.println(LuckyUtils.showtime()+"[ DYNAMIC-REQUEST         D-R ]  ["+requestMethod+"] @DR@=> "+uri);
+					log.info("CURR-REQUEST ->[DYNAMIC-REQUEST]  ["+requestMethod+"]  @DR@=> "+uri);
 					model.setRestMap(controllerAndMethod.getRestKV());
 					urlParsMap.setCross(req,resp, controllerAndMethod);
 					method = controllerAndMethod.getMethod();
@@ -126,6 +131,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 				}
 			}
 		} catch (Throwable e) {
+			log.error("LuckyDispatherServlet处理请求出现异常！", e);
 			ApplicationBeans application=ApplicationBeans.createApplicationBeans();
 			if(application.containsComponent("@%#LuckyExceptionHand@FK7075")) {
 				LuckyExceptionHand exceptionHand=(LuckyExceptionHand) application.getComponentBean("@%#LuckyExceptionHand@FK7075");

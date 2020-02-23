@@ -316,7 +316,8 @@ public class ScanConfig {
 			scanfig.addControllerPackSuffix("controller");
 			scanfig.addServicePackSuffix("service");
 			scanfig.addRepositoryPackSuffix("dao", "repository", "mapper");
-			scanfig.addComponentPackSuffix("component", "bean","websocket","exceptionhander");
+			scanfig.addComponentPackSuffix("component", "bean","exceptionhander");
+			scanfig.addWebSocketPackSuffix("websocket");
 			scanfig.addAspectPackSuffix("aspect","aop");
 			scanfig.addPojoPackSuffix("pojo", "entity");
 			scanfig.setScanMode(Scan.AUTO_SCAN);

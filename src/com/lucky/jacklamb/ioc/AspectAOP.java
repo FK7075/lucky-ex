@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.lucky.jacklamb.annotation.aop.After;
 import com.lucky.jacklamb.annotation.aop.Aspect;
 import com.lucky.jacklamb.annotation.aop.Before;
@@ -23,6 +25,8 @@ import com.lucky.jacklamb.utils.LuckyUtils;
  *
  */
 public class AspectAOP {
+	
+	private static Logger log=Logger.getLogger(AspectAOP.class);
 	
 	private static AspectAOP aspectAop;
 	
@@ -143,6 +147,7 @@ public class AspectAOP {
 						constructor.setAccessible(true);
 						pointRun=new PointRun(constructor.newInstance(),method);
 						addAspectMap(Aspectid, pointRun);
+						log.info("@Aspect          =>   [location=Before id="+Aspectid+" class="+pointRun+"]");
 					}else if(method.isAnnotationPresent(After.class)){
 						after=method.getAnnotation(After.class);
 						if("".equals(after.value())) {
@@ -154,6 +159,7 @@ public class AspectAOP {
 						constructor.setAccessible(true);
 						pointRun=new PointRun(constructor.newInstance(),method);
 						addAspectMap(Aspectid, pointRun);
+						log.info("@Aspect          =>   [location=After id="+Aspectid+" class="+pointRun+"]");
 					}else {
 						continue;
 					}
@@ -165,6 +171,7 @@ public class AspectAOP {
 				constructor.setAccessible(true);
 				pointRun=new PointRun((Point)constructor.newInstance());
 				addAspectMap(name,pointRun);
+				log.info("@Aspect          =>   [location=Around id="+name+" class="+pointRun+"]");
 			}
 		}
 	}

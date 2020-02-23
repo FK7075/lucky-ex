@@ -1,33 +1,55 @@
 package com.lucky.jacklamb.ioc;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.websocket.server.ServerApplicationConfig;
+
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import com.lucky.jacklamb.aop.proxy.PointRun;
 import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 import com.lucky.jacklamb.start.LuckyServerApplicationConfig;
 import com.lucky.jacklamb.utils.Jacklabm;
-import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class ApplicationBeans {
 	
 	public static IOCContainers iocContainers;
+	
+	public static Logger log;
 	
 	private static ApplicationBeans applicationBean;
 	
 	private static Set<Class<?>> webSocketSet;
 	
 	static {
+		URL logfile = ApplicationBeans.class.getClassLoader().getResource("/log4j.properties");
+		if(logfile!=null) {
+			PropertyConfigurator.configure(logfile.getPath());
+		}else {
+			try {
+				Properties p=new Properties();
+				p.load(new BufferedReader(new InputStreamReader(ApplicationBeans.class.getResourceAsStream("/log4j.properties"),"UTF-8")));
+				PropertyConfigurator.configure(p);
+			} catch (Exception e) {
+				BasicConfigurator.configure();
+			} 
+		}
+		log=Logger.getLogger(ApplicationBeans.class);
 		Jacklabm.welcome();
 		iocContainers=new IOCContainers();
 		iocContainers.init();
-		applicationBean.printBeans();
+
 	}
 	
 	public static ApplicationBeans createApplicationBeans() {
@@ -136,10 +158,6 @@ public class ApplicationBeans {
 	 */
 	public Map<String,Object> getMapperBeans(){
 		return iocContainers.getRepositoryIOC().getMapperMap();
-	}
-	
-	private Map<String,String> getMapperTypes(){
-		return iocContainers.getRepositoryIOC().getMapperTtypeMap();
 	}
 	
 	/**
@@ -271,28 +289,5 @@ public class ApplicationBeans {
 			}
 		}
 		return webSocketSet;
-	}
-	
-	/**
-	 * 打印容器中组件信息
-	 */
-	public void printBeans() {
-		System.err.println(LuckyUtils.showtime()+"[ SCAN-STRAT                - ]  LUCKY组件扫描开始(START)");
-		System.err.println(LuckyUtils.showtime()+"[ AOP-ASPECT-SCAN-OK        A ]  @Aspect        ==> "+getAspectBeans());
-		System.err.println(LuckyUtils.showtime()+"[ AOP-SCAN-END              - ]  Aspect组件注册完成，开始执行IOC扫描以及动态代理(AOP-END IOC-START)");
-		System.err.println(LuckyUtils.showtime()+"[ IOC-CONTROLLER-SCAN-OK    C ]  @Controller    ==> "+getControllerBeans());
-		System.err.println(LuckyUtils.showtime()+"[ IOC-SERVICE-SCAN-OK       S ]  @Service       ==> "+getServiceBeans());
-		System.err.println(LuckyUtils.showtime()+"[ IOC-REPOSITORY-SCAN-OK    R ]  @Repository    ==> "+getRepositoryBeans());
-		System.err.println(LuckyUtils.showtime()+"[ IOC-MAPPER-SCAN-OK        M ]  @Mapper        ==> "+getMapperTypes());
-		System.err.println(LuckyUtils.showtime()+"[ IOC-COMPONENT-SCAN-OK     C ]  @Component     ==> "+getComponentBeans());
-		System.err.println(LuckyUtils.showtime()+"[ IOC-WEBSOCKET-SCAN-OK     W ]  @WebSocket     ==> "+getWebSocketSet());
-		System.err.println(LuckyUtils.showtime()+"[ IOC-SCAN-END              - ]  IOC组件扫描结束!动态代理结束(IOC-END)");
-		System.err.println(LuckyUtils.showtime()+"[ URL-MAPPING-PARSING-START - ]  开始解析URL映射(URLMAP-START)");
-		System.err.println(LuckyUtils.showtime()+"[ URL-CONTROLLERMETHOD-SCAN-OK]  @RequestMapping ==> URL映射解析完毕，解析结果如下：");
-		Set<String> allMapping = allMapping();
-		for(String mapping:allMapping) {
-			System.err.println(LuckyUtils.showtime()+mapping);
-		}
-		System.err.println(LuckyUtils.showtime()+"[ INITIALIZE-SUCCESSFUL     - ]  IOC容器初始化成功启动成功! 动态代理执行完毕! 依赖注入完毕！ URL解析完毕!");
 	}
 }

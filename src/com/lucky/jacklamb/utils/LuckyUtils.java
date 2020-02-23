@@ -99,13 +99,19 @@ public class LuckyUtils {
 	     return id;
 	}
 	
+	public static String time(String format) {
+	     Date date=new Date();
+	     SimpleDateFormat sf=
+	    	 new SimpleDateFormat(format);
+	     return sf.format(date);
+	}
+	
 	public static String time() {
 	     Date date=new Date();
 	     SimpleDateFormat sf=
 	    	 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	     return sf.format(date);
 	}
-	
 	
 	/**
 	 * 判断该类型是否为java类型

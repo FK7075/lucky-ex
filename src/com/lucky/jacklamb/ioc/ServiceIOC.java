@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.lucky.jacklamb.annotation.ioc.Service;
 import com.lucky.jacklamb.aop.util.PointRunFactory;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
@@ -13,6 +15,8 @@ import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class ServiceIOC extends ComponentFactory{
+	
+	private static Logger log=Logger.getLogger(ServiceIOC.class);
 
 	private Map<String, Object> serviceMap;
 
@@ -82,7 +86,9 @@ public class ServiceIOC extends ComponentFactory{
 					beanID=ser.value();
 				else
 					beanID=LuckyUtils.TableToClass1(service.getSimpleName());
-				addServiceMap(beanID, PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "service", beanID, service));
+				Object aspect = PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "service", beanID, service);
+				addServiceMap(beanID, aspect);
+				log.info("@Service         =>   [id="+beanID+" class="+aspect+"]");
 			}
 		}
 	}

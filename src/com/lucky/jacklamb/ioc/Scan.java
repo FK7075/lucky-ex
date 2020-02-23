@@ -5,13 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.lucky.jacklamb.ioc.config.ApplicationConfig;
 import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.ScanConfig;
-import com.lucky.jacklamb.utils.LuckyUtils;
 
 public abstract class Scan {
 	
+	private static Logger log=Logger.getLogger(Scan.class);
 	
 	protected Map<String, List<Class<?>>> componentClassMap;
 	
@@ -46,10 +48,9 @@ public abstract class Scan {
 	public void init() {
 		configuration=Configuration.getConfiguration();
 		if(configuration.getScanConfig().getScanMode()==com.lucky.jacklamb.enums.Scan.AUTO_SCAN) {
-			System.err.println(LuckyUtils.showtime()+"[ SCAN-MODE                 ~ ]  AUTO_SCAN");
+			log.info("LUCKY-SCAN-MODE => AUTO_SCAN");
 			autoScan();
 		}else {
-			System.err.println(LuckyUtils.showtime()+"[ SCAN-MODE                 - ]  SUFFIX_SCAN");
 			suffixScan();
 		}
 		componentClassMap.put("controller", controllerClass);
@@ -66,6 +67,15 @@ public abstract class Scan {
 	
 	public void  suffixScan() {
 		ScanConfig scanConfig = configuration.getScanConfig();
+		StringBuilder sb=new StringBuilder("LUCKY-SCAN-MODE => SUFFIX_SCAN\n");
+		sb.append("controller-pack-suffix : "+scanConfig.getControllerPackSuffix()+"\n")
+		.append("service-pack-suffix    : "+scanConfig.getServicePackSuffix()+"\n")
+		.append("repository-pack-suffix : "+scanConfig.getRepositoryPackSuffix()+"\n")
+		.append("component-pack-suffix  : "+scanConfig.getComponentPackSuffix()+"\n")
+		.append("aspect-pack-suffix     : "+scanConfig.getAspectPackSuffix()+"\n")
+		.append("websocket-pack-suffix  : "+scanConfig.getWebSocketPackSuffix()+"\n")
+		.append("pojo-pack-suffix       : "+scanConfig.getPojoPackSuffix());
+		log.info(sb.toString());
 		controllerClass=loadComponent(scanConfig.getControllerPackSuffix());
 		serviceClass=loadComponent(scanConfig.getServicePackSuffix());
 		repositoryClass=loadComponent(scanConfig.getRepositoryPackSuffix());

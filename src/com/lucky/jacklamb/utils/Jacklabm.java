@@ -18,8 +18,8 @@ public class Jacklabm {
 		if(sc.getCustomLogo()!=null) {
 			first=false;
 			d=sc.getCustomLogo();
-			System.err.println(d);
-			System.err.println("\n--------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n--------------------------------------------------\n\n");
+			System.out.println(d);
+			System.out.println("\n--------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n--------------------------------------------------\n\n");
 			return;
 		}
 		first=false;
@@ -66,9 +66,9 @@ public class Jacklabm {
 		default:
 			d="";
 		}
-		System.err.println(d);
+		System.out.println(d);
 		if(sc.getLogo()!=Logo.MOUSELET&&sc.getLogo()!=Logo.KEYBOARD)
-			System.err.println("\n----------------------------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n----------------------------------------------------------------------\n\n");
+			System.out.println("\n----------------------------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n----------------------------------------------------------------------\n\n");
 	}
 	
 

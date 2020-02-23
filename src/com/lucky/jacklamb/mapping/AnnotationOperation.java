@@ -25,6 +25,7 @@ import javax.servlet.http.Part;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.log4j.Logger;
 
 import com.lucky.jacklamb.annotation.mvc.Download;
 import com.lucky.jacklamb.annotation.mvc.RequestParam;
@@ -38,6 +39,8 @@ import com.lucky.jacklamb.tcconversion.typechange.JavaConversion;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class AnnotationOperation {
+	
+	private static Logger log=Logger.getLogger(AnnotationOperation.class);
 
 	/**
 	 * 根据参数得到具体的MultipartFile
@@ -396,9 +399,13 @@ public class AnnotationOperation {
 			throws IOException, ServletException, InstantiationException, IllegalAccessException {
 		Parameter[] parameters = method.getParameters();
 		Object[] args = new Object[parameters.length];
+		StringBuilder sb =new StringBuilder("[ URL-PARAMS ]\n");
 		Map<String, String> uploadMap = moreUpload(model, method);
+		sb.append(uploadMap.isEmpty()?"":"@Upload-Params       : "+uploadMap.toString()+"\n");
 		Map<String, MultipartFile> multiUploadMap = moreUploadMutipar(model, method);
+		sb.append(multiUploadMap.isEmpty()?"":"MultipartFile-Params : "+multiUploadMap.toString()+"\n");
 		Map<String, Object> pojoMap = pojoParam(model, method, uploadMap);
+		sb.append(pojoMap.isEmpty()?"":"Pojo-Params          : "+pojoMap.toString()+"\n").append("URL-Params           : \n");
 		for (int i = 0; i < parameters.length; i++) {
 			if (uploadMap.containsKey(getParamName(parameters[i]))
 					&& String.class.isAssignableFrom(parameters[i].getType())) {
@@ -422,40 +429,50 @@ public class AnnotationOperation {
 				if (!model.restMapContainsKey(restKey))
 					throw new NotFindRequestException("缺少请求参数：" + restKey+",错误位置："+method);
 				args[i] = JavaConversion.strToBasic(model.getRestMap().get(restKey), parameters[i].getType());
+				sb.append("[Rest-Java] "+restKey+"="+args[i]+"\n");
 			} else {
 				String reqParaName = getParamName(parameters[i]);
 				String defparam = getRequeatParamDefValue(parameters[i]);
 				if (parameters[i].getType().isArray() && parameters[i].getType().getClassLoader() == null) {
 					if (model.parameterMapContainsKey(reqParaName)) {
 						args[i] = model.getArray(reqParaName, parameters[i].getType());
-					} else {
-						if (defparam == null)
-							throw new NotFindRequestException("缺少请求参数：" + reqParaName+",错误位置："+method);
-						if("null".equals(defparam))
-							args[i]=null;
-						else
-							args[i] = ApplicationBeans.createApplicationBeans().getBean(defparam);
-					}
-				} else {
-					if (model.parameterMapContainsKey(reqParaName)) {
-						args[i] = model.getArray(reqParaName, parameters[i].getType())[0];
-					} else if (model.restMapContainsKey(reqParaName)) {
-						args[i] = model.getRestParam(getParamName(parameters[i]), parameters[i].getType());
+						sb.append("[URL-Array] "+reqParaName+"="+args[i]+"\n");
 					} else {
 						if (defparam == null)
 							throw new NotFindRequestException("缺少请求参数：" + reqParaName+",错误位置："+method);
 						if("null".equals(defparam)) {
 							args[i]=null;
+							sb.append("[Default-Array] "+reqParaName+"="+args[i]+"\n");							
+						}else {
+							args[i] = ApplicationBeans.createApplicationBeans().getBean(defparam);
+							sb.append("[Default-Array] "+reqParaName+"="+args[i]+"\n");
+						}
+					}
+				} else {
+					if (model.parameterMapContainsKey(reqParaName)) {
+						args[i] = model.getArray(reqParaName, parameters[i].getType())[0];
+						sb.append("[URL-Java] "+reqParaName+"="+args[i]+"\n");
+					} else if (model.restMapContainsKey(reqParaName)) {
+						args[i] = model.getRestParam(getParamName(parameters[i]), parameters[i].getType());
+						sb.append("[Rest-Java] "+reqParaName+"="+args[i]+"\n");
+					} else {
+						if (defparam == null)
+							throw new NotFindRequestException("缺少请求参数：" + reqParaName+",错误位置："+method);
+						if("null".equals(defparam)) {
+							args[i]=null;
+							sb.append("[Default-Java] "+reqParaName+"="+args[i]+"\n");
 						}else if (parameters[i].getType().getClassLoader() == null) {
 							args[i] = JavaConversion.strToBasic(defparam, parameters[i].getType());
+							sb.append("[Default-Java] "+reqParaName+"="+args[i]+"\n");
 						} else {
 							args[i] = ApplicationBeans.createApplicationBeans().getBean(defparam);
+							sb.append("[Default-Java] "+reqParaName+"="+args[i]);
 						}
-
 					}
 				}
 			}
 		}
+		log.debug(sb.toString());
 		return args;
 	}
 

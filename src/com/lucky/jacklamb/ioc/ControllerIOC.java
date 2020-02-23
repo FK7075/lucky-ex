@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.lucky.jacklamb.annotation.ioc.Controller;
 import com.lucky.jacklamb.annotation.mvc.DeleteMapping;
 import com.lucky.jacklamb.annotation.mvc.GetMapping;
@@ -25,6 +27,8 @@ import com.lucky.jacklamb.exception.NotFindBeanException;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class ControllerIOC extends ComponentFactory{
+	
+	private static Logger log=Logger.getLogger(ControllerIOC.class);
 
 	private Map<String, Object> controllerMap;
 
@@ -193,7 +197,7 @@ public class ControllerIOC extends ComponentFactory{
 					ip=come.getIps().isEmpty()?"":" , IP: "+come.getIps().toString();
 					ips=come.getIpSection().length==0?"":" , IP¶Î: "+Arrays.toString(come.getIpSection());
 					rest=" , Rest: "+come.getRest().toString();
-					mappingSet.add("[ URL-MAPPING               M ]  { "+"URL: ["+ url_c +url_m+"] , RequestMethod: "+uRLAndRequestMethod.getMethods() +ip+ips+rest+" , Method: "+method+"}");
+					log.info("@RequestMapping  =>   {"+"URL: ["+ url_c +url_m+"] , RequestMethod: "+uRLAndRequestMethod.getMethods() +ip+ips+rest+" , Method: "+method+"}");
 				} else {
 					continue;
 				}

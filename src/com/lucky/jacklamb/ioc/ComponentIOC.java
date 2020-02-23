@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.lucky.jacklamb.annotation.ioc.Bean;
 import com.lucky.jacklamb.annotation.ioc.BeanFactory;
 import com.lucky.jacklamb.annotation.ioc.Component;
@@ -23,6 +25,8 @@ import com.lucky.jacklamb.utils.LuckyUtils;
  *
  */
 public class ComponentIOC extends ComponentFactory {
+	
+	private static Logger log=Logger.getLogger(ComponentIOC.class);
 
 	private Map<String, Object> appMap;
 
@@ -95,7 +99,9 @@ public class ComponentIOC extends ComponentFactory {
 				} else {
 					beanID=LuckyUtils.TableToClass1(component.getSimpleName());
 				}
-				addAppMap(beanID, PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "component", beanID, component));
+				Object aspect = PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "component", beanID, component);
+				addAppMap(beanID, aspect);
+				log.info("@Component       =>   [id="+beanID+" class="+aspect+"]");
 			} else if (component.isAnnotationPresent(BeanFactory.class)) {
 				Object obj = component.newInstance();
 				Method[] methods=component.getDeclaredMethods();
@@ -106,14 +112,18 @@ public class ComponentIOC extends ComponentFactory {
 						if("".equals(bean.value())) {
 							String Id=component.getSimpleName()+"."+met.getName();
 							addAppMap(Id, invoke);
+							log.info("@Bean            =>   [id="+Id+" class="+invoke+"]");
 						}else {
 							addAppMap(bean.value(),invoke);
+							log.info("@Bean            =>   [id="+bean.value()+" class="+invoke+"]");
 						}
 						
 					}
 				}
 			}else if(component.isAnnotationPresent(ExceptionHander.class)) {
-				addAppMap("@%#LuckyExceptionHand@FK7075",PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "component", "exceptionHand", component));
+				Object aspect = PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "component", "exceptionHand", component);
+				addAppMap("@%#LuckyExceptionHand@FK7075",aspect);
+				log.info("@ExceptionHander =>   [id=@%#LuckyExceptionHand@FK7075"+"class="+aspect+"]");
 			}else {
 				continue;
 			}
