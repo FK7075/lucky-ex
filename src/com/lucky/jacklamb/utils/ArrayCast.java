@@ -45,4 +45,18 @@ public class ArrayCast {
 		}
 		return null;
 	}
+	
+	public static Class<?>[] getClassFieldGenericType(Field field){
+		Type genericType = field.getGenericType();
+		Class<?>[] GenericType = null;
+		if (genericType instanceof ParameterizedType) {
+			ParameterizedType pt = (ParameterizedType) genericType;
+			Type[] types = pt.getActualTypeArguments();
+			GenericType=new Class<?>[types.length];
+			for(int i=0;i<types.length;i++) {
+				GenericType[i]=(Class<?>) types[i];
+			}
+		}
+		return GenericType;
+	}
 }
