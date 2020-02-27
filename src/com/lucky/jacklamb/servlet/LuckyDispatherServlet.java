@@ -82,13 +82,13 @@ public class LuckyDispatherServlet extends HttpServlet {
 			//全局资源的IP限制
 			if(!webCfg.getGlobalResourcesIpRestrict().isEmpty()&&!webCfg.getGlobalResourcesIpRestrict().contains(currIp)) {
 				model.writer(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
-				log.debug("403 : 不合法的请求ip："+currIp+"该ip地址没有被注册，服务器拒绝响应！");
+				log.info("403 : 不合法的请求ip："+currIp+"该ip地址没有被注册，服务器拒绝响应！");
 				return;
 			}
 			//指定资源的IP限制
 			if(!webCfg.getSpecifiResourcesIpRestrict().isEmpty()&&(webCfg.getSpecifiResourcesIpRestrict().containsKey(path)&&!webCfg.getSpecifiResourcesIpRestrict().get(path).contains(currIp))) {
 				model.writer(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
-				log.debug("403 : 不合法的请求ip："+currIp+"该ip地址没有被注册，服务器拒绝响应！");
+				log.info("403 : 不合法的请求ip："+currIp+"该ip地址没有被注册，服务器拒绝响应！");
 				return;
 			}
 			if(webCfg.isOpenStaticResourceManage()&&StaticResourceManage.isLegalRequest(webCfg,currIp,resp,path)) {
@@ -111,7 +111,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 					return;
 				if(!controllerAndMethod.ipExistsInRange(currIp)||!controllerAndMethod.ipISCorrect(currIp)) {
 					model.writer(Jacklabm.exception("HTTP Status 403 Blocking Access","不合法的请求ip："+currIp,"该ip地址没有被注册，服务器拒绝响应！"));
-					log.debug("403 : 不合法的请求ip："+currIp+"该ip地址没有被注册，服务器拒绝响应！");
+					log.info("403 : 不合法的请求ip："+currIp+"该ip地址没有被注册，服务器拒绝响应！");
 					return;
 				}
 				else {

@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.sqlcore.abstractionlayer.dynamiccoreImpl;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.lucky.jacklamb.query.QueryBuilder;
@@ -54,7 +55,7 @@ public final class AccessSqlCore extends SqlCore {
 	}
 
 	@Override
-	public <T> boolean insertBatchByList(List<T> list) {
+	public <T> boolean insertBatchByCollection(Collection<T> collection) {
 		// TODO Auto-generated method stub
 		return false;
 	}

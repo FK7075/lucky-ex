@@ -1,6 +1,7 @@
 package com.lucky.jacklamb.sqlcore.abstractionlayer.dynamiccoreImpl;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.List;
 
 import com.lucky.jacklamb.query.ObjectToJoinSql;
@@ -69,7 +70,7 @@ public final class MySqlCore extends SqlCore {
 	}
 
 	@Override
-	public <T> boolean insertBatchByList(List<T> list) {
+	public <T> boolean insertBatchByCollection(Collection<T> list) {
 		BatchInsert bbi=new BatchInsert(list);
 		return statementCore.update(bbi.getInsertSql(), bbi.getInsertObject());
 	}

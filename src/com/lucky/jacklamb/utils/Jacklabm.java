@@ -67,8 +67,15 @@ public class Jacklabm {
 			d="";
 		}
 		System.out.println(d);
-		if(sc.getLogo()!=Logo.MOUSELET&&sc.getLogo()!=Logo.KEYBOARD)
+		if(sc.getLogo()!=Logo.MOUSELET&&sc.getLogo()!=Logo.KEYBOARD&&sc.getLogo()!=Logo.LUCKY)
 			System.out.println("\n----------------------------------------------------------------------\n##\n## Lucky[NOXML版]\n## (v1.0.0.RELEASE)\n##\n----------------------------------------------------------------------\n\n");
+		try {
+			Thread.sleep(1000);
+			System.out.println("\n\n");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 
@@ -403,29 +410,13 @@ public class Jacklabm {
 	}
 	
 	public static String str13() {
-		String d="                                                                                        \r\n" + 
-				"                                                                                        \r\n" + 
-				"                                                                                        \r\n" + 
-				"                   2W0S            ,28MM@r                                              \r\n" + 
-				"                 0MMr iMr         ;M   MMM8                                             \r\n" + 
-				"                XMMM   MM         0MSiZMMMM                                             \r\n" + 
-				"                rMMMMMMMM         ,MMMMMMM8                                             \r\n" + 
-				"                 SMMMMMM            0MMM@7        Wr                                    \r\n" + 
-				"          iW,      ,r;                           .MM                                    \r\n" + 
-				"          MMW                                    7MM                                    \r\n" + 
-				"          MMZ                                    BM@      .                             \r\n" + 
-				"          MMZ                                    MMr   ;8MMZ                            \r\n" + 
-				"          MMW                      r,     r0MM, :MM :WMMMMS ;.    2B.                   \r\n" + 
-				"          MMM           .MM       ,MM  XMMMMWS  ZMMMMM8i    MM   MMMS                   \r\n" + 
-				"          WMM    :720MMM MMM,    XMM .MMW.      MMMMMa:     MM SMMMM                    \r\n" + 
-				"          WMMMMMMMMMMMMX  ZMMMMMMMM. MMMWZ@MMMS,MM8MMMMMMM; MMMMMMM7                    \r\n" + 
-				"          7MMMMW2i.         aMMM0r   i@MMMM@8: .MM   .i7aa,  Z@SMMM                     \r\n" + 
-				"                                                                MM,                     \r\n" + 
-				"                                                               MMM                      \r\n" + 
-				"                                                              BMMr                      \r\n" + 
-				"                                                            :MMMS                       \r\n" + 
-				"                                                          ;MMMM,                        \r\n" + 
-				"                                                          MMW,     ";
+		String d="\n        .____                   __           \r\n" + 
+				"        |    |    __ __   ____ |  | _____.__.\r\n" + 
+				"        |    |   |  |  \\_/ ___\\|  |/ <   |  |\r\n" + 
+				"        |    |___|  |  /\\  \\___|    < \\___  |\r\n" + 
+				"        |_______ \\____/  \\___  >__|_ \\/ ____|\r\n" + 
+				"                \\/           \\/     \\/\\/    \n\n\t::  Java                 ::  (v1.8.0_202)\r\n\t" + 
+				"::  Lucky NoXml          ::  (v1.0.0.RELEASE)";
 		return d;
 	}
 	

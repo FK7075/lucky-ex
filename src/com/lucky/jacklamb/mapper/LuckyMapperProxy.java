@@ -1,7 +1,6 @@
 package com.lucky.jacklamb.mapper;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,9 +11,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -415,7 +414,7 @@ public class LuckyMapperProxy {
 		String sql = ins.value();
 		if ("".equals(sql)) {
 			if(ins.batch()) {
-				return sqlCore.insertBatchByList((List<T>) args[0]);
+				return sqlCore.insertBatchByCollection((Collection<T>) args[0]);
 			}else {
 				if(ins.setautoId()) {
 					return sqlCore.insertSetId(args[0]);

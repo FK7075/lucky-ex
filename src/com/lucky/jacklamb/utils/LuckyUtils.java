@@ -1,6 +1,8 @@
 package com.lucky.jacklamb.utils;
 
 import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -99,6 +101,11 @@ public class LuckyUtils {
 	     return id;
 	}
 	
+	/**
+	 * 按照指定的格式获取当前时间的字符串
+	 * @param format 格式（YYYY-MM-DD HH:MM:SS）
+	 * @return
+	 */
 	public static String time(String format) {
 	     Date date=new Date();
 	     SimpleDateFormat sf=
@@ -106,11 +113,112 @@ public class LuckyUtils {
 	     return sf.format(date);
 	}
 	
+	/**
+	 * 获取当前时间
+	 * @return
+	 */
 	public static String time() {
 	     Date date=new Date();
 	     SimpleDateFormat sf=
 	    	 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	     return sf.format(date);
+	}
+	
+	/**
+	 * 将Date按照格式转化为String
+	 * @param date Data对象
+	 * @param format (eg:yyyy-MM-dd HH:mm:ss)
+	 * @return
+	 */
+	public static String time(Date date,String format) {
+		SimpleDateFormat df = new SimpleDateFormat(format);
+		return df.format(date);
+	}
+	
+	/**
+	 * 按照指定格式将字符串转化为Date对象
+	 * @param dadeStr
+	 * @param format
+	 * @return
+	 * @throws ParseException
+	 */
+	public static Date getDate(String dadeStr,String format) {
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		try {
+			return sdf.parse(dadeStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * 年月日转Date 
+	 * @param dateStr (eg:2020-06-31)
+	 * @return
+	 */
+	public static Date getDate(String dateStr) {
+		return getDate(dateStr,"yyyy-MM-dd");
+	}
+	
+	/**
+	 * 年月日时分秒转Date
+	 * @param dateTimeStr (eg:2020-06-31 12:23:06)
+	 * @return
+	 */
+	public static Date getDateTime(String dateTimeStr) {
+		return getDate(dateTimeStr,"yyyy-MM-dd HH:mm:ss");
+	}
+	
+	/**
+	 * 将String转化为java.sql.Date
+	 * @param dateStr
+	 * @return
+	 */
+	public static java.sql.Date getSqlDate(String dateStr){
+		return new java.sql.Date(getDate(dateStr,"yyyy-MM-dd").getTime());
+	}
+	
+	/**
+	 * 获取当前时间的java.sql.Date
+	 * @return
+	 */
+	public static java.sql.Date getSqlDate(){
+		return new java.sql.Date(new Date().getTime());
+	}
+	
+	/**
+	 * 将String转化为java.sql.Time
+	 * @param timeStr
+	 * @return
+	 */
+	public static java.sql.Time getSqlTime(String timeStr){
+		return new java.sql.Time(getDate(timeStr,"HH:mm:ss").getTime());
+	}
+	
+	/**
+	 * 获取当前时间的java.sql.Time
+	 * @return
+	 */
+	public static java.sql.Time getSqlTime(){
+		return new java.sql.Time(new Date().getTime());
+	}
+	
+	/**
+	 * 将String转化为java.sql.Timestamp
+	 * @param timestampStr
+	 * @return
+	 */
+	public static Timestamp getTimestamp(String timestampStr) {
+		return new Timestamp(getDate(timestampStr,"yyyy-MM-dd HH:mm:ss").getTime());
+	}
+	
+	/**
+	 * 获取当前时间的java.sql.Timestamp
+	 * @return
+	 */
+	public static Timestamp getTimestamp() {
+		return new Timestamp(new Date().getTime());
 	}
 	
 	/**

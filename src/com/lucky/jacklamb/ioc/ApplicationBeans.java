@@ -46,9 +46,9 @@ public class ApplicationBeans {
 			} 
 		}
 		log=Logger.getLogger(ApplicationBeans.class);
-		Jacklabm.welcome();
 		iocContainers=new IOCContainers();
 		iocContainers.init();
+		Jacklabm.welcome();
 
 	}
 	

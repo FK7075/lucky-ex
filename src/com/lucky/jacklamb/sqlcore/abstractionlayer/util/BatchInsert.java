@@ -3,6 +3,7 @@ package com.lucky.jacklamb.sqlcore.abstractionlayer.util;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -25,12 +26,16 @@ public class BatchInsert {
 		return insertObject;
 	}
 	
-	public <T> BatchInsert(List<T> list) {
-		size=list.size();
-		if(!list.isEmpty()) {
-			Class<?> pojoClass=list.get(0).getClass();
-			insertSql=createInsertSql(pojoClass,list.size());
-			insertObject=createInsertObject(list);
+	public <T> BatchInsert(Collection<T> collection) {
+		size=collection.size();
+		if(!collection.isEmpty()) {
+			Class<?> pojoClass = null;
+			for(T t:collection) {
+				pojoClass=t.getClass();
+				break;
+			}
+			insertSql=createInsertSql(pojoClass,collection.size());
+			insertObject=createInsertObject(collection);
 		}
 	}
 	
@@ -43,7 +48,7 @@ public class BatchInsert {
 			String id=PojoManage.getIdString(clzz);
 			Stream.of(fields).filter(field->!id.equals(PojoManage.getTableField(field))
 					&&field.getType().getClassLoader()==null
-					&&!(field.getType()).isAssignableFrom(List.class)).forEach(list::add);
+					&&!(field.getType()).isAssignableFrom(Collection.class)).forEach(list::add);
 			StringBuffer fk=new StringBuffer("");
 			for(int i=0;i<list.size();i++) {
 				if(i==0) {
@@ -67,7 +72,7 @@ public class BatchInsert {
 		}else {
 			List<Field> list=new ArrayList<>();
 			Stream.of(fields).filter(field->field.getType().getClassLoader()==null
-					&&!(field.getType()).isAssignableFrom(List.class)).forEach(list::add);
+					&&!(field.getType()).isAssignableFrom(Collection.class)).forEach(list::add);
 			StringBuffer fk=new StringBuffer("");
 			for(int i=0;i<list.size();i++) {
 				if(i==0) {
@@ -92,16 +97,16 @@ public class BatchInsert {
 		return prefix.append(suffix).toString();
 	}
 	
-	private <T> Object[] createInsertObject(List<T> list) {
+	private <T> Object[] createInsertObject(Collection<T> collection) {
 		List<Object> po=new ArrayList<>();
-		for(T t:list) {
+		for(T t:collection) {
 			Class<?> clzz=t.getClass();
 			String id=PojoManage.getIdString(clzz);
 			Field[] fields=clzz.getDeclaredFields();
 			if(PojoManage.getIdType(clzz)==PrimaryType.AUTO_INT) {
 				for(Field fie:fields) {
 					if(fie.getType().getClassLoader()==null
-							&&!(fie.getType()).isAssignableFrom(List.class)
+							&&!(fie.getType()).isAssignableFrom(Collection.class)
 							&&!id.equals(PojoManage.getTableField(fie))) {
 						fie.setAccessible(true);
 						try {
@@ -115,7 +120,7 @@ public class BatchInsert {
 				}
 			}else {
 				for(Field fie:fields) {
-					if(fie.getType().getClassLoader()==null&&!(fie.getType()).isAssignableFrom(List.class)) {
+					if(fie.getType().getClassLoader()==null&&!(fie.getType()).isAssignableFrom(Collection.class)) {
 						fie.setAccessible(true);
 						try {
 							Object object=fie.get(t);
