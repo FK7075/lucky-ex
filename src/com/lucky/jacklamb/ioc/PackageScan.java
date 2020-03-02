@@ -10,6 +10,7 @@ import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpoint;
 
 import com.lucky.jacklamb.annotation.aop.Aspect;
+import com.lucky.jacklamb.annotation.ioc.AppConfig;
 import com.lucky.jacklamb.annotation.ioc.BeanFactory;
 import com.lucky.jacklamb.annotation.ioc.Component;
 import com.lucky.jacklamb.annotation.ioc.Controller;
@@ -174,7 +175,7 @@ public class PackageScan extends Scan {
 				String className=file.getAbsolutePath().replaceAll("\\\\", "/").replaceAll(fileProjectPath, "").replaceAll("/", "\\.");
 				className=className.substring(0,className.length()-6);
 				Class<?> fileClass=Class.forName(className);
-				if(ApplicationConfig.class.isAssignableFrom(fileClass)) {
+				if(ApplicationConfig.class.isAssignableFrom(fileClass)&&fileClass.isAnnotationPresent(AppConfig.class)) {
 					appConfig=(ApplicationConfig) fileClass.newInstance();
 					break;
 				}

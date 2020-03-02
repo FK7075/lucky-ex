@@ -53,11 +53,38 @@ public interface GeneralObjectCore {
 	<T> List<T> getList(T t);
 	
 	/**
+	 * 得到该Class对应表的所有数据
+	 * @param t
+	 * @return
+	 */
+	default <T> List<T> getList(Class<T> t){
+		try {
+			return getList(t.newInstance());
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException("创建对象错误！Class:"+t);
+		}
+	}
+	
+	
+	/**
 	 * 统计总数
 	 * @param t
 	 * @return
 	 */
 	<T> int count(T t);
+	
+	/**
+	 * 数据统计
+	 * @param t
+	 * @return
+	 */
+	default <T> int count(Class<T> t){
+		try {
+			return count(t.newInstance());
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException("创建对象错误！Class:"+t);
+		}
+	}
 	
 	
 	/**

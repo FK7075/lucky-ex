@@ -50,12 +50,12 @@ public class IniFilePars {
 	private IniFilePars() {
 		iniMap=new HashMap<>();
 		iniInputStream=IniFilePars.class.getClassLoader().getResourceAsStream("appconfig.ini");
-		iniName="appconfig.ini";
 		try {
-			if(iniMap.isEmpty())
+			if(iniMap.isEmpty()) {
 				pars();
+			}
 		}catch(ArrayIndexOutOfBoundsException e) {
-			throw new RuntimeException(iniName+"配置文件内容格式不正确",e);
+			throw new RuntimeException("appconfig.ini配置文件内容格式不正确",e);
 		}
 	}
 	

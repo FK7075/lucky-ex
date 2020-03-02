@@ -1,6 +1,7 @@
 package com.lucky.jacklamb.sqlcore.abstractionlayer.dynamiccoreImpl;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,8 +17,9 @@ import com.lucky.jacklamb.tcconversion.reverse.TableToJava;
 @SuppressWarnings("unchecked")
 public final class MySqlCore extends SqlCore {
 	
+	
 	private TableToJava tableToJava;
-
+	
 	public MySqlCore(String dbname) {
 		super(dbname);
 		tableToJava=new TableToJava(dbname);
@@ -25,27 +27,32 @@ public final class MySqlCore extends SqlCore {
 
 	@Override
 	public void createJavaBean() {
+		log.debug("Run ==> createJavaBean()");
 		tableToJava.generateJavaSrc();
 	}
 
 	@Override
 	public void createJavaBean(String srcPath) {
+		log.debug("Run ==> createJavaBean([String]"+srcPath+")");
 		tableToJava.generateJavaSrc(srcPath);
 	}
 
 	@Override
 	public void createJavaBean(String... tables) {
+		log.debug("Run ==> createJavaBean([String...]"+Arrays.toString(tables)+")");
 		tableToJava.b_generateJavaSrc(tables);
 	}
 
 	@Override
 	public void createJavaBean(String srcPath, String... tables) {
+		log.debug("Run ==> createJavaBean([String]"+srcPath+",[String...]"+Arrays.toString(tables)+")");
 		tableToJava.a_generateJavaSrc(srcPath, tables);
 		
 	}
 
 	@Override
 	public void createTable() {
+		log.debug("Run ==> createTable()");
 		CreateTable ct = new CreateTable(dbname);
 		ct.creatTable();
 		
@@ -53,6 +60,7 @@ public final class MySqlCore extends SqlCore {
 
 	@Override
 	public <T> List<T> getPageList(T t, int page, int size) {
+		log.debug("Run ==> getPageList([T]"+t+",[int]"+page+",[int]"+size+")");
 		QueryBuilder queryBuilder=new QueryBuilder();
 		queryBuilder.limit(page,size);
 		queryBuilder.setWheresql(new MySqlGroup());
@@ -62,6 +70,7 @@ public final class MySqlCore extends SqlCore {
 
 	@Override
 	public <T> List<T> query(QueryBuilder queryBuilder, Class<T> resultClass, String... expression) {
+		log.debug("Run ==> query([QueryBuilder]"+queryBuilder+",[Class<T>]"+resultClass+",[String...]"+Arrays.toString(expression)+")");
 		queryBuilder.setWheresql(new MySqlGroup());
 		ObjectToJoinSql join = new ObjectToJoinSql(queryBuilder);
 		String sql = join.getJoinSql(expression);
@@ -71,6 +80,7 @@ public final class MySqlCore extends SqlCore {
 
 	@Override
 	public <T> boolean insertBatchByCollection(Collection<T> list) {
+		log.debug("Run ==> insertBatchByCollection([Collection<T>]"+list+")");
 		BatchInsert bbi=new BatchInsert(list);
 		return statementCore.update(bbi.getInsertSql(), bbi.getInsertObject());
 	}
@@ -81,6 +91,7 @@ public final class MySqlCore extends SqlCore {
 	 */
 	@Override
 	public void setNextId(Object pojo) {
+		log.debug("Run ==> setNextId([Object]"+pojo+")");
 		Class<?> pojoClass=pojo.getClass();
 		String sql="SELECT auto_increment FROM information_schema.`TABLES` WHERE TABLE_SCHEMA=? AND table_name=?";
 		int nextid= statementCore.getObject(int.class, sql, PojoManage.getDatabaseName(dbname),PojoManage.getTable(pojoClass))-1;

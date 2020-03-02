@@ -1,12 +1,16 @@
 package com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
+
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.mapper.LuckyMapperProxy;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.dynamiccoreImpl.MySqlCore;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.fixedcoreImpl.GeneralObjectCoreImpl;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.fixedcoreImpl.StatementCoreImpl;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
@@ -20,6 +24,8 @@ import com.lucky.jacklamb.sqlcore.c3p0.ReadIni;
  *
  */
 public abstract class SqlCore implements UniqueSqlCore {
+	
+	protected Logger log =Logger.getLogger(MySqlCore.class);
 	
 	protected String dbname;
 	
@@ -45,6 +51,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public <T> T getOne(Class<T> pojoClass, Object id) {
+		log.debug("Run ==> getOne([Class<T>]"+pojoClass+",[Object]"+id+")");
 		return generalObjectCore.getOne(pojoClass, id);
 	}
 	
@@ -54,6 +61,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public <T> T getObject(T pojo) {
+		log.debug("Run ==> getObject([T]"+pojo+")");
 		return generalObjectCore.getObject(pojo);
 	}
 	
@@ -64,16 +72,38 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public <T> List<T> getList(T pojo){
+		log.debug("Run ==> getList([T]"+pojo+")");
 		return generalObjectCore.getList(pojo);
 	}
 	
 	/**
-	 * 统计总数
+	 * 查询class对应表中得所有数据
+	 * @param clzz
+	 * @return
+	 */
+	public <T> List<T> getList(Class<T> clzz){
+		log.debug("Run ==> getList([Class<T>]"+clzz+")");
+		return generalObjectCore.getList(clzz);
+	}
+	
+	/**
+	 * 条件数据统计
 	 * @param pojo
 	 * @return
 	 */
 	public <T> int count(T pojo) {
+		log.debug("Run ==> count([T]"+pojo+")");
 		return generalObjectCore.count(pojo);
+	}
+	
+	/**
+	 * 总数统计
+	 * @param clzz
+	 * @return
+	 */
+	public <T> int count(Class<T> clzz) {
+		log.debug("Run ==> count([Class<T>]"+clzz+")");
+		return generalObjectCore.count(clzz);
 	}
 	
 	
@@ -84,6 +114,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public <T> boolean delete(T pojo) {
+		log.debug("Run ==> delete([T]"+pojo+")");
 		return generalObjectCore.delete(pojo);
 	}
 	
@@ -94,6 +125,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public <T> boolean updateByPojo(T pojo,String...conditions) {
+		log.debug("Run ==> updateByPojo([T]"+pojo+",[String...]"+Arrays.toString(conditions)+")");
 		return generalObjectCore.update(pojo,conditions);
 	}
 	
@@ -104,6 +136,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public boolean deleteBatchByArray(Object...pojos) {
+		log.debug("Run ==> deleteBatchByArray([Object...]"+pojos+")");
 		return generalObjectCore.deleteBatchByArray(pojos);
 	}
 	
@@ -115,6 +148,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public boolean updateBatchByArray(Object...pojos) {
+		log.debug("Run ==> updateBatchByArray([Object...]"+Arrays.toString(pojos)+")");
 		return generalObjectCore.updateBatchByArray(pojos);
 	}
 	
@@ -124,6 +158,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return false or true
 	 */
 	public <T> boolean deleteBatchByCollection(Collection<T> pojoCollection) {
+		log.debug("Run ==> deleteBatchByCollection([Collection<T>]"+pojoCollection+")");
 		return generalObjectCore.deleteBatchByCollection(pojoCollection);
 	}
 	
@@ -134,6 +169,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return false or true
 	 */
 	public <T> boolean updateBatchByCollection(Collection<T> pojoCollection) {
+		log.debug("Run ==> updateBatchByCollection([Collection<T>]"+pojoCollection+")");
 		return generalObjectCore.updateBatchByCollection(pojoCollection);
 	}
 	
@@ -147,6 +183,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public <T> List<T> getList(Class<T> pojoClass, String sql, Object... obj){
+		log.debug("Run ==> getList([Class<T>]"+pojoClass+",[String]"+sql+",[Object...]"+Arrays.toString(obj)+")");
 		return statementCore.getList(pojoClass, sql, obj);
 	}
 	
@@ -158,6 +195,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public <T> T getObject(Class<T> pojoClass,String sql,Object...obj) {
+		log.debug("Run ==> getObject([Class<T>]"+pojoClass+",[String]"+sql+",[Object...]"+Arrays.toString(obj)+")");
 		return statementCore.getObject(pojoClass, sql, obj);
 	}
 	
@@ -168,6 +206,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public boolean update(String sql,Object...obj) {
+		log.debug("Run ==> update([String]"+sql+",[Object...]"+Arrays.toString(obj)+")");
 		return statementCore.update(sql, obj);
 	}
 	
@@ -180,6 +219,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public boolean delete(Class<?> pojoClass,Object id) {
+		log.debug("Run ==> delete([Class<?>]"+pojoClass+",[Object]"+id+")");
 		return generalObjectCore.delete(pojoClass, id);
 	}
 	
@@ -190,6 +230,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public boolean deleteBatchByID(Class<?> pojoClass,Object...ids) {
+		log.debug("Run ==> deleteBatchByID([Class<?>]"+pojoClass+",[Object...]"+Arrays.toString(ids)+")");
 		return generalObjectCore.deleteBatchByID(pojoClass, ids);
 	}
 	
@@ -204,6 +245,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public boolean updateBatch(String sql,Object[][] obj) {
+		log.debug("Run ==> updateBatch([String]"+sql+",[Object[][]]"+Arrays.toString(obj)+")");
 		return statementCore.updateBatch(sql, obj);
 	}
 	
@@ -212,6 +254,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * @return
 	 */
 	public String getDbName() {
+		log.debug("Run ==> getDbName()");
 		return dataSource.getName();
 	}
 	
@@ -219,6 +262,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 * 清空缓存
 	 */
 	public final void clear() {
+		log.debug("Run ==> clear()");
 		statementCore.clear();
 		
 	}
@@ -230,6 +274,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getMapper(Class<T> clazz) {
+		log.debug("Run ==> getMapper([Class<T>]"+clazz+")");
 		LuckyMapperProxy mapperProxy = new LuckyMapperProxy(this);
 		Object obj = null;
 		try {
@@ -244,6 +289,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 
 	@Override
 	public <T> boolean insert(T t) {
+		log.debug("Run ==> insert([T]"+t+")");
 		if(PojoManage.getIdType(t.getClass())==PrimaryType.AUTO_UUID)
 			setNextUUID(t);
 		generalObjectCore.insert(t);
@@ -252,6 +298,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	
 	@Override
 	public <T> boolean insertSetId(T t) {
+		log.debug("Run ==> insertSetId([T]"+t+")");
 		insert(t);
 		if(PojoManage.getIdType(t.getClass())==PrimaryType.AUTO_INT)
 			setNextId(t);
@@ -260,6 +307,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 
 	@Override
 	public boolean insertBatchByArray(Object... obj) {
+		log.debug("Run ==> insertBatchByArray([Object...]"+Arrays.toString(obj)+")");
 		for(Object pojo:obj) {
 			insert(pojo);
 		}
@@ -268,6 +316,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	
 	@Override
 	public boolean insertSetIdBatchByArray( Object... obj) {
+		log.debug("Run ==> insertSetIdBatchByArray([Object...]"+Arrays.toString(obj)+")");
 		for(Object pojo:obj) {
 			insertSetId(pojo);
 		}
@@ -275,6 +324,7 @@ public abstract class SqlCore implements UniqueSqlCore {
 	}
 	
 	public void setNextUUID(Object pojo) {
+		log.debug("Run ==> setNextUUID([Object]"+pojo+")");
 		Field idField=PojoManage.getIdField(pojo.getClass());
 		idField.setAccessible(true);
 		try {

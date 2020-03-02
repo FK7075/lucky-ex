@@ -96,5 +96,5 @@ public final class GeneralObjectCoreImpl implements GeneralObjectCore {
 		PrecompileSqlAndObject insert=gcg.singleInsert(pojo);
 		return statementCore.update(insert.getPrecompileSql(), insert.getObjects().toArray());
 	}
-	
+
 }

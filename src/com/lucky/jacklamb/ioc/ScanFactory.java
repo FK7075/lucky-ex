@@ -22,7 +22,6 @@ public class ScanFactory {
 			}
 			return pack;
 		}
-		
 	}
 
 }

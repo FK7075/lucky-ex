@@ -12,6 +12,7 @@ import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpoint;
 
 import com.lucky.jacklamb.annotation.aop.Aspect;
+import com.lucky.jacklamb.annotation.ioc.AppConfig;
 import com.lucky.jacklamb.annotation.ioc.BeanFactory;
 import com.lucky.jacklamb.annotation.ioc.Component;
 import com.lucky.jacklamb.annotation.ioc.Controller;
@@ -23,24 +24,20 @@ import com.lucky.jacklamb.aop.proxy.Point;
 import com.lucky.jacklamb.ioc.config.ApplicationConfig;
 
 public class JarScan extends Scan {
+	
+	private String jarpath;
+	
+	private String prefix;
 
-	private Class<?> clzz;
 
 	public JarScan(Class<?> clzz) {
-		this.clzz = clzz;
+		String allname=clzz.getName();
+		prefix=allname.substring(0, allname.length() - clzz.getSimpleName().length()).replaceAll("\\.", "/");
+		jarpath = clzz.getResource("").getPath().substring(6, jarpath.indexOf(".jar!") + 4);
 	}
 
 	public List<Class<?>> loadComponent(List<String> suffixs) {
 		List<Class<?>> className = new ArrayList<>();
-		String prefix = "";
-		String jarpath = JarScan.class.getResource("").getPath();
-		if (clzz != null) {
-			String allname = clzz.getName();
-			String simpleName = clzz.getSimpleName();
-			prefix = allname.substring(0, allname.length() - simpleName.length()).replaceAll("\\.", "/");
-			jarpath = clzz.getResource("").getPath();
-		}
-		jarpath = jarpath.substring(6, jarpath.indexOf(".jar!") + 4);
 		JarFile jarFile = null;
 
 		try {
@@ -75,15 +72,6 @@ public class JarScan extends Scan {
 
 	@Override
 	public void autoScan() {
-		String prefix = "";
-		String jarpath = JarScan.class.getResource("").getPath();
-		if (clzz != null) {
-			String allname = clzz.getName();
-			String simpleName = clzz.getSimpleName();
-			prefix = allname.substring(0, allname.length() - simpleName.length()).replaceAll("\\.", "/");
-			jarpath = clzz.getResource("").getPath();
-		}
-		jarpath = jarpath.substring(6, jarpath.indexOf(".jar!") + 4);
 		JarFile jarFile = null;
 
 		try {
@@ -133,15 +121,6 @@ public class JarScan extends Scan {
 
 	@Override
 	public void findAppConfig() {
-		String prefix = "";
-		String jarpath = JarScan.class.getResource("").getPath();
-		if (clzz != null) {
-			String allname = clzz.getName();
-			String simpleName = clzz.getSimpleName();
-			prefix = allname.substring(0, allname.length() - simpleName.length()).replaceAll("\\.", "/");
-			jarpath = clzz.getResource("").getPath();
-		}
-		jarpath = jarpath.substring(6, jarpath.indexOf(".jar!") + 4);
 		JarFile jarFile = null;
 
 		try {
@@ -159,7 +138,7 @@ public class JarScan extends Scan {
 				name = name.substring(0, name.length() - 6);
 				String clzzName = name.replaceAll("/", "\\.");
 				Class<?> fileClass = Class.forName(clzzName);
-				if(ApplicationConfig.class.isAssignableFrom(fileClass)) {
+				if(ApplicationConfig.class.isAssignableFrom(fileClass)&&fileClass.isAnnotationPresent(AppConfig.class)) {
 					appConfig=(ApplicationConfig) fileClass.newInstance();
 					break;
 				}

@@ -27,11 +27,7 @@ public class ServerConfig {
 	
 	private int sessionTimeout;
 	
-//	private boolean defa=true;
-	
 	public static String projectPath;
-	
-//	private static boolean first=true;
 	
 	private String contextPath;
 	
@@ -217,16 +213,7 @@ public class ServerConfig {
 			serverConfig.setShutdown("SHUTDOWN");
 			serverConfig.setSessionTimeout(30);
 			serverConfig.setWebapp("/WebContent/");
-			if(ServerConfig.class.getResource("/")!=null) {
-				String path=ServerConfig.class.getResource("/").getPath();
-				path=path.replaceAll("/bin/", "/");
-				projectPath=path;
-			}else {
-				String path=ServerConfig.class.getResource("").getPath();
-				path=path.substring(6,path.indexOf(".jar!"));
-				path=path.substring(0,path.lastIndexOf("/"))+"/";
-				projectPath=path;
-			}
+			projectPath=System.getProperty("user.dir").replaceAll("\\\\", "/")+"/";
 			serverConfig.addServlet(new LuckyDispatherServlet(), "/");
 			serverConfig.setContextPath("");
 			serverConfig.setBaseDir("Lucky/tomcat/");

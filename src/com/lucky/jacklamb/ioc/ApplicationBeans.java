@@ -15,9 +15,11 @@ import javax.websocket.server.ServerApplicationConfig;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.xml.DOMConfigurator;
 
 import com.lucky.jacklamb.aop.proxy.PointRun;
 import com.lucky.jacklamb.exception.NotFindBeanException;
+import com.lucky.jacklamb.file.ini.AppConfig;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 import com.lucky.jacklamb.start.LuckyServerApplicationConfig;
 import com.lucky.jacklamb.utils.Jacklabm;
@@ -34,14 +36,28 @@ public class ApplicationBeans {
 	
 	static {
 		URL logfile = ApplicationBeans.class.getClassLoader().getResource("/log4j.properties");
+		URL logxmlfile = ApplicationBeans.class.getClassLoader().getResource("/log4j.xml");
 		if(logfile!=null) {
 			PropertyConfigurator.configure(logfile.getPath());
+		}else if(logxmlfile!=null){
+			DOMConfigurator.configure(logxmlfile.getPath());
 		}else {
 			try {
 				Properties p=new Properties();
 				p.load(new BufferedReader(new InputStreamReader(ApplicationBeans.class.getResourceAsStream("/log4j.properties"),"UTF-8")));
-				PropertyConfigurator.configure(p);
+				Map<String, String> inilog4jMap = AppConfig.getSectionMap("Log4j");
+				if(inilog4jMap!=null) {
+					Properties p2=new Properties(p);
+					for(String key:inilog4jMap.keySet()) {
+						p2.setProperty(key, inilog4jMap.get(key));
+						System.out.println(key+"="+inilog4jMap.get(key));
+					}
+					PropertyConfigurator.configure(p2);
+				}else {
+					PropertyConfigurator.configure(p);
+				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				BasicConfigurator.configure();
 			} 
 		}

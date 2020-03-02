@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
+
 import com.lucky.jacklamb.annotation.orm.Id;
 import com.lucky.jacklamb.annotation.orm.mapper.AutoId;
 import com.lucky.jacklamb.annotation.orm.mapper.Change;
@@ -42,6 +44,7 @@ import com.lucky.jacklamb.query.SqlAndObject;
 import com.lucky.jacklamb.query.SqlFragProce;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore.SqlCore;
 import com.lucky.jacklamb.sqlcore.abstractionlayer.util.PojoManage;
+import com.lucky.jacklamb.sqlcore.exception.NotFindSqlConfigFileException;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -49,7 +52,8 @@ import net.sf.cglib.proxy.MethodInterceptor;
 
 @SuppressWarnings("all")
 public class LuckyMapperProxy {
-
+	
+	private Logger log=Logger.getLogger(LuckyMapperProxy.class);
 	private SqlCore sqlCore;
 	private Map<String,String> sqlMap;
 	private Class<?> LuckyMapperGeneric;
@@ -91,8 +95,10 @@ public class LuckyMapperProxy {
 			String coding=mapper.codedformat();
 			for(String path:propertys) {
 				InputStream resource = this.getClass().getResourceAsStream("/"+path);
-				if(resource==null)
-					throw new RuntimeException("找不到"+clzz.getName()+"的Sql配置文件"+path+"!请检查@Mapper注解上的properties配置信息！");
+				if(resource==null) {
+					log.error("找不到"+clzz.getName()+"的Sql配置文件"+path+"!请检查@Mapper注解上的properties配置信息！");
+					throw new NotFindSqlConfigFileException("找不到"+clzz.getName()+"的Sql配置文件"+path+"!请检查@Mapper注解上的properties配置信息！");
+				}
 				loadProperty(clzz,resource,coding);
 
 			}
@@ -545,9 +551,11 @@ public class LuckyMapperProxy {
 		Enhancer enhancer=new Enhancer();
 		enhancer.setSuperclass(clazz);
 		MethodInterceptor interceptor=(object,method,params,methodProxy)->{
+			log.debug("Run ==> "+object.getClass().getName()+"."+method.getName()+"\n params="+Arrays.toString(params));
+			
 			
 			/*
-			  用户自定义的Mapper如果继承了LuckyMapper<T>,代理selectById和deleteById方法
+			  用户自定义的Mapper如果继承了LuckyMapper<T>,代理selectById,deleteById,count,selectList 方法
 			 这两个方法的执行依赖LuckyMapper接口的泛型类型，所以需要特殊处理
 			*/
 			if(LuckyMapperGeneric!=null&&"selectById".equals(method.getName())) {
@@ -555,6 +563,12 @@ public class LuckyMapperProxy {
 			}
 			if(LuckyMapperGeneric!=null&&"deleteById".equals(method.getName())) {
 				return sqlCore.delete(LuckyMapperGeneric, params[0]);
+			}
+			if(LuckyMapperGeneric!=null&&"count".equals(method.getName())&&params.length==0) {
+				return sqlCore.count(LuckyMapperGeneric);
+			}
+			if(LuckyMapperGeneric!=null&&"selectList".equals(method.getName())&&params.length==0) {
+				return sqlCore.getList(LuckyMapperGeneric);
 			}
 			
 			//用户自定义Mapper接口方法的代理

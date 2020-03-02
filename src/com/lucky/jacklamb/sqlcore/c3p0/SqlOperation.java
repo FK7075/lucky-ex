@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.lucky.jacklamb.utils.SqlLog;
+import com.lucky.jacklamb.sqlcore.abstractionlayer.util.SqlLog;
 /**
  * JDBC相关操作类
  * @author fk-7075

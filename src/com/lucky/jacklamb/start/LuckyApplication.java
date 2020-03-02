@@ -59,10 +59,10 @@ public class LuckyApplication {
 			sb.append(LuckyUtils.time()+"   [ tomcat-config-sessionTimeOut  ]  sessionTimeout    : " +serverCfg.getSessionTimeout()+"min\n")
 			.append(LuckyUtils.time()+"   [ tomcat-config-shutdown-port   ]  shutdown-port     : "+serverCfg.getClosePort()+"\n")
 			.append(LuckyUtils.time()+"   [ tomcat-config-shutdown-command]  shutdown-command  : "+serverCfg.getShutdown()+"\n")
-			.append(LuckyUtils.time()+"   [ tomcat-config-baseDir         ]  baseDir           : "+serverCfg.getBaseDir().substring(1)+"\n")
-			.append(LuckyUtils.time()+"   [ tomcat-config-docBase         ]  docBase           : "+docBase.substring(1)+"\n")
+			.append(LuckyUtils.time()+"   [ tomcat-config-baseDir         ]  baseDir           : "+serverCfg.getBaseDir()+"\n")
+			.append(LuckyUtils.time()+"   [ tomcat-config-docBase         ]  docBase           : "+docBase+"\n")
 			.append(LuckyUtils.time()+"   [ tomcat-config-contextPath     ]  contextPath       : \""+serverCfg.getContextPath()+"\"\n")
-			.append(LuckyUtils.time()+"   [ tomcat-Start-time             ]  Starting ProtocolHandler [http-nio-"+serverCfg.getPort()+"],"+"Tomcat启动成功！用时"+(end-start)+"ms!");
+			.append(LuckyUtils.time()+"   [ tomcat-Start-time             ]  Start Info [http-nio-"+serverCfg.getPort()+"],"+"Tomcat启动成功！用时"+(end-start)+"ms!");
 			log.info(sb.toString());
 			tomcat.getServer().await();
 		} catch (LifecycleException e) {

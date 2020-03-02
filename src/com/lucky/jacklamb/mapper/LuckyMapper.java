@@ -59,6 +59,13 @@ public interface LuckyMapper<T> {
 	public List<T> selectList(T pojo);
 	
 	/**
+	 * 查询Class对应表的所有数据
+	 * @param pojoClass
+	 * @return
+	 */
+	public List<T> selectList();
+	
+	/**
 	 * 更新操作
 	 * @param pojo 包含更新信息的pojo对象
 	 * @return 
@@ -115,5 +122,12 @@ public interface LuckyMapper<T> {
 	 */
 	@Count
 	public int count(T pojo);
+	
+	/**
+	 * 总数统计
+	 * @param pojoClass
+	 * @return
+	 */
+	public int count();
 	
 }
