@@ -415,7 +415,7 @@ public class Jacklabm {
 				"        |    |   |  |  \\_/ ___\\|  |/ <   |  |\r\n" + 
 				"        |    |___|  |  /\\  \\___|    < \\___  |\r\n" + 
 				"        |_______ \\____/  \\___  >__|_ \\/ ____|\r\n" + 
-				"                \\/           \\/     \\/\\/    \n\n\t::  Java                 ::  (v1.8.0_202)\r\n\t" + 
+				"                \\/           \\/     \\/\\/    \n\n\t::  "+System.getProperty("os.name")+"           ::  (v"+System.getProperty("os.version")+")\n\t::  Java                 ::  (v"+System.getProperty("java.version")+")\r\n\t" + 
 				"::  Lucky NoXml          ::  (v1.0.0.RELEASE)";
 		return d;
 	}
@@ -423,14 +423,4 @@ public class Jacklabm {
 	public static void main(String[] args) {
 		System.out.println(str13());
 	}
-	
-	public static void over() {
-		System.err.println(":)_> github");
-		System.err.println("_www.github.com/FK7075/Lucky_");
-		System.err.println(":)_> email ");
-		System.err.println("_1814375626@qq.com_");
-		System.err.println(":)_> wechat ");
-		System.err.println("_Fk-7075_");
-	}
-	
 }

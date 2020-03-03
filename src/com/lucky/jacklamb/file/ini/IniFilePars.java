@@ -432,10 +432,5 @@ public class IniFilePars {
 			}
 		}
 	}
-	
-	public static void main(String[] args) {
-		AppConfig app=new AppConfig("com/lucky/jacklamb/config/appconfig.ini");
-		app.printIniMap();
-	}
 }
 

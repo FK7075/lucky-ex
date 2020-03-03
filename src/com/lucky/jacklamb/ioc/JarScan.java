@@ -32,8 +32,10 @@ public class JarScan extends Scan {
 
 	public JarScan(Class<?> clzz) {
 		String allname=clzz.getName();
-		prefix=allname.substring(0, allname.length() - clzz.getSimpleName().length()).replaceAll("\\.", "/");
-		jarpath = clzz.getResource("").getPath().substring(6, jarpath.indexOf(".jar!") + 4);
+		String simpleName=clzz.getSimpleName();
+		prefix=allname.substring(0, allname.length()-simpleName.length()).replaceAll("\\.", "/");
+		jarpath=clzz.getResource("").getPath();
+		jarpath=jarpath.substring(6, jarpath.indexOf(".jar!")+4);
 	}
 
 	public List<Class<?>> loadComponent(List<String> suffixs) {
