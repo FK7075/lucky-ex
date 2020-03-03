@@ -66,7 +66,24 @@ public class ScanConfig {
 	 * 设置自定义的Logo
 	 */
 	private String customLogo;
+	
+	/**
+	 * 配置sql的ini文件的位置
+	 */
+	private String sqlIniPath;
+	
 
+	public String getSqlIniPath() {
+		return sqlIniPath;
+	}
+	
+	/**
+	 * 设置配置sql的ini文件
+	 * @param sqlIniPath
+	 */
+	public void setSqlIniPath(String sqlIniPath) {
+		this.sqlIniPath = sqlIniPath;
+	}
 	public static ScanConfig getScanfig() {
 		return scanfig;
 	}
@@ -320,6 +337,7 @@ public class ScanConfig {
 			scanfig.addWebSocketPackSuffix("websocket");
 			scanfig.addAspectPackSuffix("aspect","aop");
 			scanfig.addPojoPackSuffix("pojo", "entity");
+			scanfig.setSqlIniPath("sql.ini");
 			scanfig.setScanMode(Scan.AUTO_SCAN);
 			scanfig.setLogo(Logo.LUCKY);
 		}

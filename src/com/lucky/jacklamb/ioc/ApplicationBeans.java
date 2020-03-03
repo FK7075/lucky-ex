@@ -19,7 +19,6 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 import com.lucky.jacklamb.aop.proxy.PointRun;
 import com.lucky.jacklamb.exception.NotFindBeanException;
-import com.lucky.jacklamb.file.ini.AppConfig;
 import com.lucky.jacklamb.sqlcore.c3p0.DataSource;
 import com.lucky.jacklamb.start.LuckyServerApplicationConfig;
 import com.lucky.jacklamb.utils.Jacklabm;
@@ -45,17 +44,7 @@ public class ApplicationBeans {
 			try {
 				Properties p=new Properties();
 				p.load(new BufferedReader(new InputStreamReader(ApplicationBeans.class.getResourceAsStream("/log4j.properties"),"UTF-8")));
-				Map<String, String> inilog4jMap = AppConfig.getSectionMap("Log4j");
-				if(inilog4jMap!=null) {
-					Properties p2=new Properties(p);
-					for(String key:inilog4jMap.keySet()) {
-						p2.setProperty(key, inilog4jMap.get(key));
-						System.out.println(key+"="+inilog4jMap.get(key));
-					}
-					PropertyConfigurator.configure(p2);
-				}else {
-					PropertyConfigurator.configure(p);
-				}
+				PropertyConfigurator.configure(p);
 			} catch (Exception e) {
 				e.printStackTrace();
 				BasicConfigurator.configure();

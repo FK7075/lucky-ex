@@ -39,6 +39,8 @@ import com.lucky.jacklamb.enums.JOIN;
 import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.enums.Sort;
 import com.lucky.jacklamb.exception.NotFindFlieException;
+import com.lucky.jacklamb.file.ini.AppConfig;
+import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.query.QueryBuilder;
 import com.lucky.jacklamb.query.SqlAndObject;
 import com.lucky.jacklamb.query.SqlFragProce;
@@ -79,6 +81,25 @@ public class LuckyMapperProxy {
 				for(Field fi:fields) {
 					fi.setAccessible(true);
 					sqlMap.put(fi.getName().toUpperCase(), (String)fi.get(sqlPo));
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 加载写在.ini配置文件中的Sql
+	 * @param clazz
+	 * @throws IOException
+	 */
+	private <T> void  initIniMap(Class<T> clazz) throws IOException {
+		String iniSql = Configuration.getConfiguration().getScanConfig().getSqlIniPath();
+		InputStream ini = this.getClass().getResourceAsStream("/"+iniSql);
+		if(ini!=null) {
+			AppConfig app=new AppConfig(iniSql);
+			Map<String, String> classMap = app.getSectionMap(clazz.getName());
+			if(classMap!=null) {
+				for(String key:classMap.keySet()) {
+					sqlMap.put(key.toUpperCase(), classMap.get(key));
 				}
 			}
 		}
@@ -539,13 +560,15 @@ public class LuckyMapperProxy {
 	 * @return T
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
+	 * @throws IOException 
 	 */
-	public <T> T getMapperProxyObject(Class<T> clazz) throws InstantiationException, IllegalAccessException {
+	public <T> T getMapperProxyObject(Class<T> clazz) throws InstantiationException, IllegalAccessException, IOException {
 		Type[] genericInterfaces = clazz.getGenericInterfaces();
 		if(LuckyMapper.class.isAssignableFrom(clazz)&&genericInterfaces.length==1) {
 			ParameterizedType interfacePtype=(ParameterizedType) genericInterfaces[0];
 			LuckyMapperGeneric=(Class<?>) interfacePtype.getActualTypeArguments()[0];
 		}
+		initIniMap(clazz);
 		initSqlMap(clazz);
 		initSqlMapProperty(clazz);
 		Enhancer enhancer=new Enhancer();

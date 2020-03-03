@@ -1,5 +1,6 @@
 package com.lucky.jacklamb.sqlcore.abstractionlayer.abstcore;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -282,6 +283,9 @@ public abstract class SqlCore implements UniqueSqlCore {
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return (T) obj;

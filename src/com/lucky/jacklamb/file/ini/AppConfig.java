@@ -4,27 +4,60 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import com.lucky.jacklamb.tcconversion.typechange.JavaConversion;
 import com.lucky.jacklamb.utils.ArrayCast;
 
 public class AppConfig {
 	
-	private static IniFilePars iniFilePars;
+	private  IniFilePars iniFilePars;
 	
-	static {
-		iniFilePars=IniFilePars.getIniFilePars();
+	private static Map<String,IniFilePars> iniMap;
+	
+	public AppConfig(){
+		if(iniMap==null) {
+			iniMap=new HashMap<>();
+			iniFilePars=new IniFilePars();
+			iniMap.put("appconfig.ini", iniFilePars);
+		}else {
+			iniFilePars=iniMap.get("appconfig.ini");
+		}
 	}
 	
+	public AppConfig(String path) {
+		if(path.startsWith("/")) {
+			path=path.substring(1);
+		}
+		if(iniMap==null) {
+			iniMap=new HashMap<>();
+			iniFilePars=new IniFilePars(path);
+			iniMap.put(path, iniFilePars);
+		}else if(iniMap.containsKey(path)){
+			iniFilePars=iniMap.get(path);
+		}else {
+			iniFilePars=new IniFilePars(path);
+			iniMap.put(path, iniFilePars);
+		}
+	}
+	
+	/**
+	 * 得到配置文件中所有的配置信息
+	 * @return
+	 */
+	public Map<String,Map<String,String>> getIniMap(){
+		return iniFilePars.getIniMap();
+	}
 	/**
 	 * 得到App节下的所有key-value值组成的Map
 	 * @return
 	 */
-	public static Map<String,String> getAppParamMap() {
+	public  Map<String,String> getAppParamMap() {
 		return iniFilePars.getSectionMap("App");
 	}
 	
@@ -33,7 +66,7 @@ public class AppConfig {
 	 * @param key key名
 	 * @return
 	 */
-	public static String getAppParam(String key) {
+	public  String getAppParam(String key) {
 		return getAppParamMap().get(key);
 	}
 	
@@ -43,7 +76,7 @@ public class AppConfig {
 	 * @param clazz 类型Class
 	 * @return
 	 */
-	public static <T> T getAppParam(String key,Class<T> clazz) {
+	public  <T> T getAppParam(String key,Class<T> clazz) {
 		return getValue("App",key,clazz);
 	}
 	
@@ -53,7 +86,7 @@ public class AppConfig {
 	 * @param separator 分隔符
 	 * @return
 	 */
-	public static String[] getAppStringArray(String key,String separator) {
+	public  String[] getAppStringArray(String key,String separator) {
 		return getStringArray("App",key,separator);
 	}
 	
@@ -64,15 +97,15 @@ public class AppConfig {
 	 * @param separator 分隔符
 	 * @return
 	 */
-	public static String[] getAppStringArray(String key) {
+	public  String[] getAppStringArray(String key) {
 		return getAppStringArray(key,",");
 	}
 	
-	public static <T> T[] getAppArray(String key,Class<T> clazz) {
+	public  <T> T[] getAppArray(String key,Class<T> clazz) {
 		return getArray("App",key,clazz);
 	}
 	
-	public static <T> T[] getAppArray(String key,Class<T> clazz,String separator) {
+	public  <T> T[] getAppArray(String key,Class<T> clazz,String separator) {
 		return getArray("App",key,clazz,separator);
 	}
 	
@@ -81,7 +114,7 @@ public class AppConfig {
 	 * @param section 节的名称
 	 * @return
 	 */
-	public static Map<String,String> getSectionMap(String section) {
+	public  Map<String,String> getSectionMap(String section) {
 		return iniFilePars.getSectionMap(section);
 	}
 	
@@ -91,12 +124,12 @@ public class AppConfig {
 	 * @param key
 	 * @return
 	 */
-	public static String getValue(String section,String key) {
+	public  String getValue(String section,String key) {
 		return iniFilePars.getSectionMap(section).get(key);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T getValue(String section,String key,Class<T> clazz) {
+	public  <T> T getValue(String section,String key,Class<T> clazz) {
 		return (T) JavaConversion.strToBasic(getValue(section,key), clazz);
 	}
 	
@@ -107,7 +140,7 @@ public class AppConfig {
 	 * @param separator 分隔符
 	 * @return
 	 */
-	public static String[] getStringArray(String section,String key,String separator) {
+	public  String[] getStringArray(String section,String key,String separator) {
 		if(iniFilePars.isHasKey(section, key)) {
 			return iniFilePars.getValue(section, key).split(separator);
 		}
@@ -120,7 +153,7 @@ public class AppConfig {
 	 * @param key key名称
 	 * @return
 	 */
-	public static String[] getStringArray(String section,String key) {
+	public  String[] getStringArray(String section,String key) {
 		return getStringArray(section,key,",");
 	}
 	
@@ -132,7 +165,7 @@ public class AppConfig {
 	 * @param separator 分隔符
 	 * @return
 	 */
-	public static <T> T[] getArray(String section,String key,Class<T> changTypeClass,String separator) {
+	public  <T> T[] getArray(String section,String key,Class<T> changTypeClass,String separator) {
 		return ArrayCast.strArrayChange(getStringArray(section,key,separator), changTypeClass);
 	}
 	
@@ -146,7 +179,7 @@ public class AppConfig {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Collection<M>,M> T getCollection(String section,String key,Class<T> collectionClass,Class<M> genericClass,String separator) {
+	public  <T extends Collection<M>,M> T getCollection(String section,String key,Class<T> collectionClass,Class<M> genericClass,String separator) {
 		M[] objArr=getArray(section,key,genericClass,separator);
 		if(collectionClass.isAssignableFrom(List.class)) {
 			return (T) Arrays.asList(objArr);
@@ -166,7 +199,7 @@ public class AppConfig {
 	 * @param separator 分隔符
 	 * @return
 	 */
-	public static <T extends Collection<M>,M> T getAppCollection(String key,Class<T> collectionClass,Class<M> genericClass,String separator) {
+	public  <T extends Collection<M>,M> T getAppCollection(String key,Class<T> collectionClass,Class<M> genericClass,String separator) {
 		return getCollection("App",key,collectionClass,genericClass,separator);
 	}
 	
@@ -177,7 +210,7 @@ public class AppConfig {
 	 * @param genericClass 泛型类型
 	 * @return
 	 */
-	public static <T extends Collection<M>,M> T getAppCollection(String key,Class<T> collectionClass,Class<M> genericClass) {
+	public  <T extends Collection<M>,M> T getAppCollection(String key,Class<T> collectionClass,Class<M> genericClass) {
 		return getCollection("App",key,collectionClass,genericClass);
 	}
 	
@@ -187,7 +220,7 @@ public class AppConfig {
 	 * @param collectionClass 集合类型
 	 * @return
 	 */
-	public static <T extends Collection<String>> T getAppCollection(String key,Class<T> collectionClass) {
+	public  <T extends Collection<String>> T getAppCollection(String key,Class<T> collectionClass) {
 		return getCollection("App",key,collectionClass,String.class);
 	}
 	
@@ -199,7 +232,7 @@ public class AppConfig {
 	 * @param genericClass 泛型类型
 	 * @return
 	 */
-	public static <T extends Collection<M>,M> T getCollection(String section,String key,Class<T> collectionClass,Class<M> genericClass) {
+	public  <T extends Collection<M>,M> T getCollection(String section,String key,Class<T> collectionClass,Class<M> genericClass) {
 		return getCollection(section,key,collectionClass,genericClass,",");
 	}
 	
@@ -210,7 +243,7 @@ public class AppConfig {
 	 * @param collectionClass 集合类型
 	 * @return
 	 */
-	public static <T extends Collection<String>> T getCollection(String section,String key,Class<T> collectionClass) {
+	public  <T extends Collection<String>> T getCollection(String section,String key,Class<T> collectionClass) {
 		return getCollection(section,key,collectionClass,String.class,",");
 	}
 	
@@ -221,7 +254,7 @@ public class AppConfig {
 	 * @param changTypeClass 数组类型Class
 	 * @return
 	 */
-	public static <T> T[] getArray(String section,String key,Class<T> changTypeClass) {
+	public  <T> T[] getArray(String section,String key,Class<T> changTypeClass) {
 		return getArray(section,key,changTypeClass,",");
 	}
 	
@@ -230,7 +263,7 @@ public class AppConfig {
 	 * @param clazz 对象的Class
 	 * @return
 	 */
-	public static <T> T getObject(Class<T> clzz) {
+	public  <T> T getObject(Class<T> clzz) {
 		return getObject(clzz,clzz.getSimpleName());
 	}
 	
@@ -242,7 +275,7 @@ public class AppConfig {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T getObject(Class<T> clazz,String section) {
+	public  <T> T getObject(Class<T> clazz,String section) {
 		if(!iniFilePars.isHasSection(section))
 			return null;
 		Object object=null;
@@ -274,6 +307,16 @@ public class AppConfig {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	public void printIniMap() {
+		Map<String, Map<String, String>> iniMap = getIniMap();
+		for(Entry<String,Map<String,String>> entry: iniMap.entrySet()) {
+			System.out.println("["+entry.getKey()+"]");
+			for(Entry<String,String> kv:entry.getValue().entrySet()) {
+				System.out.println("\t"+kv.getKey()+"="+kv.getValue());
+			}
 		}
 	}
 	

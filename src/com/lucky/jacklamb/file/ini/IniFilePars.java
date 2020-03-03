@@ -7,6 +7,7 @@ import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_LISTENER;
 import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_SERVLET;
 import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_SERVLET_MAPPING;
 import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_SPECIFIRESOURCESIPRESTRICT;
+import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_SQL_INI;
 import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_STATICHANDER;
 import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_SUFFIX_SCAN;
 import static com.lucky.jacklamb.sqlcore.c3p0.IniKey.SECTION_TOMCAT;
@@ -39,30 +40,47 @@ public class IniFilePars {
 	
 	private Map<String,Map<String,String>> iniMap;
 	
+	//当前节
 	private String currSection;
 	
+	//当前行
 	private String currLine;
 	
+	//文件路径
 	private String iniName;
 	
+	//是否存在换行符"\"
+	private boolean isNewline=false;
+	
+	//多行配置中的key
+	private String newLineKey;
+	
+	//多行配置中的value
+	private StringBuilder newLineValue;
+	
+	//文件输入流
 	private InputStream iniInputStream;
 	
-	private IniFilePars() {
+	public Map<String, Map<String, String>> getIniMap() {
+		return iniMap;
+	}
+
+	public IniFilePars() {
 		iniMap=new HashMap<>();
 		iniInputStream=IniFilePars.class.getClassLoader().getResourceAsStream("appconfig.ini");
+		iniName="appconfig.ini";
 		try {
-			if(iniMap.isEmpty()) {
+			if(iniMap.isEmpty())
 				pars();
-			}
 		}catch(ArrayIndexOutOfBoundsException e) {
-			throw new RuntimeException("appconfig.ini配置文件内容格式不正确",e);
+			throw new RuntimeException(iniName+"配置文件内容格式不正确",e);
 		}
 	}
 	
-	private IniFilePars(String iniFilePath) {
+	public IniFilePars(String iniFilePath) {
 		iniMap=new HashMap<>();
 		iniInputStream=IniFilePars.class.getClassLoader().getResourceAsStream(iniFilePath);
-		iniName=iniFilePath.substring(iniFilePath.lastIndexOf("/"));
+		iniName=iniFilePath;
 		try {
 			if(iniMap.isEmpty())
 				pars();
@@ -102,21 +120,37 @@ public class IniFilePars {
 							throw new RuntimeException(iniName+"配置文件内容格式不正确,存在两个相同的Section:["+currSection+"]");
 						iniMap.put(currSection,new HashMap<>());
 						continue;
-					}else if(currLine.contains("=")){
+					}else if(!currLine.endsWith("\\")&&!isNewline) {//不是以"\"结尾，而且之前也不存在以"\"结尾的行
+						if(currLine.contains("=")) {
+							
+							currLine=currLine.replaceFirst("=", "%Lucky%FK@7075&XFL");
+							String[] KV = currLine.split("%Lucky%FK@7075&XFL");
+							if(iniMap.containsKey(currSection)) {
+								kvMap=iniMap.get(currSection);
+								kvMap.put(KV[0], KV[1]);
+							}else {
+								kvMap.put(KV[0], KV[1]);
+								iniMap.put(currSection, kvMap);
+							}
+						}
+					}else if(currLine.endsWith("\\")&&!isNewline&&currLine.contains("=")) {//是以"\"结尾，而且之前不存在以"\"结尾的行
 						currLine=currLine.replaceFirst("=", "%Lucky%FK@7075&XFL");
 						String[] KV = currLine.split("%Lucky%FK@7075&XFL");
-						if(iniMap.containsKey(currSection)) {
-							kvMap=iniMap.get(currSection);
-							kvMap.put(KV[0], KV[1]);
-						}else {
-							kvMap.put(KV[0], KV[1]);
-							iniMap.put(currSection, kvMap);
-						}
-						continue;
-					}else {
+						isNewline=true;
+						newLineKey=KV[0];
+						newLineValue=new StringBuilder(KV[1].subSequence(0, KV[1].length()-1));
+					}else if(currLine.endsWith("\\")&&isNewline) {//是以"\"结尾，而且存在以"\"结尾的行
+						newLineValue.append(currLine.substring(0, currLine.length()-1));
+					}else if(!currLine.endsWith("\\")&&isNewline) {//不是以"\"结尾，而且存在以"\"结尾的行
+						kvMap=iniMap.get(currSection);
+						newLineValue.append(currLine);
+						kvMap.put(newLineKey, newLineValue.toString());
+						iniMap.put(currSection, kvMap);
+						isNewline=false;
+					}
+					else {
 						continue;
 					}
-					
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -169,6 +203,9 @@ public class IniFilePars {
 			sectionMap = this.getSectionMap(SECTION_SUFFIX_SCAN);
 			scan.setScanMode(Scan.SUFFIX_SCAN);
 			setScanConfig(scan,sectionMap);
+		}
+		if(this.isHasSection(SECTION_SQL_INI)) {
+			scan.setSqlIniPath(this.getSectionMap(SECTION_SQL_INI).get("path"));
 		}
 		if(this.isHasSection(SECTION_TOMCAT)) {
 			sectionMap = this.getSectionMap(SECTION_TOMCAT);
@@ -394,6 +431,11 @@ public class IniFilePars {
 				scan.addWebSocketPackSuffix(suffixStr.trim().split(","));
 			}
 		}
+	}
+	
+	public static void main(String[] args) {
+		AppConfig app=new AppConfig("com/lucky/jacklamb/config/appconfig.ini");
+		app.printIniMap();
 	}
 }
 

@@ -29,7 +29,7 @@ public class Configuration {
 						+ "，将使用类中的配置初始化LUCKY...");
 				appconfig.init(scancfg, webcfg, servercfg);
 			}
-			IniFilePars.getIniFilePars().modifyAllocation(scancfg, webcfg, servercfg);
+			new IniFilePars().modifyAllocation(scancfg, webcfg, servercfg);
 			isFirst = false;
 		}
 	}

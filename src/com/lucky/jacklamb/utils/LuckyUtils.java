@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -137,20 +138,59 @@ public class LuckyUtils {
 	
 	/**
 	 * 按照指定格式将字符串转化为Date对象
-	 * @param dadeStr
+	 * @param dateStr
 	 * @param format
 	 * @return
 	 * @throws ParseException
 	 */
-	public static Date getDate(String dadeStr,String format) {
+	public static Date getDate(String dateStr,String format) {
 		SimpleDateFormat sdf = new SimpleDateFormat(format);
 		try {
-			return sdf.parse(dadeStr);
+			return sdf.parse(dateStr);
 		} catch (ParseException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
+	
+	/**
+	 * 时间运算
+	 * @param dateStr
+	 * @param format
+	 * @param calendarField
+	 * @param amount
+	 * @return
+	 */
+	public static Date addDate(String dateStr,String format,int calendarField,int amount) {
+		Calendar instance = Calendar.getInstance();
+		instance.setTime(getDate(dateStr,format));
+		instance.add(calendarField, amount);
+		return instance.getTime();
+	}
+	
+	/**
+	 * 时间运算
+	 * @param dateStr
+	 * @param calendarField
+	 * @param amount
+	 * @return
+	 */
+	public static Date addDate(String dateStr,int calendarField,int amount) {
+		return addDate(dateStr,"yyyy-MM-dd",calendarField,amount);
+	}
+	
+	/**
+	 * 基于当前时间的基础上的时间运算
+	 * @param calendarField
+	 * @param amount
+	 * @return
+	 */
+	public static Date currAddDate(int calendarField,int amount) {
+		Calendar instance = Calendar.getInstance();
+		instance.add(calendarField, amount);
+		return instance.getTime();
+	}
+	
 	
 	/**
 	 * 年月日转Date 
@@ -177,6 +217,39 @@ public class LuckyUtils {
 	 */
 	public static java.sql.Date getSqlDate(String dateStr){
 		return new java.sql.Date(getDate(dateStr,"yyyy-MM-dd").getTime());
+	}
+	
+	/**
+	 * java.sql.Date的运算
+	 * @param dateStr
+	 * @param calendarField
+	 * @param amount
+	 * @return
+	 */
+	public static java.sql.Date addSqlDate(String dateStr,int calendarField,int amount){
+		return new java.sql.Date(addDate(dateStr,calendarField,amount).getTime());
+	}
+	
+	/**
+	 * java.sql.Date的运算
+	 * @param dateStr
+	 * @param format
+	 * @param calendarField
+	 * @param amount
+	 * @return
+	 */
+	public static java.sql.Date addSqlDate(String dateStr,String format,int calendarField,int amount){
+		return new java.sql.Date(addDate(dateStr,format,calendarField,amount).getTime());
+	}
+	
+	/**
+	 * 基于当前时间java.sql.Date的运算
+	 * @param calendarField
+	 * @param amount
+	 * @return
+	 */
+	public static java.sql.Date currAddSqlDate(int calendarField,int amount){
+		return new java.sql.Date(currAddDate(calendarField, amount).getTime());
 	}
 	
 	/**

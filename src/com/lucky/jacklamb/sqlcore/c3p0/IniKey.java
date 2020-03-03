@@ -6,6 +6,8 @@ public class IniKey {
 	
 	public static final String SECTION_JDBC="Jdbc";
 	
+	public static final String SECTION_SQL_INI="Sql-Ini";
+	
 	public static final String SECTION_SUFFIX_SCAN="Suffix Scan";
 	
 	public static final String SECTION_TOMCAT="Tomcat";
