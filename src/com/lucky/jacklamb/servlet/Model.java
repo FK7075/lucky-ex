@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
+
 import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.rest.LSON;
 import com.lucky.jacklamb.rest.LXML;
@@ -28,6 +30,8 @@ import com.lucky.jacklamb.utils.ArrayCast;
  *
  */
 public class Model {
+	
+	private static Logger log=Logger.getLogger(Model.class);
 
 	private final String HEAD = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
@@ -261,6 +265,7 @@ public class Model {
 	 */
 	public void witerJson(Object pojo){
 		LSON lson = new LSON(pojo);
+		log.debug(lson.formatJson());
 		writer(lson.getJsonStr());
 	}
 
@@ -272,6 +277,7 @@ public class Model {
 	 */
 	public void witerXml(Object pojo){
 		LXML lson = new LXML(pojo);
+		log.debug(HEAD + lson.getXmlStr());
 		writer(HEAD + lson.getXmlStr());
 	}
 
@@ -389,7 +395,6 @@ public class Model {
 
 	/**
 	 * 判断parameterMap中是否存在值为paramName的Key
-	 * 
 	 * @param paramName
 	 * @return
 	 */

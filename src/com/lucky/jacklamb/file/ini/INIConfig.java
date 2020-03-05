@@ -87,7 +87,7 @@ public class INIConfig {
 	 * @return
 	 */
 	public  String[] getAppStringArray(String key,String separator) {
-		return getStringArray("App",key,separator);
+		return getArray("App",key,separator);
 	}
 	
 	
@@ -140,7 +140,7 @@ public class INIConfig {
 	 * @param separator ·Ö¸ô·û
 	 * @return
 	 */
-	public  String[] getStringArray(String section,String key,String separator) {
+	public  String[] getArray(String section,String key,String separator) {
 		if(iniFilePars.isHasKey(section, key)) {
 			return iniFilePars.getValue(section, key).split(separator);
 		}
@@ -153,8 +153,8 @@ public class INIConfig {
 	 * @param key keyÃû³Æ
 	 * @return
 	 */
-	public  String[] getStringArray(String section,String key) {
-		return getStringArray(section,key,",");
+	public  String[] getArray(String section,String key) {
+		return getArray(section,key,",");
 	}
 	
 	/**
@@ -166,7 +166,7 @@ public class INIConfig {
 	 * @return
 	 */
 	public  <T> T[] getArray(String section,String key,Class<T> changTypeClass,String separator) {
-		return ArrayCast.strArrayChange(getStringArray(section,key,separator), changTypeClass);
+		return ArrayCast.strArrayChange(getArray(section,key,separator), changTypeClass);
 	}
 	
 	/**
