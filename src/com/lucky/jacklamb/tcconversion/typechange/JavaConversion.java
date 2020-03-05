@@ -4,22 +4,29 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 import com.lucky.jacklamb.expression.ExpressionEngine;
+import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class JavaConversion {
 	
-	/**
-	 * String类型转化为其他的基本类型
-	 * @param expression String类型表达式
-	 * @param type 转换目标类型的Class或String表示
-	 * @return
-	 */
-	public static Object strToBasic(String expression, Object type) {
+	public static Object strToBasic(String expression, Object type,boolean isCalculate) {
 		String strtype;
-		if(type instanceof Class)
-			strtype=((Class<?>)type).getSimpleName();
-		else
+		if(type instanceof Class) {
+			Class<?> clzz=(Class<?>)type;
+			if("java.util.Date".equals(clzz.getName())) {
+				strtype="java.util.Date";
+			}else if("java.sql.Date".equals(clzz.getName())) {
+				strtype="java.sql.Date";
+			}else{
+				strtype=((Class<?>)type).getSimpleName();
+			}
+		}
+		else {
 			strtype=(String) type;
-		String data=ExpressionEngine.calculate(expression);
+		}
+		String data=expression;
+		if(isCalculate) {
+			data=ExpressionEngine.calculate(expression);
+		}
 		if("String".equalsIgnoreCase(strtype))
 			return data;
 		if("int".equals(strtype)||"Integer".equals(strtype))
@@ -38,12 +45,26 @@ public class JavaConversion {
 			return Short.parseShort(data);
 		if("char".equalsIgnoreCase(strtype))
 			return data.charAt(0);
+		if("java.util.Date".equalsIgnoreCase(strtype))
+			return LuckyUtils.getDate(data);
+		if("java.sql.Date".equalsIgnoreCase(strtype))
+			return LuckyUtils.getSqlDate(data);
 		if("Time".equalsIgnoreCase(strtype))
-			return Time.valueOf(data);
+			return LuckyUtils.getSqlTime(data);
 		if("Timestamp".equalsIgnoreCase(strtype))
 			return Timestamp.valueOf(data);
 		return strtype;
-
+		
+	}
+	
+	/**
+	 * String类型转化为其他的基本类型
+	 * @param expression String类型表达式
+	 * @param type 转换目标类型的Class或String表示
+	 * @return
+	 */
+	public static Object strToBasic(String expression, Object type) {
+		return strToBasic(expression,type,false);
 	}
 	
 	/**

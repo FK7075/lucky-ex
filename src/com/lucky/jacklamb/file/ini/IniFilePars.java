@@ -122,7 +122,6 @@ public class IniFilePars {
 						continue;
 					}else if(!currLine.endsWith("\\")&&!isNewline) {//不是以"\"结尾，而且之前也不存在以"\"结尾的行
 						if(currLine.contains("=")) {
-							
 							currLine=currLine.replaceFirst("=", "%Lucky%FK@7075&XFL");
 							String[] KV = currLine.split("%Lucky%FK@7075&XFL");
 							if(iniMap.containsKey(currSection)) {
@@ -140,10 +139,20 @@ public class IniFilePars {
 						newLineKey=KV[0];
 						newLineValue=new StringBuilder(KV[1].subSequence(0, KV[1].length()-1));
 					}else if(currLine.endsWith("\\")&&isNewline) {//是以"\"结尾，而且存在以"\"结尾的行
-						newLineValue.append(currLine.substring(0, currLine.length()-1));
+						currLine=currLine.replaceAll("\\t", " ");
+						int index=firstNoSpaceIndex(currLine);
+						if(index==0||index==1)
+							newLineValue.append(currLine.substring(0, currLine.length()-1));
+						else
+							newLineValue.append(currLine.substring(index-1, currLine.length()-1));
 					}else if(!currLine.endsWith("\\")&&isNewline) {//不是以"\"结尾，而且存在以"\"结尾的行
 						kvMap=iniMap.get(currSection);
-						newLineValue.append(currLine);
+						currLine=currLine.replaceAll("\\t", " ");
+						int index=firstNoSpaceIndex(currLine);
+						if(index==0||index==1)
+							newLineValue.append(currLine);
+						else
+							newLineValue.append(currLine.substring(index-1, currLine.length()));
 						kvMap.put(newLineKey, newLineValue.toString());
 						iniMap.put(currSection, kvMap);
 						isNewline=false;
@@ -431,6 +440,20 @@ public class IniFilePars {
 				scan.addWebSocketPackSuffix(suffixStr.trim().split(","));
 			}
 		}
+	}
+	
+	private static int firstNoSpaceIndex(String str) {
+		char[] charArr = str.toCharArray();
+		int i=0;
+		boolean isHave=false;
+		for(char ch:charArr) {
+			if(ch!=' ') {
+				isHave=true;
+				break;
+			}
+			i++;
+		}
+		return isHave?i:-1;
 	}
 }
 
