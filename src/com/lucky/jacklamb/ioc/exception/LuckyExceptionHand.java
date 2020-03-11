@@ -7,7 +7,7 @@ import java.util.List;
 import com.lucky.jacklamb.servlet.Model;
 
 /**
- * 全局异常处理类
+ * 全局异常处理基类
  * 
  * @author fk-7075
  *

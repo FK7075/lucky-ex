@@ -1,8 +1,12 @@
 <div align=center><img src="/image/images.png" width="150"/></div>
 
+[TOC]
+
+
+
 ## 一.Lucky 的简介
 
-Lucky是一款用于开发Java Web项目的轻量级**全栈型**框架。Lucky遵从**约定大于配置**原则，所以Lucky的使用**无需**进行**任何的xml配置**，开箱即用！Lucky支持**RestFul风格**开发，支持**多数据源**开发，支持**内嵌Tomcat**(jar包部署)。内置的数据持久层同时具备**全映射与半映射的特点**。集万千宠爱于一身，只为让开发变得轻松优雅！
+Lucky是一款用于开发JavaWeb项目的轻量级框编写的架，是本人借鉴ssm以及Spring Boot等一些优秀框架的特点编写的一款全栈型框架，也是我在框架学习过程中的一个总结！Lucky-Noxml版去除了所有的xml配置，使用全注解的开发模式，极大的简化开发，使用组最少的配置完成最多的功能！提供了对RestFul，多数据源，WebSocket,Ioc,Aop,内嵌Tomcat等技术的支持,集万千宠爱于一身，只为让开发变得轻松优雅！
 
 1.下载地址
 
@@ -30,6 +34,8 @@ Lucky是一款用于开发Java Web项目的轻量级**全栈型**框架。Lucky�
 
 【**cglib**(cglib-nodep-x.x.x.jar)】
 
+【**log4j**(log4j-x.x.xx.jar,slf4j-api-x.x.x.jar和slf4j-log4jxx-x.x.x.jar)】
+
 如果要使用内嵌Tomcat进行开发还需要引入相关的依赖包
 
 【**apache-file**(commons-fileupload-x.x.x.jar和commons-io-x.x.jar)】、
@@ -44,51 +50,530 @@ pure文件夹中的文件功能与上面的表格中介绍的大同小异，不�
 
 ## 二.Lucky组件介绍
 
-在开发中，Lucky允许用户定义以下七种组件，不同组件定义不同的功能块，不同组件之间通过IOC容器进行调度与组合。
+在开发中，Lucky允许用户定义以下九种组件，不同组件定义不同的功能块，不同组件之间通过IOC容器进行调度与组合。
 
 1. **AppConfig组件**：用于修改默认约定和运行时的某些参数。
-
 2. **Controller组件**：用于接收和响应Http请求。
-
 3. **Service组件**：用于处理业务逻辑。
-
 4. **Repository组件**：使用传统方式与数据持久层交互。
-
 5. **Mapper组件**：使用Mapper接口方式与数据持久层交互
-
 6. **Component组件**：普通的ioc组件。
+7. **Aspect组件**：aop组件，用于定义一系列的增强，用于功能的横向扩展。
+8. **WebSocket组件**：WebSocket组件，用于定义一个接受webSocket请求的组件
+9. **ExceptionHander**：异常处理组件，用于处理由Controller组件所产生的异常
 
-7. **Agent组件**：aop组件，用于定义一系列的增强，用于功能的横向扩展。
+## 三.Lucky的两种约定
 
-   
+### 1.自动扫描约定(默认)
 
-   ## 三.Lucky的默认约定
+​	自动扫描约定是一种十分宽泛的约定，lucky启动时会自动扫描项目路径中的所有文件来得到并管理用户创建的九大组件，自动完成依赖注入以及动态代理等工作，用户只需要按照规定定义好组件既可以立即使用，在此模式下不需要使用以往大量的xml配置，也没有任何其他要求！一切自然而然的简单！
 
-   Lucky中有以下两中默认约定
+### **2.后缀扫描约定**
 
-   **1.七大组件的位置约定**
+相比**自动扫描约定**这个**后缀扫描约**多了些许的条件限制，在这种约定模式下，指定的组件需要编写在指定的位置，这样才能确保Lucky在启动的时候能够准确的找到并启用他们。在**后缀扫描约定**中**九大组件必须写在**以特定名字结尾的包中才能被Lucky识别。
 
-   这个约定用于确定组件的定义位置，每种组件必须写在特定的位置，这样才能确保Lucky在启动的时候能够准确的找到并启用他们。在**默认约定中**七大组件必须写在**以特定名字结尾的包**中才能被Lucky识别。
+以下是九大组件在**后缀扫描模式**下的默认约定位置：
 
-   以下是八大组件的默认约定位置：
+|      组件名称       |                     约定位置                      |                   配合使用的注解                   |                约定位置举例说明                |
+| :-----------------: | :-----------------------------------------------: | :------------------------------------------------: | :--------------------------------------------: |
+|    **AppConfig**    |                     任意位置                      |                 @AppConfig注解标注                 |                    任意位置                    |
+|   **Controller**    |       定义在包名以**controller**结尾的包中        |                @Controller注解标注                 | 【*controller】controller，com.mycontroller等  |
+|     **Service**     |         定义在包名以**service**结尾的包中         |                  @Service注解标注                  |  【*service】service，com.lucky.testservice等  |
+|   **Repository**    | 定义在包名以【**repository**或**dao**】结尾的包中 |                @Repository注解标注                 |             【*repository和 *dao】             |
+|     **Mapper**      |         定义在包名以**mapper**结尾的包中          |                  @Mapper注解标注                   |                  【*mapper】                   |
+|    **Component**    | 定义在包名以【**component**或**bean**】结尾的包中 |                 @Component注解标注                 | 【*component或 *bean】com.bean,com.component等 |
+|      **Agent**      |          定义在包名以**agent**结尾的包中          |                   @Agent注解标注                   |   【*agent】com.agent,com.lucky.testagent等    |
+| **ExceptionHander** |     定义在包名以**exceptionhande**r结尾的包中     | @ExceptionHander注解标注，并继承LuckyExceptionHand |              【*exceptionhander】              |
+|    **WebSocket**    |          定义在包名以websocket结尾的包中          |               使用Tomcat中的编写规范               |                 【*websocket】                 |
 
-   |    组件名称    |                     约定位置                      |    配合使用的注解     |                 约定位置举例说明                 |
-   | :------------: | :-----------------------------------------------: | :-------------------: | :----------------------------------------------: |
-   | **Appconfig**  |        定义在包名以**appconfig结尾**的包中        | 继承ApplicationConfig | 【*appconfig】com.lucky.appconfig，myappconfig等 |
-   | **Controller** |       定义在包名以**controller**结尾的包中        |  @Controller注解标注  |  【*controller】controller，com.mycontroller等   |
-   |  **Service**   |         定义在包名以**service**结尾的包中         |   @Service注解标注    |   【*service】service，com.lucky.testservice等   |
-   | **Repository** | 定义在包名以【**repository**或**dao**】结尾的包中 |                       |                                                  |
-   |   **Mapper**   |         定义在包名以**mapper**结尾的包中          |                       |                                                  |
-   | **Component**  | 定义在包名以【**component**或**bean**】结尾的包中 |  @Component注解标注   |  【*component或 *bean】com.bean,com.component等  |
-   |   **Agent**    |          定义在包名以**agent**结尾的包中          |    @Agent注解标注     |    【*agent】com.agent,com.lucky.testagent等     |
+## 四.Lucky的配置文件和配置类
 
-   **2.数据库配置文件的位置约定**
+### 	1.配置文件
 
-   数据库配置文件的格式是**.properties**在默认约定中，数据库配置文件的名称为**db.properties**,位置为**classpath**下！当然，数据库配置文件也不是必须的，后面数据库章节会介绍一种是用配置类的写法！
+​			lucky使用.ini文件作为配置文件，.ini文件由**节+KV**组成节写在[]中，节代表一个特定的模块，在一个接下可以配置多个键值对，在不同的节中可以使用相同的key.
 
-   ## 四.七大组件的使用
+​			lucky的配置文件名固定为appconfig.ini，且必须放在classpath(src)文件夹下，在appconfig.ini中可以配置的内容如下：
 
-   ### 1.Controller组件
+#### 1.Lucky的标准配置文件
 
-在Lucky中Controller组价的职能是**用于接收和响应Http请求**
+appconfig.ini
 
+```ini
+#多数据源配置
+[DataSources]
+dataSources=ZheJiang,GuangDong
+
+#数据库配置
+[Jdbc]
+##数据库驱动##
+driverClass=com.mysql.jdbc.Driver
+##数据库地址##
+jdbcUrl=jdbc:mysql://127.0.0.1:3306/jacklamb?useUnicode=true&characterEncoding=utf8
+##登录名##
+user=root
+##密码##
+password=123456
+##连接池无空闲连接可用时，一次性创建的新连接数 默认值：3
+acquireIncrement=3
+##连接池初始化时创建的连接数 默认值：3
+initialPoolSize=3
+##连接池中拥有的最大连接数 默认值：15
+maxPoolSize=15
+##连接池保持的最小连接数
+minPoolSize=3
+##连接的最大空闲时间,如果超过这个时间，某个数据库连接还没有被使用，则会断开掉这个连接，如果为0，则永远不会断开连接。
+maxidleTime=0
+##这个配置主要时为了减轻连接池的负载，配置不为 0 则会将连接池中的连接数量保持到minPoolSize，为 0 则不处理
+maxConnectionAge=0
+##当连接池用完时客户端调用getConnection()后等待获取新连接的时间，超时后将抛出 SQLException,如设为0则无限期等待。单位毫秒。Default: 0
+checkoutTimeout=0
+##连接池为数据源缓存的PreparedStatement的总数。由于PreparedStatement属于单个Connection
+##所有这个数量应该根据应用中平均连接数乘以每个连接的平均PreparedStatement来计算。为 0 的时候不缓存，同时maxStatementsPerConnection的配置无效
+maxStatements=0
+##连接池为数据源单个Connection缓存的PreparedStatement数，
+##这个配置比maxStatements更有意义，因为它缓存的服务对象是单个数据连接，如果配置的好，肯定是可以提高性能的。为 0 的时候不缓存
+maxStatementsPerConnection=0
+##设置为true时，每一次SQL操作都将会使用不同的Connection对象，默认false##
+poolMethod=false
+##是否打印SQL日志##
+log=false
+##是否打印格式化的SQL日志##
+formatSqlLog=false
+##是否开启缓存##
+cache=false
+##逆向工程,配置用于存放生成的实体类的包##
+reversePackage=com.jacklamb.lucky.pojo
+##项目classpath(src)的绝对路径##
+srcpath=C:\Users\DELL\git\lucky-ex\src
+##自动建表，配置需要建表机制操作的实体类的包路径##
+createTables=table1,table2,teble3
+##自动建表操作具体要操作的实体类##
+table1=com.jacklamb.lucky.entity.Book
+table2=com.jacklamb.lucky.entity.Stort
+table3=com.jacklamb.lucky.entity.Authod
+
+##配置Sql的ini文件的位置
+[Sql-Ini]
+path=sql.ini
+
+#开启后缀扫描,以reset:开始表示重置原始配置后再添加，无前缀则为追加
+[Suffix Scan]
+controller=controller,mycontroller
+service=reset:service,myservice
+repository=repository
+aspect=aspect
+component=component
+websocket=websocket
+pojo=pojo
+
+#更换Tomcat配置
+[Tomcat]
+##接收请求的端口
+port=8080
+##session超时时间（分钟）
+sessionTimeout=30
+##RealPath，静态文件所在的文件夹（ap 为绝对路径的写法）
+docBase=WebContext/
+ap-docBase=C:/Fk7075/
+##tomcat运行时临时文件所在的文件夹（ap 为绝对路径的写法）
+baseDir=tomcat/tmp/
+ap-baseDir=D:/tomcat/tmp/
+##项目路径
+contextPath= 
+webapp=/WebContent/
+##tomcat用于监听关机命令的端口
+closePort=8005
+##tomcat用于关机的命令
+shutdown=SHUTDOWN
+
+#添加Servlet
+[Servlet]
+servletName=servletClass
+s1=c1
+[Servlet Mapping]
+servletName=/user/*,/admin/*
+s1=/
+
+#添加Filter
+[Filter]
+filterName=filterClass
+f1=c1
+[Filter Mapping]
+filterName=/*
+f1=/query/*
+
+#添加Listener
+[Listener]
+l1=ListenerClass1
+l2=ListenerClass2
+
+#配置web设置
+[Web]
+#URL编码格式
+encoding=UTF-8
+#是否开启静态资源管理器
+openStaticResourceManage=true
+#是否开启POST请求类型转换(_method)
+postChangeMethod=true
+#全局资源IP限制
+globalResourcesIpRestrict=192.168.3.3,192.168.3.4
+#静态资源Ip限制
+staticResourcesIpRestrict=192.168.3.3,192.168.3.4
+[StaticHander]
+/user/login=/user/login.html
+/admin/update=/admin/update.html
+#全局的响应前后缀配置
+[HanderPrefixAndSuffix]
+prefix=/WEN-INF/
+suffix=.jsp
+#指定资源的Ip限制,一个资源只能被指定的ip访问
+[specifiResourcesIpRestrict]
+/user/query/=192.168.3.3,192.168.3.4
+/file/test.jpg=192.168.3.3,192.168.3.4
+```
+
+
+
+#### 2.ini文件解析器INIConfig
+
+以上是appconfig.ini中可以配置的内容以及解释，另外我们也可以在appconfig.ini文件中配置一些自定义的参数，Lucky中内置了一个.ini文件解析器INIConfig类，以下是INIConfig的API
+
+```java
+/**
+ * ini文件解析器
+ */
+public class INIConfig {
+	
+    /**
+     * 无参构造器，使用该构造方法则默认解析src下的appconfig.ini文件
+     */
+	public INIConfig()
+	
+    /**
+     * 有参构造器，使用该构造方法解析项目中的任意一个ini文件
+     * @param path 带解析ini文件相对src的相对路径
+     */
+	public INIConfig(String path)
+	
+	/**
+	 * 得到配置文件中所有的配置信息
+	 * @return
+	 */
+	public Map<String,Map<String,String>> getIniMap()
+        
+	/**
+	 * 得到App节下的所有key-value值组成的Map
+	 * @return
+	 */
+	public  Map<String,String> getAppParamMap()
+	
+	/**
+	 *  得到App节下的某一个key对应的value值
+	 * @param key key名
+	 * @return
+	 */
+	public  String getAppParam(String key)
+	
+	/**
+	 * 得到App节下的某一个key对应的value值(指定类型)
+	 * @param key key名
+	 * @param clazz 类型Class
+	 * @return
+	 */
+	public  <T> T getAppParam(String key,Class<T> clazz)
+	
+	/**
+	 * 得到App节下的某一个key对应的value值(String[]类型)
+	 * @param key key名
+	 * @param separator 分隔符
+	 * @return
+	 */
+	public  String[] getAppStringArray(String key,String separator)
+	
+	
+	/**
+	 * 得到App节下的某一个key对应的value值(String[]类型)
+	 * @param key key名
+	 * @param separator 分隔符
+	 * @return
+	 */
+	public  String[] getAppStringArray(String key) 
+	
+     /**
+	 * 得到App节下的某一个key对应的一个特定类型的value
+	 * @param key key名
+	 * @param clazz 指定类型的Class
+	 * @return
+	 */
+	public  <T> T[] getAppArray(String key,Class<T> clazz)
+	
+    /**
+	 * 得到App节下的某一个key对应的一个特定类型的value
+	 * @param key key名
+	 * @param clazz 指定类型的Class
+	 * @param separator 分隔符
+	 * @return
+	 */   
+	public  <T> T[] getAppArray(String key,Class<T> clazz,String separator)
+	
+	/**
+	 * 得到某个人指定节下的所有的key-value值组成的Map
+	 * @param section 节的名称
+	 * @return
+	 */
+	public  Map<String,String> getSectionMap(String section) 
+	
+	/**
+	 * 得到某个指定节下指定key的value值
+	 * @param section
+	 * @param key
+	 * @return
+	 */
+	public  String getValue(String section,String key)
+	
+	/**
+	 * 得到一个具体类型的Value
+	 * @param section 节名称
+	 * @param key key名
+	 * @param clazz 指定类型的Class
+	 * @return
+	 */
+	public  <T> T getValue(String section,String key,Class<T> clazz)
+	
+	/**
+	 * 得到一个String[]形式的value
+	 * @param section 节名称
+	 * @param key key名称
+	 * @param separator 分隔符
+	 * @return
+	 */
+	public  String[] getArray(String section,String key,String separator)
+	
+	/**
+	 * 得到一个String[]形式的value
+	 * @param section 节名称
+	 * @param key key名称
+	 * @return
+	 */
+	public  String[] getArray(String section,String key)
+	
+	/**
+	 * 得到一个指定类型数组形式的value
+	 * @param section 节名称
+	 * @param key key名称
+	 * @param changTypeClass 数组类型Class
+	 * @param separator 分隔符
+	 * @return
+	 */
+	public  <T> T[] getArray(String section,String key,Class<T> changTypeClass,String       separator)
+	
+	/**
+	 * 得到一个指定类型集合形式的value
+	 * @param section 节名
+	 * @param key key名
+	 * @param collectionClass 集合类型
+	 * @param genericClass 泛型类型
+	 * @param separator 分隔符
+	 * @return
+	 */
+	public  <T extends Collection<M>,M> T getCollection(String section,String               key,Class<T> collectionClass,Class<M> genericClass,String separator)
+	
+	/**
+	 * 得到App节下指定类型集合形式的value
+	 * @param key key名
+	 * @param collectionClass 集合类型
+	 * @param genericClass 泛型类型
+	 * @param separator 分隔符
+	 * @return
+	 */
+	public  <T extends Collection<M>,M> T getAppCollection(String key,Class<T>               collectionClass,Class<M> genericClass,String separator)
+	
+	/**
+	 * 得到App节下指定类型集合形式的value
+	 * @param key key名
+	 * @param collectionClass 集合类型
+	 * @param genericClass 泛型类型
+	 * @return
+	 */
+	public  <T extends Collection<M>,M> T getAppCollection(String key,Class<T>               collectionClass,Class<M> genericClass)
+	
+	/**
+	 * 得到App节下String类型集合形式的value
+	 * @param key key名
+	 * @param collectionClass 集合类型
+	 * @return
+	 */
+	public  <T extends Collection<String>> T getAppCollection(String key,Class<T>           collectionClass)
+	
+	/**
+	 * 得到指定节下指定类型集合形式的value
+	 * @param section 节名
+	 * @param key key名
+	 * @param collectionClass 集合类型
+	 * @param genericClass 泛型类型
+	 * @return
+	 */
+	public  <T extends Collection<M>,M> T getCollection(String section,String 		         key,Class<T> collectionClass,Class<M> genericClass) 
+	
+	/**
+	 * 得到指定节下String类型集合形式的value
+	 * @param section 节名
+	 * @param key key名
+	 * @param collectionClass 集合类型
+	 * @return
+	 */
+	public  <T extends Collection<String>> T getCollection(String section,String 		     key,Class<T> collectionClass) 
+	
+	/**
+	 * 得到一个指定类型数组形式的value
+	 * @param section 节名称
+	 * @param key key名称
+	 * @param changTypeClass 数组类型Class
+	 * @return
+	 */
+	public  <T> T[] getArray(String section,String key,Class<T> changTypeClass)
+	
+	/**
+	 * 将某个节下的配置信息封装为一个特定的对象
+	 * @param clazz 对象的Class
+	 * @return
+	 */
+	public  <T> T getObject(Class<T> clzz) 
+
+	/**
+	 * 将某个节下的配置信息封装为一个特定的对象
+	 * @param clazz 对象的Class
+	 * @param section 节名称
+	 * @return
+	 */
+	public  <T> T getObject(Class<T> clazz,String section) 
+	
+	/**
+	 * 打印配置文件中的所有配置信息
+	 */
+	public void printIniMap() 
+
+
+```
+
+#### 3.使用INIConfig类解析ini文件
+
+3.1 在com.lucky包下创建一个名为test.ini的文件，内容如下
+
+test.ini
+
+```ini
+[Test]
+str=String-Test
+double=14.5
+date=2020-12-12
+arr=23,34,12,55,67,23
+
+[Good]
+id=1
+name=辣条
+price=3
+production=2020-12-14
+overdue=2022-12-14
+list=1,2,3,4,5,5
+set=1.1,2.2,2.2,3.3
+user=@S:User
+
+[User]
+username=付康
+password=PA$$W0RD
+```
+
+3.2 使用ini文件解析器INIConfig解析test.ini文件
+
+```java
+
+public class INIConfigTest {
+	
+	@Test
+	@SuppressWarnings("unchecked")
+	public void printTest() {
+		
+		INIConfig ini=new INIConfig("com/lucky/test.ini");
+		//打印test.ini文件的所有内容
+		ini.printIniMap();
+		
+		//获取Double类型的[Test]-double
+		Double test_double = ini.getValue("Test", "double",Double.class);
+		System.out.printf("\ndouble=(Double)%s",test_double);
+		
+		//获取java.util.Date类型的[Test]->date
+		Date test_date = ini.getValue("Test", "date",Date.class);
+		System.out.printf("\ndate=(java.util.Date)%s",test_date);
+		
+		//获取String类型的[Test]->arr
+		String string_arr=ini.getValue("Test", "arr");
+		System.out.printf("\narr=(String)%s",string_arr);
+		
+		//获取String[]类型的[Test]->arr
+		String[] array_arr=ini.getArray("Test", "arr");
+		System.out.printf("\narr=(String[])%s",Arrays.toString(array_arr));
+		
+		//获取Integer[]类型的[Test]->arr
+		Integer[] int_array_arr=ini.getArray("Test", "arr",int.class);
+		System.out.printf("\narr=(Integer[])%s",Arrays.toString(int_array_arr));
+		
+		//获取List<String>类型的[Test]->arr
+		List<String> list_array_arr=ini.getCollection("Test", "arr", List.class);
+		System.out.printf("\narr=(List<String>)%s",list_array_arr);
+		
+		//获取List<Double>类型的[Test]->arr
+		List<Double> listd_array_arr=ini.getCollection("Test", "arr", List.class,Double.class);
+		System.out.printf("\narr=(List<Double>)%s",listd_array_arr);
+		
+		//获取Set<Integer>类型的[Test]->str
+		Set<Integer> seti_array_arr=ini.getCollection("Test", "arr", Set.class,Integer.class);
+		System.out.printf("\narr=(Set<Integer>)%s",seti_array_arr);
+		
+		//获取com.lucky.pojo.User类型的[User]
+		User user=ini.getObject(User.class);
+		System.out.printf("\n[User]==>%s",user);
+		
+		//获取com.lucky.pojo.Good类型的[Good],如果该类的属性为对象，则可以在.ini对应该属性key的value前加上@S:Section即可快速引入文件中的另一个对象
+		Good good=ini.getObject(Good.class);
+		System.out.printf("\n[Good]==>%s",good);
+	}
+	
+}
+
+控制台输出：
+[User]
+	password=PA$$W0RD
+	username=付康
+[Test]
+	str=String-Test
+	date=2020-12-12
+	arr=23,34,12,55,67,23
+	double=14.5
+[Good]
+	set=1.1,2.2,2.2,3.3
+	overdue=2022-12-14
+	production=2020-12-14
+	price=3
+	name=辣条
+	id=1
+	list=1,2,3,4,5,5
+	user=@S:User
+
+double=(Double)14.5
+date=(java.util.Date)Sat Dec 12 00:00:00 CST 2020
+arr=(String)23,34,12,55,67,23
+arr=(String[])[23, 34, 12, 55, 67, 23]
+arr=(Integer[])[23, 34, 12, 55, 67, 23]
+arr=(List<String>)[23, 34, 12, 55, 67, 23]
+arr=(List<Double>)[23.0, 34.0, 12.0, 55.0, 67.0, 23.0]
+arr=(Set<Integer>)[34, 67, 23, 55, 12]
+[User]==>User(username=付康, password=PA$$W0RD)
+[Good]==>Good(user=User(username=付康, password=PA$$W0RD), id=1, name=辣条, price=3.0, production=2020-12-14, overdue=2022-12-14, list=[1, 2, 3, 4, 5, 5], set=[1.1, 2.2, 3.3])
+
+
+```
+
+
+
+### 	2.配置类
