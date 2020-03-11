@@ -153,6 +153,15 @@ public class LuckyUtils {
 		}
 	}
 	
+	public static String getDate(Date date,String format) {
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		return sdf.format(date);
+	}
+	
+	public static String getDate(Date date) {
+		return getDate(date,"yyyy-MM-dd HH:mm:ss");
+	}
+	
 	/**
 	 *  ±º‰‘ÀÀ„
 	 * @param dateStr

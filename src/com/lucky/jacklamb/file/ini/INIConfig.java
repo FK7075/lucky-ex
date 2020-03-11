@@ -128,6 +128,13 @@ public class INIConfig {
 		return iniFilePars.getSectionMap(section).get(key);
 	}
 	
+	/**
+	 * 得到一个具体类型的Value
+	 * @param section 节名称
+	 * @param key key名
+	 * @param clazz 指定类型的Class
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public  <T> T getValue(String section,String key,Class<T> clazz) {
 		return (T) JavaConversion.strToBasic(getValue(section,key), clazz);

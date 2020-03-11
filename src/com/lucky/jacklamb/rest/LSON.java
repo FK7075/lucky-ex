@@ -1,15 +1,20 @@
 package com.lucky.jacklamb.rest;
 
 import java.lang.reflect.Field;
-import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.log4j.Logger;
+
+import com.lucky.jacklamb.exception.JsonFormatException;
+import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**
  * pojo对象转json字符串
@@ -18,20 +23,44 @@ import java.util.Map.Entry;
  *
  */
 public class LSON {
+	
+	private static Logger log=Logger.getLogger(LSON.class);
 
 	private String jsonStr;
 	
-	public String getJsonStr() {
+	/**
+	 * 传入一个对象，返回该对象的Json字符串
+	 * @param jsonObject
+	 * @return
+	 */
+	public String toJson(Object jsonObject) {
+		toJsonString(jsonObject);
 		return jsonStr;
 	}
+	
 
 	/**
-	 * 将pojo转化为Json字符
-	 * 
-	 * @param jsonObject
+	 * 传入一个Json字符串,返回一个指定类型的对象
+	 * @param objectClass 返回对象的类型
+	 * @param jsonStr Json字符串
+	 * @return
 	 */
+	public <T> T toObject(Class<T> objectClass,String jsonStr) {
+		if(!check(jsonStr)) {
+			log.error("错误的Json字符串"+jsonStr,new JsonFormatException("错误的Json字符串"+jsonStr));
+			throw new JsonFormatException("错误的Json字符串"+jsonStr);
+		}
+		return null;
+	}
+	
+	public boolean check(String jsonStr) {
+		return false;
+	}
+	
+	
+	
 	@SuppressWarnings("unchecked")
-	public LSON(Object jsonObject) {
+	private void toJsonString(Object jsonObject) {
 		if(jsonObject==null)
 			jsonStr="null";
 		else {
@@ -64,9 +93,11 @@ public class LSON {
 				}
 			}else {
 				if(String.class.isAssignableFrom(clzz)||Character.class.isAssignableFrom(clzz)
-				   ||Date.class.isAssignableFrom(clzz)||Time.class.isAssignableFrom(clzz)
+				   ||java.sql.Date.class.isAssignableFrom(clzz)||Time.class.isAssignableFrom(clzz)
 				   ||Timestamp.class.isAssignableFrom(clzz))
 					jsonStr="\""+jsonObject.toString()+"\"";
+				else if(java.util.Date.class.isAssignableFrom(clzz))
+					jsonStr="\""+LuckyUtils.getDate((Date)jsonObject)+"\"";
 				else
 					jsonStr=jsonObject.toString();
 			}
@@ -75,12 +106,13 @@ public class LSON {
 	}
 	
 	private String mapToJsonStr(Map<Object,Object> map) {
+		LSON lson=new LSON();
 		if(map==null||map.isEmpty()) {
 			return "{}";
 		}
 		StringBuilder str=new StringBuilder("{");
 		for(Entry<Object,Object> entry:map.entrySet()) {
-			str.append(new LSON(entry.getKey()).getJsonStr()).append(":").append(new LSON(entry.getValue()).getJsonStr()).append(",");
+			str.append(lson.toJson(entry.getKey())).append(":").append(lson.toJson(entry.getValue())).append(",");
 		}
 		if(str.toString().endsWith(","))
 			return str.substring(0, str.length()-1)+"}";
@@ -159,7 +191,14 @@ public class LSON {
 				return objJsonStr.substring(0, objJsonStr.length()-1)+"}";
 			return "{}";
 		} else {
-			return "\"" + object + "\"";
+			if(object instanceof String||object instanceof Character
+					   ||object instanceof java.sql.Date||object instanceof Time
+					   ||object instanceof Timestamp)
+						return "\""+object.toString()+"\"";
+					else if(object instanceof java.util.Date)
+						return "\""+LuckyUtils.getDate((Date)object)+"\"";
+					else
+						return object.toString();
 		}
 
 	}
@@ -174,15 +213,15 @@ public class LSON {
 	 */
 	private String fieldToJsonStr(Object field_Obj, Field field)
 			throws IllegalArgumentException, IllegalAccessException {
-		
+		LSON lson=new LSON();
 		StringBuilder fieldJsonStr = new StringBuilder();
 		field.setAccessible(true);
 		Object obj = field.get(field_Obj);
 		StringBuilder fieldValueJson;
 		StringBuilder fieldNameJson;
 		if (obj != null) {
-			fieldValueJson = new StringBuilder(new LSON(obj).getJsonStr());
-			fieldNameJson=new StringBuilder(new LSON(field.getName()).getJsonStr());
+			fieldValueJson = new StringBuilder(lson.toJson(obj));
+			fieldNameJson=new StringBuilder(lson.toJson(AttrUtil.getField(field)));
 			if(!"{}".equals(fieldValueJson.toString())&&!"[]".equals(fieldValueJson.toString())) {
 				fieldJsonStr.append(fieldNameJson).append(":").append(fieldValueJson);
 				return fieldJsonStr.toString();
@@ -214,12 +253,13 @@ public class LSON {
 		map_bb.put("map2", bb);
 		map_bb.put("map3", new BB("MAPBB"));
 		object.setMap_BB(map_bb);
-		LSON l=new LSON(object);
-		System.out.println(FormatUtil.formatJson(l.getJsonStr()));
+		LSON l=new LSON();
+		System.out.println(l.toJson(object));
+		System.out.println(LuckyUtils.getDate(new Date()));
 	}
 	
-	public String formatJson() {
-		return FormatUtil.formatJson(getJsonStr());
+	public String formatJson(Object jsonObject) {
+		return FormatUtil.formatJson(toJson(jsonObject));
 	}
 	
 }

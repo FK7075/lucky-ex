@@ -169,7 +169,7 @@ public class LXML {
 			String fieldXmlStr=new LXML(obj).getXmlStr();
 			if(fieldClass.isArray()) {
 				if(!"<array/>".equals(fieldXmlStr)&&!"<array></array>".equals(fieldXmlStr)) {
-					fieldXmlStr=fieldXmlStr.replaceAll("<array>", "<"+field.getName()+">").replaceAll("</array>", "</"+field.getName()+">");
+					fieldXmlStr=fieldXmlStr.replaceAll("<array>", "<"+AttrUtil.getField(field)+">").replaceAll("</array>", "</"+AttrUtil.getField(field)+">");
 					fieldxmlStr.append(fieldXmlStr);
 					return "";
 				}else {
@@ -178,7 +178,7 @@ public class LXML {
 			}
 			if(Collection.class.isAssignableFrom(fieldClass)) {
 				if(!"<collection/>".equals(fieldXmlStr)&&!"<collection></collection>".equals(fieldXmlStr)) {
-					fieldXmlStr=fieldXmlStr.replaceAll("<collection>", "<"+field.getName()+">").replaceAll("</collection>", "</"+field.getName()+">");
+					fieldXmlStr=fieldXmlStr.replaceAll("<collection>", "<"+AttrUtil.getField(field)+">").replaceAll("</collection>", "</"+AttrUtil.getField(field)+">");
 					fieldxmlStr.append(fieldXmlStr);
 					return fieldxmlStr.toString();
 				}else {
@@ -187,14 +187,14 @@ public class LXML {
 			}
 			if(Map.class.isAssignableFrom(fieldClass)) {
 				if(!"<map/>".equals(fieldXmlStr)&&!"<map></map>".equals(fieldXmlStr)) {
-					fieldXmlStr=fieldXmlStr.replaceAll("<map>", "<"+field.getName()+">").replaceAll("</map>", "</"+field.getName()+">");
+					fieldXmlStr=fieldXmlStr.replaceAll("<map>", "<"+AttrUtil.getField(field)+">").replaceAll("</map>", "</"+AttrUtil.getField(field)+">");
 					fieldxmlStr.append(fieldXmlStr);
 					return fieldxmlStr.toString();
 				}else {
 					return "";
 				}
 			}
-			return "<"+field.getName()+">"+fieldXmlStr+"</"+field.getName()+">";
+			return "<"+AttrUtil.getField(field)+">"+fieldXmlStr+"</"+AttrUtil.getField(field)+">";
 		}
 		return fieldxmlStr.toString();
 	}
@@ -231,12 +231,24 @@ public class LXML {
 
 class TT{
 	
+	@Attr("TT-STR")
 	private String str;
+	
+	@Attr("TT-DOUBLE-LIST")
 	private List<Double> doublelist;
+	
+	@Attr("TT-STRING-BB-MAP")
 	private Map<String,BB> map_BB;
+	
+	@Attr("TT-BB-LIST")
 	private List<BB> list_BB;
+	
+	@Attr("TT-STRING-INTEGER-MAP")
 	private Map<String,Integer> map;
+	
+	@Attr("TT-BB")
 	private BB bb;
+	
 	public String getStr() {
 		return str;
 	}
@@ -286,8 +298,12 @@ class BB{
 	public BB(String bname) {
 		this.bname = bname;
 	}
+	@Attr("BB-BNAME")
 	private String bname;
+	
+	@Attr("BB-ARRAY")
 	private String[] stringarray;
+	
 	public String getBname() {
 		return bname;
 	}

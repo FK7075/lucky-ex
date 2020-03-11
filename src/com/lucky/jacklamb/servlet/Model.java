@@ -264,9 +264,9 @@ public class Model {
 	 * @throws IOException
 	 */
 	public void witerJson(Object pojo){
-		LSON lson = new LSON(pojo);
-		log.debug(lson.formatJson());
-		writer(lson.getJsonStr());
+		LSON lson = new LSON();
+		log.debug(lson.formatJson(pojo));
+		writer(lson.toJson(pojo));
 	}
 
 	/**

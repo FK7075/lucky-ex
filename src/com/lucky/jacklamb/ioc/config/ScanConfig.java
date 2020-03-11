@@ -337,7 +337,7 @@ public class ScanConfig {
 			scanfig.addWebSocketPackSuffix("websocket");
 			scanfig.addAspectPackSuffix("aspect","aop");
 			scanfig.addPojoPackSuffix("pojo", "entity");
-			scanfig.setSqlIniPath("sql.ini");
+			scanfig.setSqlIniPath("appconfig.ini");
 			scanfig.setScanMode(Scan.AUTO_SCAN);
 			scanfig.setLogo(Logo.LUCKY);
 		}
