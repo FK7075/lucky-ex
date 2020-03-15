@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.lucky.jacklamb.ioc.ScanFactory;
 import com.lucky.jacklamb.ioc.config.Configuration;
+import com.lucky.jacklamb.ioc.scan.ScanFactory;
 
 public class DataSource {
 

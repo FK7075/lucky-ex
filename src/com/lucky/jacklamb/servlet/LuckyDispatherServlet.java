@@ -74,7 +74,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 			requestMethod=urlParsMap.chagenMethod(req,resp,requestMethod,webCfg.isPostChangeMethod());
 			String uri = req.getRequestURI();
 			uri=java.net.URLDecoder.decode(new String(uri.getBytes(encoding), req.getCharacterEncoding()), req.getCharacterEncoding());
-			model=new Model(req,resp,requestMethod,encoding);
+			model=new Model(req,resp,this.getServletConfig(),requestMethod,encoding);
 			urlParsMap.setLuckyWebContext(model);
 			String context = req.getContextPath();
 			String path = uri.replace(context, "");
@@ -97,7 +97,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 				StaticResourceManage.response(req, resp, uri);
 				return;
 			}
-			if (path.endsWith(".do")||path.endsWith(".xfl")||path.endsWith(".fk")||path.endsWith(".cad")||path.endsWith(".lcl")) {
+			if (path.endsWith(".lucky")||path.endsWith(".do")||path.endsWith(".xfl")||path.endsWith(".fk")||path.endsWith(".cad")||path.endsWith(".lcl")) {
 				//Lucky默认可以使用的后缀
 				path = path.substring(0, path.lastIndexOf("."));
 			}
@@ -115,7 +115,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 					return;
 				}
 				else {
-					log.info("CURR-REQUEST ->[DYNAMIC-REQUEST]  ["+requestMethod+"]  @DR@=> "+uri);
+					log.info("CURR-REQUEST ==> ["+requestMethod+"] "+uri);
 					model.setRestMap(controllerAndMethod.getRestKV());
 					urlParsMap.setCross(req,resp, controllerAndMethod);
 					method = controllerAndMethod.getMethod();

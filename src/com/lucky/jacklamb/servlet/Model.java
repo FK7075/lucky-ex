@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -49,6 +51,11 @@ public class Model {
 	 * Response对象
 	 */
 	private HttpServletResponse resp;
+	
+	/**
+	 * ServletConfig对象
+	 */
+	private ServletConfig servletConfig;
 
 	/**
 	 * url请求的方法
@@ -80,8 +87,9 @@ public class Model {
 	 *            解码方式
 	 * @throws IOException
 	 */
-	public Model(HttpServletRequest request, HttpServletResponse response, RequestMethod requestMethod, String encod)
+	public Model(HttpServletRequest request, HttpServletResponse response,ServletConfig servletConfig , RequestMethod requestMethod, String encod)
 			throws IOException {
+		this.servletConfig=servletConfig;
 		this.encod = encod;
 		req = request;
 		resp = response;
@@ -256,6 +264,25 @@ public class Model {
 	public Object getSessionAttribute(String name) {
 		return req.getSession().getAttribute(name);
 	}
+	
+	/**
+	 * 向application域中存值
+	 * @param name
+	 * @param object
+	 */
+	public void setServletContext(String name,Object object) {
+		getServletContext().setAttribute(name, object);
+	}
+	
+	/**
+	 * 向application域中取值
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Object getServletContextAttribute(String name) {
+		return getServletContext().getAttribute(name);
+	}
 
 	/**
 	 * 使用response对象的Writer方法将对象模型写出为JSON格式数据
@@ -347,6 +374,22 @@ public class Model {
 	 */
 	public HttpServletRequest getRequest() {
 		return req;
+	}
+	
+	/**
+	 * 得到Appliction对象
+	 * @return
+	 */
+	public ServletContext getServletContext() {
+		return req.getServletContext();
+	}
+	
+	/**
+	 * 得到ServletConfig对象
+	 * @return
+	 */
+	public ServletConfig getServletConfig() {
+		return this.servletConfig;
 	}
 
 	/**

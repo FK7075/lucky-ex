@@ -30,6 +30,7 @@ public abstract class LuckyFilter implements Filter {
 
 	@Override
 	public void destroy() {
+		
 	}
 
 	

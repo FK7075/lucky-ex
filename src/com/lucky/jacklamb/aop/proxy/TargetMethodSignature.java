@@ -5,6 +5,8 @@ import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.lucky.jacklamb.aop.util.ASMUtil;
+
 /**
  * 当前执行方法的所有相关项
  * @author fk-7075
@@ -46,6 +48,11 @@ public class TargetMethodSignature {
 	 * 参数列表的 Parameter[]
 	 */
 	private Parameter[] parameters;
+	
+	/**
+	 * 当前真实方法的参数名列表
+	 */
+	private String[] paramNames;
 	
 	
 	
@@ -111,6 +118,7 @@ public class TargetMethodSignature {
 		this.targetClass=aspectObject.getClass().getSuperclass();
 		this.currMethod=currMethod;
 		this.params=params;
+		this.paramNames=ASMUtil.getMethodParamNames(currMethod);
 		indexMap=new HashMap<>();
 		for(int i=0;i<params.length;i++) {
 			indexMap.put(i+1, params[i]);
@@ -118,14 +126,20 @@ public class TargetMethodSignature {
 		parameters = currMethod.getParameters();
 		nameMap=new HashMap<>();
 		for(int i=0;i<parameters.length;i++) {
-			nameMap.put(parameters[i].getName(), params[i]);
+			nameMap.put(paramNames[i], params[i]);
 		}
 	}
 	
+
 	public boolean containsIndex(int index) {
 		return indexMap.containsKey(index);
 	}
 	
+	/**
+	 * 得到参数列表中index位置的参数
+	 * @param index
+	 * @return
+	 */
 	public Object getParamByIndex(int index){
 		if(!containsIndex(index))
 			return null;

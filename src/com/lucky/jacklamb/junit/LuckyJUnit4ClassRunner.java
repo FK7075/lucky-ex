@@ -19,16 +19,15 @@ import com.lucky.jacklamb.utils.ArrayCast;
 
 public class LuckyJUnit4ClassRunner extends BlockJUnit4ClassRunner{
 	
-	private ApplicationBeans applicationBeans;
 	
 	public LuckyJUnit4ClassRunner(Class<?> testClass) throws InitializationError {
 		super(testClass);
 	}
 
 	@Override
-	protected final Object createTest() throws Exception {
+	protected Object createTest() throws Exception {
 		Object createTest = super.createTest();
-		applicationBeans=ApplicationBeans.createApplicationBeans();
+		ApplicationBeans applicationBeans=ApplicationBeans.createApplicationBeans();
 		return createTestObject(applicationBeans,createTest);
 	}
 	

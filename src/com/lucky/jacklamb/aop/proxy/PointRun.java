@@ -290,6 +290,14 @@ public class PointRun {
 						if(!targetMethodSignature.containsIndex(index))
 							throw new RuntimeException("错误的表达式，参数表达式中的索引超出参数列表索引范围！错误位置："+expandMethod+"@AopParam("+aopParamValue+")=>err");
 						expandParams[i]=targetMethodSignature.getParamByIndex(index);	
+					}else if(aopParamValue.startsWith("name:")) {
+						indexStr=aopParamValue.substring(5).trim();
+						if(targetMethodSignature.containsParamName(indexStr)) {
+							expandParams[i]=targetMethodSignature.getParamByName(indexStr);
+						}else {
+							expandParams[i]=null;
+						}
+						
 					} else if(aopParamValue.equals("[params]")){//整个参数列表
 						expandParams[i]=targetMethodSignature.getParameters();
 					}else if(aopParamValue.equals("[method]")) {//Method对象
@@ -298,7 +306,7 @@ public class PointRun {
 						expandParams[i]=targetMethodSignature.getTargetClass();
 					} else {//根据参数名得到具体参数
 						if(!targetMethodSignature.containsParamName(aopParamValue))
-							throw new RuntimeException("错误的参数名配置，在目标方法中找不到参数名为\""+aopParamValue+"\"的参数，请检查配置信息!(注：使用方法名配置必须保证JDK版本不得低于JDK8,另外还需确保开启了\"-parameters\"！)错误位置："+expandMethod+"@AopParam("+aopParamValue+")=>err");
+							throw new RuntimeException("错误的参数名配置，在目标方法中找不到参数名为\""+aopParamValue+"\"的参数，请检查配置信息!错误位置："+expandMethod+"@AopParam("+aopParamValue+")=>err");
 						expandParams[i]=targetMethodSignature.getParamByName(aopParamValue);
 					}
 				}

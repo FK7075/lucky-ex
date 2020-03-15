@@ -17,6 +17,7 @@ import com.lucky.jacklamb.aop.proxy.Point;
 import com.lucky.jacklamb.aop.proxy.PointRun;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
+import com.lucky.jacklamb.ioc.scan.ScanFactory;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**

@@ -31,6 +31,7 @@ import com.lucky.jacklamb.annotation.mvc.Download;
 import com.lucky.jacklamb.annotation.mvc.RequestParam;
 import com.lucky.jacklamb.annotation.mvc.RestParam;
 import com.lucky.jacklamb.annotation.mvc.Upload;
+import com.lucky.jacklamb.aop.util.ASMUtil;
 import com.lucky.jacklamb.exception.NotFindRequestException;
 import com.lucky.jacklamb.file.MultipartFile;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
@@ -70,17 +71,20 @@ public class AnnotationOperation {
 			throws IOException, ServletException {
 		Map<String, MultipartFile> map = new HashMap<>();
 		Parameter[] parameters = method.getParameters();
+		String[] paramNames=ASMUtil.getMethodParamNames(method);
 		try {
-			for (Parameter par : parameters) {
-				if (MultipartFile.class.isAssignableFrom(par.getType())) {
-					map.put(getParamName(par), uploadMutipar(model, getParamName(par)));
+			String paramName;
+			for(int i=0;i<parameters.length;i++) {
+				if (MultipartFile.class.isAssignableFrom(parameters[i].getType())) {
+					paramName=getParamName(parameters[i],paramNames[i]);
+					map.put(paramName, uploadMutipar(model, paramName));
 				}
 			}
 		}catch (NullPointerException e) {
 			List<String> paramlist=new ArrayList<>();
-			for (Parameter par : parameters) {
-				if (MultipartFile.class.isAssignableFrom(par.getType())) {
-					paramlist.add(getParamName(par));
+			for(int i=0;i<parameters.length;i++) {
+				if (MultipartFile.class.isAssignableFrom(parameters[i].getType())) {
+					paramlist.add(getParamName(parameters[i],paramNames[i]));
 				}
 			}
 			setMultipartFileMap(model,map,paramlist);
@@ -314,7 +318,10 @@ public class AnnotationOperation {
 			throws InstantiationException, IllegalAccessException, IOException, ServletException {
 		Map<String, Object> map = new HashMap<>();
 		Parameter[] parameters = method.getParameters();
+		String[] paramNames=ASMUtil.getMethodParamNames(method);
+		int i=0;
 		for (Parameter param : parameters) {
+			
 			if (!MultipartFile.class.isAssignableFrom(param.getType()) 
 					&& param.getType().getClassLoader() != null
 					&& !ServletRequest.class.isAssignableFrom(param.getType())
@@ -332,9 +339,9 @@ public class AnnotationOperation {
 					if (uploadMap.containsKey(fi.getName()) && fi_obj == null)
 						fi.set(pojo, uploadMap.get(fi.getName()));
 				}
-				map.put(getParamName(param), pojo);
+				map.put(getParamName(param,paramNames[i]), pojo);
 			}
-
+			i++;
 		}
 		return map;
 
@@ -397,6 +404,7 @@ public class AnnotationOperation {
 	 */
 	public Object getControllerMethodParam(Model model, Method method)
 			throws IOException, ServletException, InstantiationException, IllegalAccessException {
+		String[] paramNames=ASMUtil.getMethodParamNames(method);
 		Parameter[] parameters = method.getParameters();
 		Object[] args = new Object[parameters.length];
 		StringBuilder sb =new StringBuilder("[ URL-PARAMS ]\n");
@@ -406,15 +414,17 @@ public class AnnotationOperation {
 		sb.append(multiUploadMap.isEmpty()?"":"MultipartFile-Params : "+multiUploadMap.toString()+"\n");
 		Map<String, Object> pojoMap = pojoParam(model, method, uploadMap);
 		sb.append(pojoMap.isEmpty()?"":"Pojo-Params          : "+pojoMap.toString()+"\n").append("URL-Params           : \n");
+		String paramName;
 		for (int i = 0; i < parameters.length; i++) {
-			if (uploadMap.containsKey(getParamName(parameters[i]))
+			paramName=getParamName(parameters[i],paramNames[i]);
+			if (uploadMap.containsKey(paramName)
 					&& String.class.isAssignableFrom(parameters[i].getType())) {
-				args[i] = uploadMap.get(getParamName(parameters[i]));
-			} else if (multiUploadMap.containsKey(getParamName(parameters[i]))
+				args[i] = uploadMap.get(paramName);
+			} else if (multiUploadMap.containsKey(paramName)
 					&& MultipartFile.class.isAssignableFrom(parameters[i].getType())) {
-				args[i] = multiUploadMap.get(getParamName(parameters[i]));
-			} else if (pojoMap.containsKey(getParamName(parameters[i]))) {
-				args[i] = pojoMap.get(getParamName(parameters[i]));
+				args[i] = multiUploadMap.get(paramName);
+			} else if (pojoMap.containsKey(paramName)) {
+				args[i] = pojoMap.get(paramName);
 			} else if (ServletRequest.class.isAssignableFrom(parameters[i].getType())) {
 				args[i] = model.getRequest();
 			} else if (HttpSession.class.isAssignableFrom(parameters[i].getType())) {
@@ -431,42 +441,41 @@ public class AnnotationOperation {
 				args[i] = JavaConversion.strToBasic(model.getRestMap().get(restKey), parameters[i].getType());
 				sb.append("[Rest-Java] "+restKey+"="+args[i]+"\n");
 			} else {
-				String reqParaName = getParamName(parameters[i]);
 				String defparam = getRequeatParamDefValue(parameters[i]);
 				if (parameters[i].getType().isArray() && parameters[i].getType().getClassLoader() == null) {
-					if (model.parameterMapContainsKey(reqParaName)) {
-						args[i] = model.getArray(reqParaName, parameters[i].getType());
-						sb.append("[URL-Array] "+reqParaName+"="+args[i]+"\n");
+					if (model.parameterMapContainsKey(paramName)) {
+						args[i] = model.getArray(paramName, parameters[i].getType());
+						sb.append("[URL-Array] "+paramName+"="+args[i]+"\n");
 					} else {
 						if (defparam == null)
-							throw new NotFindRequestException("缺少请求参数：" + reqParaName+",错误位置："+method);
+							throw new NotFindRequestException("缺少请求参数：" + paramName+",错误位置："+method);
 						if("null".equals(defparam)) {
 							args[i]=null;
-							sb.append("[Default-Array] "+reqParaName+"="+args[i]+"\n");							
+							sb.append("[Default-Array] "+paramName+"="+args[i]+"\n");							
 						}else {
 							args[i] = ApplicationBeans.createApplicationBeans().getBean(defparam);
-							sb.append("[Default-Array] "+reqParaName+"="+args[i]+"\n");
+							sb.append("[Default-Array] "+paramName+"="+args[i]+"\n");
 						}
 					}
 				} else {
-					if (model.parameterMapContainsKey(reqParaName)) {
-						args[i] = model.getArray(reqParaName, parameters[i].getType())[0];
-						sb.append("[URL-Java] "+reqParaName+"="+args[i]+"\n");
-					} else if (model.restMapContainsKey(reqParaName)) {
-						args[i] = model.getRestParam(getParamName(parameters[i]), parameters[i].getType());
-						sb.append("[Rest-Java] "+reqParaName+"="+args[i]+"\n");
+					if (model.parameterMapContainsKey(paramName)) {
+						args[i] = model.getArray(paramName, parameters[i].getType())[0];
+						sb.append("[URL-Java] "+paramName+"="+args[i]+"\n");
+					} else if (model.restMapContainsKey(paramName)) {
+						args[i] = model.getRestParam(paramName, parameters[i].getType());
+						sb.append("[Rest-Java] "+paramName+"="+args[i]+"\n");
 					} else {
 						if (defparam == null)
-							throw new NotFindRequestException("缺少请求参数：" + reqParaName+",错误位置："+method);
+							throw new NotFindRequestException("缺少请求参数：" + paramName+",错误位置："+method);
 						if("null".equals(defparam)) {
 							args[i]=null;
-							sb.append("[Default-Java] "+reqParaName+"="+args[i]+"\n");
+							sb.append("[Default-Java] "+paramName+"="+args[i]+"\n");
 						}else if (parameters[i].getType().getClassLoader() == null) {
 							args[i] = JavaConversion.strToBasic(defparam, parameters[i].getType());
-							sb.append("[Default-Java] "+reqParaName+"="+args[i]+"\n");
+							sb.append("[Default-Java] "+paramName+"="+args[i]+"\n");
 						} else {
 							args[i] = ApplicationBeans.createApplicationBeans().getBean(defparam);
-							sb.append("[Default-Java] "+reqParaName+"="+args[i]);
+							sb.append("[Default-Java] "+paramName+"="+args[i]);
 						}
 					}
 				}
@@ -515,12 +524,12 @@ public class AnnotationOperation {
 	 * @param param
 	 * @return
 	 */
-	private String getParamName(Parameter param) {
+	private String getParamName(Parameter param,String paramName) {
 		if (param.isAnnotationPresent(RequestParam.class)) {
 			RequestParam rp = param.getAnnotation(RequestParam.class);
 			return rp.value();
 		} else {
-			return param.getName();
+			return paramName;
 		}
 	}
 

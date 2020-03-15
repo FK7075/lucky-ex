@@ -18,6 +18,7 @@ import com.lucky.jacklamb.annotation.ioc.Autowired;
 import com.lucky.jacklamb.annotation.ioc.Value;
 import com.lucky.jacklamb.exception.InjectionPropertiesException;
 import com.lucky.jacklamb.ioc.config.Configuration;
+import com.lucky.jacklamb.ioc.scan.ScanFactory;
 import com.lucky.jacklamb.servlet.Model;
 import com.lucky.jacklamb.tcconversion.typechange.JavaConversion;
 import com.lucky.jacklamb.utils.ArrayCast;
