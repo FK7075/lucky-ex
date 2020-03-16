@@ -32,6 +32,8 @@ public class PackageScan extends Scan {
 	
 	private String fileProjectPath;
 	
+	private LuckyClassLoader luckyClassLoader;
+	
 	
 	public PackageScan() {
 		super();
@@ -102,11 +104,16 @@ public class PackageScan extends Scan {
 					clzzpath=clzzpath.replaceAll("\\\\", "\\.");
 					clzzpath=clzzpath.substring(0, clzzpath.length()-6);
 					try {
-						if(clzzpath.startsWith("classes."))
+						if(clzzpath.startsWith("classes.")) {
 							clzzpath=clzzpath.substring(8);
-						if(clzzpath.startsWith("test-classes."))
+							components.add(Class.forName(clzzpath));
+						}else if(clzzpath.startsWith("test-classes.")) {
+							luckyClassLoader=new LuckyClassLoader(fileProjectPath+File.separator+"test-classes");
 							clzzpath=clzzpath.substring(13);
-						components.add(Class.forName(clzzpath));
+							components.add(luckyClassLoader.loadClass(clzzpath));
+						}else {
+							components.add(Class.forName(clzzpath));
+						}
 					} catch (ClassNotFoundException e) {
 						throw new RuntimeException("¿‡º”‘ÿ¥ÌŒÛ£¨¥ÌŒÛpath:"+clzzpath, e);
 					}
@@ -185,11 +192,17 @@ public class PackageScan extends Scan {
 			if(!file.isDirectory()&&file.getAbsolutePath().endsWith(".class")) {
 				String className=file.getAbsolutePath().replaceAll("\\\\", "/").replaceAll(fileProjectPath, "").replaceAll("/", "\\.");
 				className=className.substring(0,className.length()-6);
-				if(className.startsWith("classes."))
+				Class<?> fileClass=null;
+				if(className.startsWith("classes.")) {
 					className=className.substring(8);
-				if(className.startsWith("test-classes."))
+					fileClass=Class.forName(className);
+				}else if(className.startsWith("test-classes.")) {
+					luckyClassLoader=new LuckyClassLoader(fileProjectPath+File.separator+"test-classes");
 					className=className.substring(13);
-				Class<?> fileClass=Class.forName(className);
+					fileClass=luckyClassLoader.loadClass(className);
+				}else {
+					fileClass=Class.forName(className);
+				}
 				if(ApplicationConfig.class.isAssignableFrom(fileClass)&&fileClass.isAnnotationPresent(AppConfig.class)) {
 					appConfig=(ApplicationConfig) fileClass.newInstance();
 					break;
@@ -211,11 +224,17 @@ public class PackageScan extends Scan {
 			}else if(file.getAbsolutePath().endsWith(".class")) {
 				String className=file.getAbsolutePath().replaceAll("\\\\", "/").replaceAll(fileProjectPath, "").replaceAll("/", "\\.");
 				className=className.substring(0,className.length()-6);
-				if(className.startsWith("classes."))
+				Class<?> fileClass=null;
+				if(className.startsWith("classes.")) {
 					className=className.substring(8);
-				if(className.startsWith("test-classes."))
+					fileClass=Class.forName(className);
+				}else if(className.startsWith("test-classes.")) {
+					luckyClassLoader=new LuckyClassLoader(fileProjectPath+File.separator+"test-classes");
 					className=className.substring(13);
-				Class<?> fileClass=Class.forName(className);
+					fileClass=luckyClassLoader.loadClass(className);
+				}else{
+					fileClass=Class.forName(className);
+				}
 				if(fileClass.isAnnotationPresent(Controller.class))
 					controllerClass.add(fileClass);
 				else if(fileClass.isAnnotationPresent(Service.class))
