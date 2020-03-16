@@ -38,7 +38,7 @@ public class PackageScan extends Scan {
 	public PackageScan() {
 		super();
 		projectPath=PackageScan.class.getClassLoader().getResource("").getPath();
-		System.out.println("Project Start Position ==>"+fileProjectPath);
+		System.out.println("Project Start Position ==>"+projectPath);
 		if(projectPath.endsWith("/classes/")) {
 			projectPath=projectPath.substring(0,projectPath.length()-8);
 		}else if(projectPath.endsWith("/test-classes/")) {
