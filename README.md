@@ -1,6 +1,6 @@
 
 
-![](image/images.png)
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/images.png)
 
 
 
@@ -632,7 +632,7 @@ public class HelloController {
 
 项目结构图如下：
 
-![](/l1.png)
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l2.png)
 
 ```java
 package com.lucky;
@@ -650,5 +650,5 @@ public class TestApplication {
 
 3.运行启动类，打开浏览器访问 http://localhost:8080/lucky/hello 即可看到效果
 
-![](/l2.png)
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l2.png)
 
