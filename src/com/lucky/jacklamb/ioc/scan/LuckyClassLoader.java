@@ -6,6 +6,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+
+/**
+ * ¿‡º”‘ÿ∆˜
+ * @author fk-7075
+ *
+ */
 public class LuckyClassLoader extends ClassLoader {
 
 	private String filePath;

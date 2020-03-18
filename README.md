@@ -1,6 +1,6 @@
-<div align=center><img src="/image/images.png" width="150"/></div>
 
-[TOC]
+
+![](image/images.png)
 
 
 
@@ -232,9 +232,9 @@ suffix=.jsp
 /file/test.jpg=192.168.3.3,192.168.3.4
 ```
 
+### 2.ini文件解析器
 
-
-#### 2.ini文件解析器INIConfig
+#### 1.ini文件解析器INIConfig
 
 以上是appconfig.ini中可以配置的内容以及解释，另外我们也可以在appconfig.ini文件中配置一些自定义的参数，Lucky中内置了一个.ini文件解析器INIConfig类，以下是INIConfig的API
 
@@ -254,67 +254,6 @@ public class INIConfig {
      * @param path 带解析ini文件相对src的相对路径
      */
 	public INIConfig(String path)
-	
-	/**
-	 * 得到配置文件中所有的配置信息
-	 * @return
-	 */
-	public Map<String,Map<String,String>> getIniMap()
-        
-	/**
-	 * 得到App节下的所有key-value值组成的Map
-	 * @return
-	 */
-	public  Map<String,String> getAppParamMap()
-	
-	/**
-	 *  得到App节下的某一个key对应的value值
-	 * @param key key名
-	 * @return
-	 */
-	public  String getAppParam(String key)
-	
-	/**
-	 * 得到App节下的某一个key对应的value值(指定类型)
-	 * @param key key名
-	 * @param clazz 类型Class
-	 * @return
-	 */
-	public  <T> T getAppParam(String key,Class<T> clazz)
-	
-	/**
-	 * 得到App节下的某一个key对应的value值(String[]类型)
-	 * @param key key名
-	 * @param separator 分隔符
-	 * @return
-	 */
-	public  String[] getAppStringArray(String key,String separator)
-	
-	
-	/**
-	 * 得到App节下的某一个key对应的value值(String[]类型)
-	 * @param key key名
-	 * @param separator 分隔符
-	 * @return
-	 */
-	public  String[] getAppStringArray(String key) 
-	
-     /**
-	 * 得到App节下的某一个key对应的一个特定类型的value
-	 * @param key key名
-	 * @param clazz 指定类型的Class
-	 * @return
-	 */
-	public  <T> T[] getAppArray(String key,Class<T> clazz)
-	
-    /**
-	 * 得到App节下的某一个key对应的一个特定类型的value
-	 * @param key key名
-	 * @param clazz 指定类型的Class
-	 * @param separator 分隔符
-	 * @return
-	 */   
-	public  <T> T[] getAppArray(String key,Class<T> clazz,String separator)
 	
 	/**
 	 * 得到某个人指定节下的所有的key-value值组成的Map
@@ -456,11 +395,11 @@ public class INIConfig {
 
 ```
 
-#### 3.使用INIConfig类解析ini文件
+#### 2.使用INIConfig类解析ini文件
 
 3.1 在com.lucky包下创建一个名为test.ini的文件，内容如下
 
-test.ini
+com/lucky/test.ini
 
 ```ini
 [Test]
@@ -573,4 +512,143 @@ arr=(Set<Integer>)[34, 67, 23, 55, 12]
 
 
 ```
+
+## 五.Controller组件的
+
+### 1.@Controller注解
+
+@Controller注解用于声明一个接受http请求的接受器，功能类似于Servlet，@Controller注解的源码如下:                       该注解的通常与@RequestMapping注解一起配合使用，其中的属性在之后的章节会一一介绍。
+
+```java
+/**
+ * 在MVC中此用于标识一个Controller组件
+ * 	value：单独使用此注解是用来定义一个IOC组件
+ * 	prefix：MVC中的视图定位的前缀(eg: /WEB_INF/jsp/)
+ * 	suffix:MVC中的视图定位的后缀(eg: .jsp)
+ * -------------------------------------------
+ * 	使用"return String"的方式设置转发或重定向的目的地(返回值为String的方法)
+ * 	1.转发到页面：无前缀 return page
+ * 	2.转发到Controller方法:return forward:method
+ *	3.重定向到页面：return page:pageing
+ *	4.重定向到Controller方法：return redirect:method
+ * @author fk-7075
+ *
+ */
+/**
+ * 定义一个Controller组件
+ * @author fk-7075
+ *
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Controller {
+	
+	/**
+	 * 为该Controller组件指定一个唯一ID，默认会使用[首字母小写类名]作为组件的唯一ID
+	 * @return
+	 */
+	String value() default "";
+	
+	/**
+	 * 指定一些合法访问的ip地址，来自其他ip地址的请求将会被拒绝
+	 * @return
+	 */
+	String[] ip() default {};
+	
+	/**
+	 * 指定一些合法访问的ip段，来自其他ip地址的请求将会被拒绝
+	 * @return
+	 */
+	String[] ipSection() default "";
+	
+	/**
+	 * 指定对Controller中所有方法的返回值处理策略<br>
+	 * 1.Rest.NO(默认选项)：转发与重定向处理,只对返回值类型为String的结果进行处理<br>
+	 *  &nbsp;&nbsp;&nbsp;
+	 * a.转发到页面：无前缀 return page<br>
+     * 	&nbsp;&nbsp;&nbsp;
+     * b.转发到Controller方法:return forward:method<br>
+     *	&nbsp;&nbsp;&nbsp;
+     * c.重定向到页面：return page:pageing<br>
+     *	&nbsp;&nbsp;&nbsp;
+     * d.重定向到Controller方法：return redirect:method<br>
+     * 2.Rest.TXT：将返回值封装为txt格式，并返回给客户端<br>
+     * 3.Rest.JSON：将返回值封装为json格式，并返回给客户端<br>
+     * 4.Rest.XML：将返回值封装为xml格式，并返回给客户端
+	 * @return
+	 */
+	Rest rest() default Rest.NO;
+	
+	/**
+	 * 视图定位的前缀(eg: /WEB_INF/jsp/),只有在rest=Rest.NO时发挥作用
+	 * @return
+	 */
+	String prefix() default "";
+	
+	/**
+	 * 视图定位的后缀(eg: .jsp),只有在rest=Rest.NO时发挥作用
+	 * @return
+	 */
+	String suffix() default "";
+}
+
+```
+
+### 2.第一个Controller
+
+需求：用户访问 http://localhost:8080/lucky/hello ,程序向浏览器返回并打印字符串“Lucky Hello World！”
+
+1.定义一个Controller组件HelloController，代码如下：
+
+```java
+package com.lucky.controller;
+
+import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+
+import com.lucky.jacklamb.annotation.ioc.Controller;
+import com.lucky.jacklamb.annotation.mvc.RequestMapping;
+
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+	
+	//Response对象会在请求到达时被自动注入
+	private HttpServletResponse response;
+	
+	@RequestMapping("/hello")
+	public void hello() throws IOException {
+
+		response.getWriter().println("Lucky Hello World!");
+		
+	}
+
+}
+
+```
+
+2.在最外层的包下定义一个Lucky的启动类TestApplication,代码如下：
+
+项目结构图如下：
+
+![](/l1.png)
+
+```java
+package com.lucky;
+
+import com.lucky.jacklamb.start.LuckyApplication;
+
+public class TestApplication {
+	
+	public static void main(String[] args) {
+		LuckyApplication.run(TestApplication.class);
+	}
+
+}
+```
+
+3.运行启动类，打开浏览器访问 http://localhost:8080/lucky/hello 即可看到效果
+
+![](/l2.png)
 

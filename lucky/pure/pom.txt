@@ -1,6 +1,37 @@
- 
+<!-- Lucky的maven依赖 -->
 <dependency>
      <groupId>lucky.jacklamb</groupId>
      <artifactId>lucky</artifactId>
      <version>1.0.0</version>
 </dependency>
+
+<!-- Maven打包插件依赖 -->
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-shade-plugin</artifactId>
+			<version>1.2.1</version>
+			<executions>
+				<execution>
+					<phase>package</phase>
+					<goals>
+						<goal>shade</goal>
+					</goals>
+					<configuration>
+						<transformers>
+							<transformer
+								implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<!-- 入口主函数 -->
+								<mainClass>jdwl.zp.found.FoundApplication</mainClass>
+							</transformer>
+						</transformers>
+					</configuration>
+				</execution>
+			</executions>
+			<configuration>
+				<skipTests>true</skipTests>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
