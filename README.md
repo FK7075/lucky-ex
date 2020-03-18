@@ -2,7 +2,9 @@
 
 ![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/images.png)
 
-@[TOC](Lucky文档目录)
+#  Lucky文档目录
+
+[TOC]
 
 
 ## 一.Lucky 的简介
