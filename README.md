@@ -4,7 +4,7 @@
 
 #  Lucky文档目录
 
-[TOC]
+@[TOC]
 
 
 ## 一.Lucky 的简介
