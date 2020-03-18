@@ -178,6 +178,8 @@ public class UrlParsMap {
 		LuckyWebContext luckyWebContext = LuckyWebContext.createContext();
 		luckyWebContext.setRequest(model.getRequest());
 		luckyWebContext.setResponse(model.getResponse());
+		luckyWebContext.setSession(model.getSession());
+		luckyWebContext.setApplication(model.getServletContext());
 		LuckyWebContext.setContext(luckyWebContext);
 	}
 
@@ -189,7 +191,7 @@ public class UrlParsMap {
 	}
 
 	/**
-	 * 为Controller注入Model HttpSession ServletRequest ServletResponse属性
+	 * 为Controller注入Model HttpSession ServletRequest ServletResponse ServletContext属性
 	 * @param obj controller对象
 	 * @param model controller方法
 	 */

@@ -513,9 +513,9 @@ arr=(Set<Integer>)[34, 67, 23, 55, 12]
 
 ```
 
-## 五.Controller组件的
+## 五.Controller组件
 
-### 1.@Controller注解
+### 1.Controller注解
 
 @Controller注解用于声明一个接受http请求的接受器，功能类似于Servlet，@Controller注解的源码如下:                       该注解的通常与@RequestMapping注解一起配合使用，其中的属性在之后的章节会一一介绍。
 
@@ -563,18 +563,14 @@ public @interface Controller {
 	String[] ipSection() default "";
 	
 	/**
-	 * 指定对Controller中所有方法的返回值处理策略<br>
-	 * 1.Rest.NO(默认选项)：转发与重定向处理,只对返回值类型为String的结果进行处理<br>
-	 *  &nbsp;&nbsp;&nbsp;
-	 * a.转发到页面：无前缀 return page<br>
-     * 	&nbsp;&nbsp;&nbsp;
-     * b.转发到Controller方法:return forward:method<br>
-     *	&nbsp;&nbsp;&nbsp;
-     * c.重定向到页面：return page:pageing<br>
-     *	&nbsp;&nbsp;&nbsp;
-     * d.重定向到Controller方法：return redirect:method<br>
-     * 2.Rest.TXT：将返回值封装为txt格式，并返回给客户端<br>
-     * 3.Rest.JSON：将返回值封装为json格式，并返回给客户端<br>
+	 * 指定对Controller中所有方法的返回值处理策略
+	 * 1.Rest.NO(默认选项)：转发与重定向处理,只对返回值类型为String的结果进行处理
+	 * a.转发到页面：无前缀 return page
+     * b.转发到Controller方法:return forward:method
+     * c.重定向到页面：return page:pageing
+     * d.重定向到Controller方法：return redirect:method
+     * 2.Rest.TXT：将返回值封装为txt格式，并返回给客户端
+     * 3.Rest.JSON：将返回值封装为json格式，并返回给客户端
      * 4.Rest.XML：将返回值封装为xml格式，并返回给客户端
 	 * @return
 	 */
@@ -599,7 +595,9 @@ public @interface Controller {
 
 需求：用户访问 http://localhost:8080/lucky/hello ,程序向浏览器返回并打印字符串“Lucky Hello World！”
 
-1.定义一个Controller组件HelloController，代码如下：
+#### 2.1 编写HelloController类
+
+定义一个Controller组件**HelloController**，代码如下：
 
 ```java
 package com.lucky.controller;
@@ -628,11 +626,15 @@ public class HelloController {
 
 ```
 
-2.在最外层的包下定义一个Lucky的启动类TestApplication,代码如下：
+#### 2.2 编写Lucky启动类
 
-项目结构图如下：
+2.在<u>**最外层的包下**</u>定义一个Lucky的启动类TestApplication,在其中编写一个main方法，方法中调用LuckyApplication.run(Class clzz)方法，启动内嵌Tomcat。项目结构图如下：
 
-![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l2.png)
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l1.png)
+
+
+
+代码如下：
 
 ```java
 package com.lucky;
@@ -648,7 +650,190 @@ public class TestApplication {
 }
 ```
 
-3.运行启动类，打开浏览器访问 http://localhost:8080/lucky/hello 即可看到效果
+3.运行启动类，打开浏览器访问 http://localhost:8080/lucky/hello 即可看到效果：
 
 ![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l2.png)
+
+### 3.Controller属性以及参数获取
+
+#### 3.1 属性
+
+​	在Controller中可以声明一些特殊的属性，这些属性不需要用户自己初始化，Lucky在封装请求的时候会自动初始化并且自动为Controller注入。这些特殊的属性如下：
+
+```java
+//响应对象
+private Model model;
+//Request对象
+private HttpServletRequest request;
+//Response对象
+private HttpServletResponse response;
+//Session对象
+private HttpSession session;
+//ServletContext对象
+private ServletContext aplication;
+```
+
+​	**作为测试**，可以在HelloController中声明这些属性，然后在fieldTest方法中依次打印这些对象来印证Lucky的Controller属性自动注入机制，代码如下：
+
+```java
+package com.lucky.controller;
+
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+	
+	private Model model;
+	private HttpServletRequest request;
+	private HttpServletResponse response;
+	private HttpSession session;
+	private ServletContext aplication;
+    
+    ...
+	
+	@RequestMapping("/controllerField")
+	public void fieldTest() {
+		System.out.println("Model ==> "+model);
+		System.out.println("HttpServletRequest ==> "+request);
+		System.out.println("HttpServletResponse"+response);
+		System.out.println("HttpSession"+session);
+		System.out.println("ServletContext"+aplication);
+	}
+
+}
+
+启动TestApplication,在浏览器中输入 http://localhost:8080/lucky/controllerField,可以在控制中看到如下输出：
+控制台:
+
+...............
+
+CURR-REQUEST ==> [GET] /lucky/controllerField
+    
+Model ==> com.lucky.jacklamb.servlet.Model@79dc4515
+HttpServletRequest ==> org.apache.catalina.connector.RequestFacade@4c70a46a
+HttpServletResponseorg.apache.catalina.connector.ResponseFacade@52a4fae5
+HttpSessionorg.apache.catalina.session.StandardSessionFacade@d1b38ae
+ServletContextorg.apache.catalina.core.ApplicationContextFacade@167430f5
+```
+
+#### 3.2 获取客户端参数
+
+​	**1.获取git请求中的参数**
+
+​		1.在HelloController中添加一个param方法，具体代码如下：
+
+```java
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+
+    ..............
+	
+	@RequestMapping("/param")
+	public void param(String id,Double price) {
+		System.out.println("id="+id);
+		System.out.println("price="+price);
+	}
+
+}
+```
+
+​		2.在Postman中对该方法进行测试(http://localhost:8080/lucky/param?id=1d-123&price=12.6)
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l3.png)
+
+​		3.测试结果
+
+```
+控制台：
+CURR-REQUEST ==> [GET] /lucky/param
+id=id-123
+price=12.6
+
+```
+
+​	**2.获取Post请求中的参数**
+
+​		1.将请求类型更换为POST再次进行测试：
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l4.png)
+
+​		2.测试结果
+
+```
+控制台：
+CURR-REQUEST ==> [POST] /lucky/param
+id=id-123
+price=12.6
+
+```
+
+​	**3.将请求参数封装到对象**
+
+​	Lucky支持将请求参数直接封装为对象（参数名必须与实体的属性名相同才能完成赋值），创建一个实体类User,并且在HelloController中添加一个pojo方法，具体代码如下：
+
+User类：
+
+```java
+package com.lucky.pojo;
+
+import lombok.Data;
+
+@Data
+public class User {
+    
+	private String id;
+	private String username;
+	private String password;
+	private Integer age;
+
+}
+```
+
+HelloController的pojo方法：
+
+```
+
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+	
+	............
+	
+	@RequestMapping("/pojo")
+	public void param(User user) {
+		System.out.println(user);
+	}
+	
+
+}
+```
+
+使用Postm进行测试：
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l5.png)
+
+控制台：
+
+```
+CURR-REQUEST ==> [POST] /lucky/pojo
+User(id=id-8864, username=Lucy, password=PA$$W0RD, age=24)
+```
+
+
+
+### 4.文件上传下载
+
+#### 4.1 使用@Upload完成文件上传
+
+#### 4.2 使用MultipartFile类完成文件上传
+
+#### 4.3 使用@Download完成文件下载
+
+#### 4.4 使用MultipartFile类完成文件下载
+
+
+
+
+
+
 

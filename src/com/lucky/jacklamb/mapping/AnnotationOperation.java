@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
@@ -327,6 +328,7 @@ public class AnnotationOperation {
 					&& !ServletRequest.class.isAssignableFrom(param.getType())
 					&& !ServletResponse.class.isAssignableFrom(param.getType())
 					&& !HttpSession.class.isAssignableFrom(param.getType())
+					&& !ServletContext.class.isAssignableFrom(param.getType())
 					&& !Model.class.isAssignableFrom(param.getType()) && canInjection(param.getType(),model)) {
 				Class<?> pojoclzz = param.getType();
 				Object pojo = pojoclzz.newInstance();
@@ -431,6 +433,8 @@ public class AnnotationOperation {
 				args[i] = model.getSession();
 			} else if (ServletResponse.class.isAssignableFrom(parameters[i].getType())) {
 				args[i] = model.getResponse();
+			}else if (ServletContext.class.isAssignableFrom(parameters[i].getType())) {
+				args[i] = model.getServletContext();
 			} else if (Model.class.isAssignableFrom(parameters[i].getType())) {
 				args[i] = model;
 			} else if (parameters[i].isAnnotationPresent(RestParam.class)) {

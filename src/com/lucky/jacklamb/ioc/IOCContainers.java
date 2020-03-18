@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpSession;
@@ -238,6 +239,8 @@ public final class IOCContainers {
 				field.set(object, model.getRequest());
 			}else if(ServletResponse.class.isAssignableFrom(field.getType())) {
 				field.set(object, model.getResponse());
+			}else if(ServletContext.class.isAssignableFrom(field.getType())) {
+				field.set(object, model.getServletContext());
 			}else {
 				continue;
 			}
