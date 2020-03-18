@@ -21,13 +21,13 @@ public @interface Upload {
 	 * 表单中<form enctype="multipart/form-data">---<input type='file'>的name属性值或者Ajax请求中{formData.append("name",$('#crowd_file')[0].files[0]);data:formData]name属性所组成的数组
 	 * @return
 	 */
-	String[] names() default "";
+	String[] names();
 	
 	/**
 	 * 上传到项目文件夹的位置(对应names)
 	 * @return
 	 */
-	String[] filePath() default "";
+	String[] filePath();
 	
 	/**
 	 * 允许上传的文件类型(eg:  .jpg,.jpeg,.png),默认不做限制

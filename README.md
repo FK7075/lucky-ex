@@ -791,7 +791,7 @@ public class User {
 
 HelloController的pojo方法：
 
-```
+```java
 
 @Controller
 @RequestMapping("lucky")
@@ -823,13 +823,95 @@ User(id=id-8864, username=Lucy, password=PA$$W0RD, age=24)
 
 ### 4.文件上传下载
 
-#### 4.1 使用@Upload完成文件上传
+#### 	4.1 使用@Upload完成文件上传
 
-#### 4.2 使用MultipartFile类完成文件上传
+​		在Lucky中文件上传是一件极为简单的事情，我们只需要在方法上加上@Upload,并设置@Upload中的names以及filePath。其中names为文件的name属性(可以配置多个，多个用“,隔开)，filePath为文件上传到服务器上的位置(docBase的相对路径)，文件上传到服务器之后为了解决文件同名的问题Lucky会将文件重命名，新的文件名是一串UUID字符串。这个新的文件名会被注入到与@Upload的names属性对应的Controller方法参数中。
 
-#### 4.3 使用@Download完成文件下载
+在HelloController中添加一个upload方法来完成文件上传操作，具体代码如下：
 
-#### 4.4 使用MultipartFile类完成文件下载
+```java
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+
+    ........
+    
+	@Upload(names="file",filePath="upload/images/")
+	@RequestMapping("/file")
+	public void upload(String file) {
+		System.out.println(file);
+	}
+
+}
+
+```
+
+在Postman中进行测试
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l6.png)
+
+项目文件：
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l7.png)
+
+控制台：
+
+```
+CURR-REQUEST ==> [POST] /lucky/file
+4971e7c6-963f-460d-bd67-7cd2acc56a6e.jpg
+
+//可以看出上传到服务器的文件的文件名与控制台中输出的一致
+```
+
+#### 	4.2 使用MultipartFile类完成文件上传
+
+​	文件上传也可以使用MultipartFile类来完成，使用这个类时需要在Controller方法中声明MultipartFile对象，方法参数名必须与文件的name属性相同，然后使用MultipartFile对象的方法来完成文件上传，具体实现如下：
+
+​	在HelloController中添加一个multipart方法，具体代码如下：
+
+```java
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+
+	........
+	
+	@RequestMapping("multipart")
+	public void multipart(MultipartFile file) throws IOException {
+		//将文件拷贝到服务器的具体位置
+		file.copyToDocRelativePath("upload/mufile/");
+		//打印文件名
+		System.out.println(file.getFileName());
+	}
+
+}
+
+```
+
+​	在Postman中进行测试
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l8.png)
+
+​	项目文件：
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l9.png)
+
+​	控制台：
+
+```
+CURR-REQUEST ==> [POST] /lucky/multipart
+30905c87e264408189af5acb95d4f2b5.jpg
+
+//可以看出上传到服务器的文件的文件名与控制台中输出的一致
+```
+
+
+
+#### 	4.3 使用@Download完成文件下载
+
+#### 	4.4 使用MultipartFile类完成文件下载
+
+### 5.RestFul风格
 
 
 
