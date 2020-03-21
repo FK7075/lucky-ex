@@ -4,7 +4,7 @@
 
 #  Lucky文档目录
 
-[Lucky的简介](## 一.Lucky 的简介)
+[TOC]
 
 
 ## 一.Lucky 的简介
@@ -1092,6 +1092,7 @@ public class HelloController {
 		File file=new File("C:/Users/chenjun/Desktop/img/th.jpg");
 		MultipartFile.downloadFile(response, file);
 	}
+}
 ```
 
 
@@ -1102,9 +1103,228 @@ public class HelloController {
 
 RESTful架构将服务器分成前端服务器和后端服务器两部分，前端服务器为用户提供无模型的视图；后端服务器为前端服务器提供接口。浏览器向前端服务器请求视图，通过视图中包含的AJAX函数发起接口请求获取模型。
 
-项目开发引入RESTful架构，利于团队并行开发。在RESTful架构中，将多数HTTP请求转移到前端服务器上，降低服务器的负荷，使视图获取后端模型失败也能呈现。但RESTful架构却不适用于所有的项目，当项目比较小时无需使用RESTful架构，项目变得更加复杂。 [4]
+项目开发引入RESTful架构，利于团队并行开发。在RESTful架构中，将多数HTTP请求转移到前端服务器上，降低服务器的负荷，使视图获取后端模型失败也能呈现。但RESTful架构却不适用于所有的项目，当项目比较小时无需使用RESTful架构，项目变得更加复杂。
+
+#### 6.1 定义一个接受特定请求的方法
+
+##### 6.1.1 使用@RequestMapping注解的method属性指定请求类型
+
+​	eg：@RequestMapping(method=RequestMethod.GET)或																					             	@RequestMapping(method={RequestMethod.GET,RequestMethod.POST})
+
+在HelloController中添加一个postMethod方法，使用@RequestMapping注解进行标注，这个方法只接受post请求，具体代码如下：
+
+```java
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+
+	........
+	
+    @RequestMapping(value="postMethod",method=RequestMethod.POST)
+    public void postMethod(Model model) {
+    	model.writer("当前请求方法："+model.getRequestMethod());
+    	
+    }
+}
+```
+
+​	1.使用POST请求：
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l15.png)
+
+​	2.使用GET请求：
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l16.png)
+
+##### 6.1.2 使用@GetMapping、@PostMapping、@DeleteMapping、@PutMapping
+
+使用@PostMapping完成同样的功能，代码如下：
+
+```java
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+
+	........
+	
+    @PostMapping("postMapping")
+    public void postMapping(Model model) {
+    	model.writer("当前Controller方法：postMapping(Model model) ,当前请求方法："+model.getRequestMethod());
+    }
+    
+}
+```
+
+##### 6.1.3 使用Post请求类型转换改变当前的请求
+
+​	目前浏览器的表单只能提交POST和GET请求，为了使表单也能提交PUT和DELETE请求，Lucky中提供了一套请求转化机制，这个转化机制需要手动开启，使用请求转换机制有如下两个步骤
+
+1.在appconfig.ini中开启请求转化机制，在配置文件中加入如下配置
+
+```ini
+[Web]
+postChangeMethod=true
+```
+
+2.请求转换机制只能在POST请求下生效，并且需要使用_method传入一个类型参数！在HelloController中添加一个只支持PUT请求的方法putMapping,具体代码如下：
+
+```java
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+
+	........
+	
+    @PutMapping("putMapping")
+    public void putMapping(Model model) {
+    	model.writer(model.getRequestMethod());
+    	
+    }
+    
+}
+```
+
+使用POST请求进行测试：
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l17.png)
+
+使用POST请求和参数_method=put进行测试：
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l18.png)
 
 
+
+##### 6.2 响应JSON、XML和TXT格式的数据
+
+创建一个User对象，并以JSON的格式响应给浏览器，可以通过以下三种方式实现：
+
+首先在HelloController中定义一个可以产生User对象的方法，具体代码如下：
+
+```java
+    private User getUser() {
+    	User user=new User();
+    	user.setId("ID-3306-FK7075");
+    	user.setUsername("Jack Fu");
+    	user.setPassword("PA$$W0RD");
+    	user.setAge(18);
+    	return user;
+    }
+
+```
+
+1.使用Model对象的witerJson(Object object)方法
+
+​	在HelloController中添加modelWriter方法，具体代码如下：
+
+```java
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+
+	........
+    
+    @GetMapping("modelWriter")
+    public void modelWriter(Model model) {
+    	model.witerJson(getUser());
+    }
+    
+    ........
+}
+
+```
+
+​	使用Postman进行测试：
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l12.png)
+
+2.在Controller上使用@Controller注解的**rest**属性[eg:@Controller(rest=Rest.JSON)]
+
+​	在HelloController中添加writerJson方法，具体代码如下：
+
+```java
+@Controller(rest=Rest.JSON)
+@RequestMapping("lucky")
+public class HelloController {
+
+	........
+    
+    @GetMapping("writerJson")
+    public User writerJson() {
+    	return getUser();
+    }
+    
+    ........
+}
+```
+
+​	在Postman中进行测试：
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l13.png)
+
+3.在Controller方法上使用@RestBody注解
+
+​	在HelloController中添加bodyJson方法，具体代码如下：
+
+```java
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+
+	........
+    
+    @RestBody
+    @GetMapping("bodyJson")
+    public User bodyJson() {
+    	return getUser();
+    }
+    
+    ........
+}
+```
+
+​	在Postman中进行测试：
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l14.png)
+
+响应XML格式和TXT格式的写法请参考上面的代码
+
+​	1-xml.使用Model对象的witerXml(Object object)方法
+
+​	2-xml.在Controller上使用@Controller注解的**rest**属性[eg:@Controller(rest=Rest.Xml)]
+
+​	3-xml.在Controller方法上使用@RestBody注解的**value**属性[eg:@RestBody(Rest.Xml)]
+
+​	1-txt.使用Model对象的writer(Object object)方法
+
+​	2-txt.在Controller上使用@Controller注解的**rest**属性[eg:@Controller(rest=Rest.TXT)]
+
+​	3-txt.在Controller方法上使用@RestBody注解的**value**属性[eg:@RestBody(Rest.TXT)]
+
+
+
+##### 6.3 设计Rest风格的URL
+
+在@**Mapping中的URL可以使用#{name}符号来定义Rest风格的URL，然后可以在Controller方法中使用@RestParam注解来接受URL中的参数，例子如下，我们在HelloController中定义一个deleteUser方法，具体代码如下：
+
+```java
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+
+	........
+    
+    @DeleteMapping("delete/#{uid}")
+    public void deleteUser(Model model,@RestParam("uid")String uid) {
+    	model.writer("需要删除的用户ID为："+uid);
+    }
+    
+    ........
+}
+```
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l19.png)
+
+#### 7.Controller异常处理
 
 
 
