@@ -4,7 +4,7 @@
 
 #  Lucky文档目录
 
-@[TOC]
+[Lucky的简介](# 一.Lucky 的简介)
 
 
 ## 一.Lucky 的简介
@@ -822,9 +822,75 @@ CURR-REQUEST ==> [POST] /lucky/pojo
 User(id=id-8864, username=Lucy, password=PA$$W0RD, age=24)
 ```
 
+### 4.转发与重定向
+
+使用转发与重定向的Controller方法的返回值必须是String类型的，Lucky会检测方法返回值的特定前缀来执行响应的操作，以下是Lucky定义一些具有特殊含义的前缀：
+
+```
+
+ a.转发到页面
+ 无前缀 
+ [eg:return "page.html";]
+
+ b.转发到Controller方法 
+ 前缀 forward:  
+ [eg:return "forward:login"]
+ 
+ c.重定向到页面
+ 前缀 page: 
+ [eg:return "page:login.jsp"]
+ 
+ d.重定向到Controller方法
+ 前缀 redirect:
+ [eg:return "redirect:login"]
+```
 
 
-### 4.文件上传下载
+
+演示一个从一个Controller方法转发到另一个Controller方法的实例，其他情况可以按照此案例来进行变换。
+
+在HelloController中添加一个forwoardMethod1方法和一个forwoardMethod2,当我们请求forwoardMethod1时请求处理完后会被转发到forwoardMethod2中，具体代码如下：
+
+```java
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+	
+	............
+	
+	@RequestMapping("forwoardMethod1")
+	public String forwoardMethod1(String username) {
+		System.out.println("forwoardMethod1 ==> username="+username);
+        //forward: 表示转发到方法
+        return "forward:forwoardMethod2?username="+username;
+	}
+    
+    @RequestMapping("forwoardMethod2")
+	public void forwoardMethod(String username) {
+		System.out.println("forwoardMethod2 ==> username="+username);
+	}
+	
+
+}
+```
+
+使用Postman对forwoardMethod1进行测试：
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l11.png)
+
+控制台：
+
+```
+CURR-REQUEST ==> [POST] /lucky/forwoardMethod1
+forwoardMethod1 ==> username=Lucy
+2020-03-21 20:26:41,522 [INFO ] 8572 --- [http-nio-8080-exec-2:8572 ] com.lucky.jacklamb.servlet.LuckyDispatherServlet.luckyResponse(LuckyDispatherServlet.java:118)
+CURR-REQUEST ==> [POST] /lucky/forwoardMethod2
+forwoardMethod ==> username=Lucy
+```
+
+
+
+### 5.文件上传下载
 
 #### 	4.1 使用@Upload完成文件上传
 
@@ -912,11 +978,131 @@ CURR-REQUEST ==> [POST] /lucky/multipart
 
 #### 	4.3 使用@Download完成文件下载
 
+话不多说，先上@Download的源代码：
+
+```java
+/**
+ * MVC中定义一个文件下载的操作，只能使用在Controller的方法映射方法上
+ * @author fk-7075
+ *
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Download {
+	
+	/**
+	 * 接受URL请求中包含的文件相对docBase文件夹的相对路径的参数值<br>
+	 * eg:http://localhost:8080/download?file="image/1.jpg"<br>
+	 * -@Download(name="file")
+	 * @return
+	 */
+	String name();
+	
+	/**
+	 * 要下载本地文件的绝对路径
+	 * @return
+	 */
+	String path() default "";
+	
+	/**
+	 * 要下载文件相对docBase文件夹的相对路径 
+	 * @return
+	 */
+	String docPath() default "";
+	
+	/**
+	 * 文件所在文件夹相对docBase的位置
+	 * @return
+	 */
+	String folder() default "";
+	
+	/**
+	 * 下载网络上的资源（eg:https://github.com/FK7075/lucky-ex/blob/noxml/image/images.png）
+	 * @return
+	 */
+	String url() default "";
+}
+```
+
+1.使用@Download的**path**属性指定本地文件供用户下载,在HelloController中添加一个downLocalFile()方法，具体代码如下：
+
+```java
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+
+	........
+	
+	@Download(path = "C:/Users/chenjun/Desktop/img/th.jpg")
+	@RequestMapping("/downLoacl")
+	public void downLocalFile() {
+		System.out.println("提供本地资源给用户下载.....		(C:/Users/chenjun/Desktop/img/th.jpg)");
+	}
+
+}
+```
+
+使用浏览器进行测试：
+
+![image](https://github.com/FK7075/lucky-ex/blob/noxml/image/l10.png)
+
+1.使用@Download的**name**属性动态的指定一个在docBase中的文件供用户下载,在HelloController中添加一个downDocBaseFile()方法，具提代码如下：
+
+> ```java
+> @Controller
+> @RequestMapping("lucky")
+> public class HelloController {
+> 
+> 	........
+> 	
+> 	@Download(name="filename")
+> 	@RequestMapping("/downDocPath")
+> 	public void downDocPath() {
+> 		//要下载的docBase中的文件的文件名可以使用name属性的值[当前-filename]动态的传入
+> 	}
+> 
+> }
+> Lucky启动时会有如下日志，在倒数第三行可以看到DocBase在本地的位置
+> 2020-03-21 12:42:08,169 [INFO ] 4224 --- [main:4224 ] com.lucky.jacklamb.start.LuckyApplication.run(LuckyApplication.java:66)
+> 2020-03-21 12:42:08  Tomcat-SessionTimeOut   : 30min
+> 2020-03-21 12:42:08  Tomcat-Shutdown-Port    : 8005
+> 2020-03-21 12:42:08  Tomcat-Shutdown-Command : SHUTDOWN
+> 2020-03-21 12:42:08  Tomcat-BaseDir          : E:/Lucky-Teest/lucky-db/Lucky/tomcat/
+> 2020-03-21 12:42:08  Tomcat-DocBase          : E:/Lucky-Teest/lucky-db/Lucky/project/
+> 2020-03-21 12:42:08  Tomcat-ContextPath      : ""
+> 2020-03-21 12:42:08  Tomcat-Start [http-nio-8080],Tomcat启动成功！用时4094ms!
+> ```
+
+
+
 #### 	4.4 使用MultipartFile类完成文件下载
 
-### 5.RestFul风格
+文件下载还可以通过MultipartFile类的静态方法downloadFile来实现，这个方法需要一个HttpServletResponse对象和一个File对象！在HelloController中添加一个downMultipart方法，具体代码如下：
+
+```java
+@Controller
+@RequestMapping("lucky")
+public class HelloController {
+
+	........
+	//方法中的HttpServletResponse参数会在Lucky接受请求时自动的注入
+	@RequestMapping("/downMultipart")
+	public void downMultipart(HttpServletResponse response) throws IOException {
+		File file=new File("C:/Users/chenjun/Desktop/img/th.jpg");
+		MultipartFile.downloadFile(response, file);
+	}
+```
 
 
+
+### 6.RestFul风格
+
+​	RESTful架构是对MVC架构改进后所形成的一种架构，通过使用事先定义好的接口与不同的服务联系起来。在RESTful架构中，浏览器使用POST，DELETE，PUT和GET四种请求方式分别对指定的URL资源进行增删改查操作。因此，RESTful是通过URI实现对资源的管理及访问，具有扩展性强、结构清晰的特点。
+
+RESTful架构将服务器分成前端服务器和后端服务器两部分，前端服务器为用户提供无模型的视图；后端服务器为前端服务器提供接口。浏览器向前端服务器请求视图，通过视图中包含的AJAX函数发起接口请求获取模型。
+
+项目开发引入RESTful架构，利于团队并行开发。在RESTful架构中，将多数HTTP请求转移到前端服务器上，降低服务器的负荷，使视图获取后端模型失败也能呈现。但RESTful架构却不适用于所有的项目，当项目比较小时无需使用RESTful架构，项目变得更加复杂。 [4]
 
 
 

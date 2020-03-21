@@ -1,4 +1,4 @@
-package com.lucky.jacklamb.annotation.mvc;
+  package com.lucky.jacklamb.annotation.mvc;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -41,4 +41,10 @@ public @interface Download {
 	 * @return
 	 */
 	String folder() default "";
+	
+	/**
+	 * 下载网络上的资源（eg:https://github.com/FK7075/lucky-ex/blob/noxml/image/images.png）
+	 * @return
+	 */
+	String url() default "";
 }

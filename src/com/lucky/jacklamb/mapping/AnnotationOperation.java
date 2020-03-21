@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -356,14 +358,22 @@ public class AnnotationOperation {
 	 * @param method 将要执行的Controller方法
 	 * @throws IOException
 	 */
-	@SuppressWarnings("resource")
 	public void download(Model model, Method method) throws IOException {
 		Download dl = method.getAnnotation(Download.class);
+		InputStream fis = null;
+		String downName = null;
 		String path="";
 		if(!"".equals(dl.path())) {
 			path=dl.path();
 		}else if(!"".equals(dl.docPath())){
 			path=model.getRealPath("")+dl.docPath();
+		}else if(!"".equals(dl.url())){
+			downName=dl.url();
+			downName=downName.substring(downName.lastIndexOf("."));
+			downName=UUID.randomUUID().toString()+downName;
+			HttpURLConnection httpurlcon=(HttpURLConnection)new URL(dl.url()).openConnection();
+			httpurlcon.connect();
+			fis=httpurlcon.getInputStream();
 		}else {
 			String fileName = dl.name();
 			String filePath = dl.folder();
@@ -376,21 +386,24 @@ public class AnnotationOperation {
 				throw new RuntimeException("找不到必要属性\""+fileName+"\"");
 			path = model.getRealPath(filePath) + file; // 默认认为文件在当前项目的根目录
 		}
-		File f=new File(path);
-		if(!f.exists())
-			throw new RuntimeException("找不到文件,无法完成下载操作！"+path);
-		FileInputStream fis = new FileInputStream(f);
-		String downName=f.getName();
+		if(fis==null) {
+			File f=new File(path);
+			if(!f.exists())
+				throw new RuntimeException("找不到文件,无法完成下载操作！"+path);
+			fis = new FileInputStream(f);
+			downName=f.getName();
+		}
 		model.getResponse().setCharacterEncoding("utf-8");
 		model.getResponse().setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(downName,"UTF-8"));
 		ServletOutputStream out = model.getResponse().getOutputStream();
-		byte[] bt = new byte[1024*6];
-		int length = 0;
+		byte[] bt = new byte[1024];
+		int length;
 		while ((length = fis.read(bt)) != -1) {
 			out.write(bt, 0, length);
 			out.flush();
 		}
 		out.close();
+		fis.close();
 	}
 
 	/**

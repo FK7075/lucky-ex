@@ -30,7 +30,7 @@ public class MultipartFile {
 			this.originalFileInpueStream=(FileInputStream) part.getInputStream();
 			String disposition=part.getHeader("Content-Disposition");
 			this.fileType=disposition.substring(disposition.lastIndexOf("."));
-			this.uploadFileName=UUID.randomUUID().toString().replaceAll("-", "")+getFileType();
+			this.uploadFileName=UUID.randomUUID().toString()+getFileType();
 			this.projectPath=projectPath;
 		} catch (ClassCastException | IOException e) {
 			throw new RuntimeException("参数信息不正确，无法构造MultipartFile类实例！");
@@ -46,7 +46,7 @@ public class MultipartFile {
 	public MultipartFile(InputStream originalFileInpueStream,String projectPath,String fileType) {
 		this.originalFileInpueStream=originalFileInpueStream;
 		this.fileType=fileType;
-		this.uploadFileName=UUID.randomUUID().toString().replaceAll("-", "")+getFileType();
+		this.uploadFileName=UUID.randomUUID().toString()+getFileType();
 		this.projectPath=projectPath;
 	}
 	
