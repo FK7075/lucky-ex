@@ -4,7 +4,7 @@
 
 #  Lucky文档目录
 
-[Lucky的简介](# 一.Lucky 的简介)
+[Lucky的简介](## 一.Lucky 的简介)
 
 
 ## 一.Lucky 的简介
