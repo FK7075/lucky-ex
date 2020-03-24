@@ -19,7 +19,7 @@ import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.ControllerAndMethod;
 import com.lucky.jacklamb.ioc.config.Configuration;
 import com.lucky.jacklamb.ioc.config.WebConfig;
-import com.lucky.jacklamb.ioc.exception.LuckyExceptionHand;
+import com.lucky.jacklamb.ioc.exception.LuckyExceptionDispose;
 import com.lucky.jacklamb.mapping.AnnotationOperation;
 import com.lucky.jacklamb.mapping.UrlParsMap;
 import com.lucky.jacklamb.utils.Jacklabm;
@@ -118,7 +118,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 					log.info("CURR-REQUEST ==> ["+requestMethod+"] "+uri);
 					model.setRestMap(controllerAndMethod.getRestKV());
 					urlParsMap.setCross(req,resp, controllerAndMethod);
-					method = controllerAndMethod.getMethod();
+					method = controllerAndMethod.getMethod(); 
 					boolean isDownload = method.isAnnotationPresent(Download.class);
 					controllerObj=controllerAndMethod.getController();
 					urlParsMap.autowReqAdnResp(controllerObj,model);
@@ -131,19 +131,14 @@ public class LuckyDispatherServlet extends HttpServlet {
 				}
 			}
 		} catch (Throwable e) {
-			log.error("LuckyDispatherServlet处理请求出现异常！", e);
-			ApplicationBeans application=ApplicationBeans.createApplicationBeans();
-			if(application.containsComponent("@%#LuckyExceptionHand@FK7075")) {
-				LuckyExceptionHand exceptionHand=(LuckyExceptionHand) application.getComponentBean("@%#LuckyExceptionHand@FK7075");
-				exceptionHand.initialize(model, controllerObj, method, args);
-				exceptionHand.exceptionHand();
-				if(e instanceof InvocationTargetException) {
-					exceptionHand.exceptionRole(e.getCause());
-				}else {
-					exceptionHand.exceptionRole(e);
-				}
+			log.error("Lucky异常处理机制捕获到LuckyDispatherServlet异常, Caused by: "+e.getCause());
+			LuckyExceptionDispose luckyExceptionDispose=new LuckyExceptionDispose();
+			luckyExceptionDispose.initialize(model, controllerObj, method, args);
+			luckyExceptionDispose.exceptionHand();
+			if(e instanceof InvocationTargetException) {
+				luckyExceptionDispose.exceptionRole(e.getCause());
 			}else {
-				e.printStackTrace();
+				luckyExceptionDispose.exceptionRole(e);
 			}
 		}finally {
 			urlParsMap.closeLuckyWebContext();

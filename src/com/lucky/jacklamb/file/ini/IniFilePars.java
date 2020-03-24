@@ -380,6 +380,9 @@ public class IniFilePars {
 		if(sectionMap.containsKey("webapp")) {
 			server.setWebapp(sectionMap.get("webapp"));
 		}
+		if(sectionMap.containsKey("url-encoding")) {
+			server.setURIEncoding(sectionMap.get("url-encoding"));
+		}
 	}
 	
 	private void setScanConfig(ScanConfig scan,Map<String, String> sectionMap) {

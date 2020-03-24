@@ -3,8 +3,11 @@ package com.lucky.jacklamb.ioc.exception;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
+import com.lucky.jacklamb.annotation.ioc.Controller;
 import com.lucky.jacklamb.servlet.Model;
+import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**
  * 全局异常处理基类
@@ -40,14 +43,9 @@ public abstract class LuckyExceptionHand {
 	protected Model model;
 
 	/**
-	 * Controller层面上的指定处理
+	 * ExceptionDisposeHand的注册中心
 	 */
-	protected List<ExceptionDisposeHand> roleController;
-
-	/**
-	 * Method层面上的指定处理
-	 */
-	protected List<ExceptionDisposeHand> roleMethod;
+	private List<ExceptionDisposeHand> registry;
 
 	public void initialize(Model model, Object controllerObj, Method currMethod, Object[] params) {
 		this.controllerObj = controllerObj;
@@ -55,12 +53,11 @@ public abstract class LuckyExceptionHand {
 		this.currMethod = currMethod;
 		this.params = params;
 		this.model = model;
-		roleController = new ArrayList<>();
-		roleMethod = new ArrayList<>();
+		registry = new ArrayList<>();
 	}
 
 	/**
-	 * Controller全局异常处理
+	 * 提供给用户重写，Controller全局异常处理
 	 * @param e
 	 */
 	protected void globalExceptionHand(Throwable e) {
@@ -68,33 +65,57 @@ public abstract class LuckyExceptionHand {
 	}
 	
 	/**
-	 * 指定异常处理
+	 * 提供给用户重写，指定异常处理[指定类，指定方法]
 	 */
 	public void exceptionHand() {
 		
 	}
+	
+	/**
+	 * 注册ExceptionDisposeHand
+	 * @param exceptionDisposeHands
+	 */
+	public void registered(ExceptionDisposeHand...exceptionDisposeHands) {
+		Stream.of(exceptionDisposeHands).forEach(registry::add);
+	}
+	
 
+	/**
+	 * 回调方法，被Lucky调用
+	 * @param e
+	 */
 	public void exceptionRole(Throwable e) {
-		if (roleController.isEmpty() && roleMethod.isEmpty()) {
+		if (registry.isEmpty()) {
 			globalExceptionHand(e);
 			return;
 		}
-		String ctrlName = currClass.getSimpleName();
+		String ctrlName = getControllerID();
 		String cmethodName = currMethod.getName();
-		for(ExceptionDisposeHand methodED:roleMethod) {
-			if(methodED.root(ctrlName+"."+cmethodName)) {
-				methodED.getDispose().dispose(model, e);
+		for(ExceptionDisposeHand methodED:registry) {
+			//方法优先
+			if(methodED.root(ctrlName,cmethodName)) {
+				methodED.getDispose().dispose(e);
 				return;
 			}
-		}
-		
-		for(ExceptionDisposeHand controllerED:roleController) {
-			if(controllerED.root(ctrlName)) {
-				controllerED.getDispose().dispose(model, e);
+			//类其次
+			if(methodED.root(ctrlName)) {
+				methodED.getDispose().dispose(e);
 				return;
 			}
+
 		}
 		globalExceptionHand(e);
+	}
+	
+	private String getControllerID() {
+		if(currClass.isAnnotationPresent(Controller.class)) {
+			Controller annotation = currClass.getAnnotation(Controller.class);
+			if(!"".equals(annotation.value()))
+				return currClass.getAnnotation(Controller.class).value();
+			return LuckyUtils.TableToClass1(currClass.getSimpleName());
+		}else {
+			return LuckyUtils.TableToClass1(currClass.getSimpleName());
+		}
 	}
 }
 

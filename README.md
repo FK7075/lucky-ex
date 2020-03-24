@@ -1326,5 +1326,4 @@ public class HelloController {
 
 #### 7.Controller异常处理
 
-
-
+Lucky中的异常处理机制，可以在三个层面上捕获并处理由Controller产生出的异常                                                  1.全局处理:只要出现异常，不管是哪个Controller产生的，都会被异常处理器捕获。											    2.类层面的处理：用户可以自定义一些针对不同类的异常处理器，此时异常处理器只会捕获由这些类的对象产生的异常。 																																												 3.方法层面的处理：用户可以自定义一些针对不同方法的异常处理器，此时异常处理器只会捕获由这些方法产生的异常。 																																												 在Lucky环境下如何使用异常处理器？使用步骤如下： 																						          1.创建一个类继承LuckyExceptionHand类 																											          2.使用@ExceptionHander注解标注该类 																														3.如果需要定义一个全局的异常处理请重写globalExceprionHand方法，处理逻辑写在方法中即可。 				    4.如果需要定义一个类/方法层面的异常处理器请重写exceptionHand方法，在方法中定义处理逻辑，并注册到Lucky中即可！此时定义一个处理逻辑的本质其实是生成一些ExceptionDisposeHand对象，此对象由两部分组成：List<String>和一个ExceptionDispose对象，前者用于描述作用的方法或类(类用类名来描述，方法用类名.方法名来描述)后者用来描述捕获异常后的处理逻辑，ExceptionDispose是一个函数式接口，有一个抽象方法 dispose(Model,Throwable),可以使用lambda表达式快速构建！																				 如图三，在一个Controller中定义了两个均会产生AritameticException的方法！ 如图四，定义了一个全局的异常处理方法，此方法会捕获到此异常并转发到err1.html 如图五，为测试结果！ 如图六，定义了两个针对两个不同Controller方法的异常处理方法，针对test方法会转发到err1.html，而test2则会被转发到err2.html。 如图七，为测试结果

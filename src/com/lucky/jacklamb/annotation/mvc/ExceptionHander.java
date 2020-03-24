@@ -11,6 +11,10 @@ import java.lang.annotation.Target;
 @Documented
 public @interface ExceptionHander {
 	
-	String value() default "";
+	String id() default "";
+	
+	String[] value() default {};
+	
+	boolean global() default true;
 	
 }

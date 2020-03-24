@@ -33,6 +33,8 @@ public class ServerConfig {
 	
 	private String webapp;
 	
+	private String URIEncoding;
+	
 	private String docBase;
 	
 	private String baseDir;
@@ -43,6 +45,15 @@ public class ServerConfig {
 	
 	private Set<EventListener> listeners;
 	
+	
+	public String getURIEncoding() {
+		return URIEncoding;
+	}
+
+	public void setURIEncoding(String uRIEncoding) {
+		URIEncoding = uRIEncoding;
+	}
+
 	public String getDocBase() {
 		return docBase;
 	}
@@ -218,6 +229,7 @@ public class ServerConfig {
 			serverConfig.setContextPath("");
 			serverConfig.setBaseDir("Lucky/tomcat/");
 			serverConfig.setDocBase("Lucky/project/");
+			serverConfig.setURIEncoding("UTF-8");
 		}
 		return serverConfig;
 	}

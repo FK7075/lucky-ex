@@ -184,37 +184,50 @@ public class ApplicationBeans {
 	
 	/**
 	 * 根据类型得到一个IOC组件
-	 * @param clzz 组件类型
+	 * @param clzz
 	 * @return
 	 */
 	public Object getBean(Class<?> clzz) {
-		Object controllerObj=getBeanByClass(iocContainers.getControllerIOC().getControllerMap(),clzz);
-		Object serviceObj=getBeanByClass(iocContainers.getServiceIOC().getServiceMap(),clzz);
-		Object repositoryObj=getBeanByClass(iocContainers.getRepositoryIOC().getRepositoryMap(),clzz);
-		Object mapperObj=getBeanByClass(iocContainers.getRepositoryIOC().getMapperMap(),clzz);
-		Object componentObj=getBeanByClass(iocContainers.getAppIOC().getAppMap(),clzz);
-		if(controllerObj!=null)
+		List<Object> beans = getBeans(clzz);
+		if(beans.size()==1)
+			return beans.get(0);
+		throw new NotFindBeanException("在IOC容器中类型为-"+clzz+"-的bean不是唯一的!  请使用@Value或者@Autowired的value属性指定bean的ID！");
+	}
+	
+	/**
+	 * 根据类型得到一组IOC组件
+	 * @param clzz 组件类型
+	 * @return
+	 */
+	public List<Object> getBeans(Class<?> clzz) {
+		List<Object> controllerObj=getBeanByClass(iocContainers.getControllerIOC().getControllerMap(),clzz);
+		List<Object> serviceObj=getBeanByClass(iocContainers.getServiceIOC().getServiceMap(),clzz);
+		List<Object> repositoryObj=getBeanByClass(iocContainers.getRepositoryIOC().getRepositoryMap(),clzz);
+		List<Object> mapperObj=getBeanByClass(iocContainers.getRepositoryIOC().getMapperMap(),clzz);
+		List<Object> componentObj=getBeanByClass(iocContainers.getAppIOC().getAppMap(),clzz);
+		if(!controllerObj.isEmpty())
 			return controllerObj;
-		else if(serviceObj!=null)
+		else if(!serviceObj.isEmpty())
 			return serviceObj;
-		else if(repositoryObj!=null)
+		else if(!repositoryObj.isEmpty())
 			return repositoryObj;
-		else if(mapperObj!=null)
+		else if(!mapperObj.isEmpty())
 			return mapperObj;
-		else if(componentObj!=null)
+		else if(!componentObj.isEmpty())
 			return componentObj;
 		else
 			throw new NotFindBeanException("在IOC容器中找不到类型为--"+clzz+"--的Bean...");
 	}
 	
-	private Object getBeanByClass(Map<String,Object> map,Class<?> clzz) {
+	private List<Object> getBeanByClass(Map<String,Object> map,Class<?> clzz) {
+		List<Object> sameClassObjects=new ArrayList<>();
 		for(Entry<String,Object> entry:map.entrySet()) {
 			Object obj=entry.getValue();
 			Class<?> mapClass=obj.getClass();
 			if(clzz.isAssignableFrom(mapClass))
-				return obj;
+				sameClassObjects.add(obj);
 		}
-		return null;
+		return sameClassObjects;
 	}
 	
 	/**

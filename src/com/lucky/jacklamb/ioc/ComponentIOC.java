@@ -122,8 +122,14 @@ public class ComponentIOC extends ComponentFactory {
 				}
 			}else if(component.isAnnotationPresent(ExceptionHander.class)) {
 				Object aspect = PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "component", "exceptionHand", component);
-				addAppMap("@%#LuckyExceptionHand@FK7075",aspect);
-				log.info("@ExceptionHander =>   [id=@%#LuckyExceptionHand@FK7075"+"class="+aspect+"]");
+				ExceptionHander annotation = component.getAnnotation(ExceptionHander.class);
+				if (!"".equals(annotation.id())) {
+					beanID=annotation.id();
+				} else {
+					beanID=LuckyUtils.TableToClass1(component.getSimpleName());
+				}
+				addAppMap(beanID,aspect);
+				log.info("@ExceptionHander =>   [id="+beanID+" ,class="+aspect+"]");
 			}else {
 				continue;
 			}

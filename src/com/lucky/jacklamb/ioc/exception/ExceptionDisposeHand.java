@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.lucky.jacklamb.ioc.ApplicationBeans;
+
 /**
  * 特定对象/方法的异常处理器
  * @author fk-7075
@@ -43,8 +45,12 @@ public class ExceptionDisposeHand {
 		this.dispose = dispose;
 	}
 	
-	public boolean root(String info) {
-		return hander.contains(info);
+	public boolean root(String controllerID) {
+		return hander.contains(controllerID)&&ApplicationBeans.createApplicationBeans().contains(controllerID);
+	}
+	
+	public boolean root(String controllerID,String methodName) {
+		return hander.contains(controllerID+"."+methodName)&&ApplicationBeans.createApplicationBeans().contains(controllerID);
 	}
 
 
