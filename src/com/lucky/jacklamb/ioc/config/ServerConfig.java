@@ -10,12 +10,21 @@ import java.util.Set;
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
 
+import com.lucky.jacklamb.annotation.mvc.LuckyFilter;
+import com.lucky.jacklamb.annotation.mvc.LuckyServlet;
+import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.servlet.LuckyDispatherServlet;
 import com.lucky.jacklamb.start.FilterMapping;
 import com.lucky.jacklamb.start.ServletMapping;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 public class ServerConfig {
+	
+	public ServerConfig() {
+		servletlist=new ArrayList<>();
+		listeners=new HashSet<>();
+		filterlist=new ArrayList<>();
+	}
 	
 	private static ServerConfig serverConfig;
 	
@@ -140,12 +149,6 @@ public class ServerConfig {
 		}
 	}
 
-	public ServerConfig() {
-		servletlist=new ArrayList<>();
-		filterlist=new ArrayList<>();
-		listeners=new HashSet<>();
-	}
-	
 	public int getPort() {
 		return port;
 	}
@@ -232,6 +235,56 @@ public class ServerConfig {
 			serverConfig.setURIEncoding("UTF-8");
 		}
 		return serverConfig;
+	}
+	
+	/**
+	 * ×¢½â°æServlet×¢²á
+	 */
+	private void servletInit() {
+		List<Object> servlets = ApplicationBeans.createApplicationBeans().getBeans(HttpServlet.class);
+		ServletMapping servletMap;
+		HttpServlet servlet;
+		Set<String> smapping;
+		LuckyServlet annServlet;
+		for(Object servletObj:servlets) {
+			servlet=(HttpServlet) servletObj;
+			annServlet=servlet.getClass().getAnnotation(LuckyServlet.class);
+			smapping=new HashSet<>(Arrays.asList(annServlet.value()));
+			servletMap=new ServletMapping(smapping,LuckyUtils.TableToClass1(servlet.getClass().getSimpleName()),servlet);
+			servletlist.add(servletMap);
+		}
+	}
+	
+	/**
+	 * ×¢½â°æFilter×¢²á
+	 */
+	private void filterInit() {
+		List<Object> filters = ApplicationBeans.createApplicationBeans().getBeans(Filter.class);
+		FilterMapping filterMap;
+		Filter filter;
+		Set<String> fmapping;
+		LuckyFilter annFilter;
+		for(Object filterObj:filters) {
+			filter=(Filter) filterObj;
+			annFilter=filter.getClass().getAnnotation(LuckyFilter.class);
+			fmapping=new HashSet<>(Arrays.asList(annFilter.value()));
+			filterMap=new FilterMapping(fmapping,LuckyUtils.TableToClass1(filter.getClass().getSimpleName()),filter);
+			filterlist.add(filterMap);
+		}
+	}
+	
+	/**
+	 * ×¢½â°æListener×¢²á
+	 */
+	private void listenerInit() {
+		List<Object> listeners = ApplicationBeans.createApplicationBeans().getBeans(EventListener.class);
+		listeners.stream().forEach(a->this.listeners.add((EventListener)a));
+	}
+	
+	public void init() {
+		listenerInit();
+		servletInit();
+		filterInit();
 	}
 }
 	

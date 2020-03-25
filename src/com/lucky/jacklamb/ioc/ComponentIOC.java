@@ -13,6 +13,9 @@ import com.lucky.jacklamb.annotation.ioc.Bean;
 import com.lucky.jacklamb.annotation.ioc.BeanFactory;
 import com.lucky.jacklamb.annotation.ioc.Component;
 import com.lucky.jacklamb.annotation.mvc.ExceptionHander;
+import com.lucky.jacklamb.annotation.mvc.LuckyFilter;
+import com.lucky.jacklamb.annotation.mvc.LuckyListener;
+import com.lucky.jacklamb.annotation.mvc.LuckyServlet;
 import com.lucky.jacklamb.aop.util.PointRunFactory;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
@@ -121,15 +124,22 @@ public class ComponentIOC extends ComponentFactory {
 					}
 				}
 			}else if(component.isAnnotationPresent(ExceptionHander.class)) {
-				Object aspect = PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "component", "exceptionHand", component);
 				ExceptionHander annotation = component.getAnnotation(ExceptionHander.class);
 				if (!"".equals(annotation.id())) {
 					beanID=annotation.id();
 				} else {
 					beanID=LuckyUtils.TableToClass1(component.getSimpleName());
 				}
+				Object aspect = PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "component", beanID, component);
 				addAppMap(beanID,aspect);
 				log.info("@ExceptionHander =>   [id="+beanID+" ,class="+aspect+"]");
+			}else if(component.isAnnotationPresent(LuckyServlet.class)
+					||component.isAnnotationPresent(LuckyFilter.class)
+					||component.isAnnotationPresent(LuckyListener.class)) {
+				beanID=LuckyUtils.TableToClass1(component.getSimpleName());
+				Object aspect = PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "component", beanID, component);
+				addAppMap(beanID,aspect);
+				log.info("@Web×é¼þ =>   [id="+beanID+" ,class="+aspect+"]");
 			}else {
 				continue;
 			}

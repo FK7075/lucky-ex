@@ -189,6 +189,8 @@ public class ApplicationBeans {
 	 */
 	public Object getBean(Class<?> clzz) {
 		List<Object> beans = getBeans(clzz);
+		if(beans.isEmpty())
+			throw new NotFindBeanException("在IOC容器中找不到类型为--"+clzz+"--的Bean...");
 		if(beans.size()==1)
 			return beans.get(0);
 		throw new NotFindBeanException("在IOC容器中类型为-"+clzz+"-的bean不是唯一的!  请使用@Value或者@Autowired的value属性指定bean的ID！");
@@ -216,7 +218,7 @@ public class ApplicationBeans {
 		else if(!componentObj.isEmpty())
 			return componentObj;
 		else
-			throw new NotFindBeanException("在IOC容器中找不到类型为--"+clzz+"--的Bean...");
+			return new ArrayList<>();
 	}
 	
 	private List<Object> getBeanByClass(Map<String,Object> map,Class<?> clzz) {

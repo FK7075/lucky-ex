@@ -25,7 +25,7 @@ public class LuckyServletContainerInitializer implements ServletContainerInitial
 	public static Logger log=Logger.getLogger(LuckyServletContainerInitializer.class);
 	
 	public LuckyServletContainerInitializer() {
-		
+		serverCfg.init();
 	}
 
 	@Override
