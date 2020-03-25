@@ -139,7 +139,7 @@ public class ComponentIOC extends ComponentFactory {
 				beanID=LuckyUtils.TableToClass1(component.getSimpleName());
 				Object aspect = PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "component", beanID, component);
 				addAppMap(beanID,aspect);
-				log.info("@Web组件 =>   [id="+beanID+" ,class="+aspect+"]");
+				log.info("@Web组件                                =>   [id="+beanID+" ,class="+aspect+"]");
 			}else {
 				continue;
 			}
