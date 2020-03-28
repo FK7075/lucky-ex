@@ -19,6 +19,7 @@ import com.lucky.jacklamb.annotation.mvc.LuckyServlet;
 import com.lucky.jacklamb.aop.util.PointRunFactory;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
+import com.lucky.jacklamb.ioc.config.LuckyConfig;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**
@@ -109,7 +110,7 @@ public class ComponentIOC extends ComponentFactory {
 				Object obj = component.newInstance();
 				Method[] methods=component.getDeclaredMethods();
 				for(Method met:methods) {
-					if(met.isAnnotationPresent(Bean.class)) {
+					if(met.isAnnotationPresent(Bean.class)&&!LuckyConfig.class.isAssignableFrom(met.getReturnType())) {
 						Object invoke = met.invoke(obj);
 						Bean bean=met.getAnnotation(Bean.class);
 						if("".equals(bean.value())) {

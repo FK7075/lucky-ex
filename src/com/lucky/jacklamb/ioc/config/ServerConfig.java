@@ -18,7 +18,7 @@ import com.lucky.jacklamb.start.FilterMapping;
 import com.lucky.jacklamb.start.ServletMapping;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
-public class ServerConfig {
+public class ServerConfig implements LuckyConfig  {
 	
 	public ServerConfig() {
 		servletlist=new ArrayList<>();

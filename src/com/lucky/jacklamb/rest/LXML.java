@@ -38,6 +38,8 @@ public class LXML {
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				}
+			}else if(clzz.isEnum()) {
+				xmlStr=pojo.toString();
 			} else if (clzz.isArray()) {
 				try {
 					xmlStr = arrayToxmlStr((Object[])pojo);
@@ -137,7 +139,8 @@ public class LXML {
 			List<String> field_json = new ArrayList<>();
 			Field[] fields = object.getClass().getDeclaredFields();
 			for (Field field : fields) {
-				field_json_copy.add(fieldToxmlStr(object, field));
+				if(!field.getType().getName().equals(object.getClass().getName()))
+					field_json_copy.add(fieldToxmlStr(object, field));
 			}
 			field_json_copy.stream().filter(str -> !"".equals(str)).forEach(field_json::add);
 			for (int i = 0; i < field_json.size(); i++) {

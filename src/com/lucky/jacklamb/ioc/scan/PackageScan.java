@@ -1,6 +1,8 @@
 package com.lucky.jacklamb.ioc.scan;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,8 +11,11 @@ import javax.websocket.Endpoint;
 import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpoint;
 
+import org.apache.log4j.Logger;
+
 import com.lucky.jacklamb.annotation.aop.Aspect;
 import com.lucky.jacklamb.annotation.ioc.AppConfig;
+import com.lucky.jacklamb.annotation.ioc.Bean;
 import com.lucky.jacklamb.annotation.ioc.BeanFactory;
 import com.lucky.jacklamb.annotation.ioc.Component;
 import com.lucky.jacklamb.annotation.ioc.Controller;
@@ -23,6 +28,8 @@ import com.lucky.jacklamb.annotation.mvc.LuckyServlet;
 import com.lucky.jacklamb.annotation.orm.mapper.Mapper;
 import com.lucky.jacklamb.aop.proxy.Point;
 import com.lucky.jacklamb.ioc.config.ApplicationConfig;
+import com.lucky.jacklamb.ioc.config.LuckyConfig;
+import com.lucky.jacklamb.rest.LSON;
 
 /**
  * 不做配置时的默认包扫描
@@ -35,11 +42,16 @@ public class PackageScan extends Scan {
 	
 	private String fileProjectPath;
 	
+	private static Logger log = Logger.getLogger(PackageScan.class);
+	
+	private LSON lson;
+	
 	private LuckyClassLoader luckyClassLoader;
 	
 	
 	public PackageScan() {
 		super();
+		lson=new LSON();
 		projectPath=PackageScan.class.getClassLoader().getResource("").getPath();
 		System.out.println("Project Start Position ==>"+projectPath);
 		if(projectPath.endsWith("/classes/")) {
@@ -184,10 +196,16 @@ public class PackageScan extends Scan {
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
-	private void findConfig(String path) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	private void findConfig(String path) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		File bin=new File(path);
 		File[] listFiles = bin.listFiles();
 		for(File file:listFiles) {
@@ -205,9 +223,24 @@ public class PackageScan extends Scan {
 				}else {
 					fileClass=Class.forName(className);
 				}
+				if(fileClass.isAnnotationPresent(BeanFactory.class)) {
+					Method[] beanMethods=fileClass.getDeclaredMethods();
+					Class<?> returnType;
+					Object config;
+					StringBuilder info;
+					for(Method method:beanMethods) {
+						returnType=method.getReturnType();
+						if(method.isAnnotationPresent(Bean.class)&&LuckyConfig.class.isAssignableFrom(returnType)) {
+							info=new StringBuilder();
+							method.setAccessible(true);
+							config=method.invoke(fileClass.newInstance());
+							info.append("@").append(config.getClass().getSimpleName()).append("       =>  ").append(lson.toJson(config));
+							log.info(info.toString());
+						}
+					}
+				}
 				if(ApplicationConfig.class.isAssignableFrom(fileClass)&&fileClass.isAnnotationPresent(AppConfig.class)) {
 					appConfig=(ApplicationConfig) fileClass.newInstance();
-					break;
 				}
 			}else if(file.isDirectory()){
 				findConfig(path+"/"+file.getName());

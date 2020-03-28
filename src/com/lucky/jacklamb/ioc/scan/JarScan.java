@@ -1,6 +1,8 @@
 package com.lucky.jacklamb.ioc.scan;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -11,8 +13,11 @@ import javax.websocket.Endpoint;
 import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpoint;
 
+import org.apache.log4j.Logger;
+
 import com.lucky.jacklamb.annotation.aop.Aspect;
 import com.lucky.jacklamb.annotation.ioc.AppConfig;
+import com.lucky.jacklamb.annotation.ioc.Bean;
 import com.lucky.jacklamb.annotation.ioc.BeanFactory;
 import com.lucky.jacklamb.annotation.ioc.Component;
 import com.lucky.jacklamb.annotation.ioc.Controller;
@@ -25,15 +30,22 @@ import com.lucky.jacklamb.annotation.mvc.LuckyServlet;
 import com.lucky.jacklamb.annotation.orm.mapper.Mapper;
 import com.lucky.jacklamb.aop.proxy.Point;
 import com.lucky.jacklamb.ioc.config.ApplicationConfig;
+import com.lucky.jacklamb.ioc.config.LuckyConfig;
+import com.lucky.jacklamb.rest.LSON;
 
 public class JarScan extends Scan {
 	
 	protected String jarpath;
 	
+	private static Logger log = Logger.getLogger(JarScan.class);
+	
+	private LSON lson;
+	
 	protected String prefix;
 
 
 	public JarScan(Class<?> clzz) {
+		lson=new LSON();
 		String allname=clzz.getName();
 		String simpleName=clzz.getSimpleName();
 		prefix=allname.substring(0, allname.length()-simpleName.length()).replaceAll("\\.", "/");
@@ -147,9 +159,25 @@ public class JarScan extends Scan {
 				name = name.substring(0, name.length() - 6);
 				String clzzName = name.replaceAll("/", "\\.");
 				Class<?> fileClass = Class.forName(clzzName);
+				if(fileClass.isAnnotationPresent(BeanFactory.class)) {
+					Method[] beanMethods=fileClass.getDeclaredMethods();
+					Class<?> returnType;
+					Object config;
+					StringBuilder info;
+					for(Method method:beanMethods) {
+						returnType=method.getReturnType();
+						if(method.isAnnotationPresent(Bean.class)&&LuckyConfig.class.isAssignableFrom(returnType)) {
+							info=new StringBuilder();
+							method.setAccessible(true);
+							config=method.invoke(fileClass.newInstance());
+							info.append("@").append(config.getClass().getSimpleName()).append("       =>  ").append(lson.toJson(config));
+							log.info(info.toString());
+							
+						}
+					}
+				}
 				if(ApplicationConfig.class.isAssignableFrom(fileClass)&&fileClass.isAnnotationPresent(AppConfig.class)) {
 					appConfig=(ApplicationConfig) fileClass.newInstance();
-					break;
 				}
 			}
 		}
@@ -159,6 +187,12 @@ public class JarScan extends Scan {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

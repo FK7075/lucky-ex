@@ -13,7 +13,7 @@ import com.lucky.jacklamb.enums.Scan;
  * @author DELL
  *
  */
-public class ScanConfig {
+public class ScanConfig implements LuckyConfig {
 	
 	private static ScanConfig scanfig;
 	
@@ -84,10 +84,10 @@ public class ScanConfig {
 	public void setSqlIniPath(String sqlIniPath) {
 		this.sqlIniPath = sqlIniPath;
 	}
-	public static ScanConfig getScanfig() {
+	public ScanConfig getScanfig() {
 		return scanfig;
 	}
-	public static void setScanfig(ScanConfig scanfig) {
+	public void setScanfig(ScanConfig scanfig) {
 		ScanConfig.scanfig = scanfig;
 	}
 

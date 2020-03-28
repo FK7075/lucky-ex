@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.lucky.jacklamb.exception.JsonFormatException;
+import com.lucky.jacklamb.ioc.config.ScanConfig;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**
@@ -73,6 +74,8 @@ public class LSON {
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				}
+			}else if(clzz.isEnum()) {
+				jsonStr="\""+jsonObject.toString()+"\"";
 			} else if (clzz.isArray()) {
 				try {
 					jsonStr = arrayToJsonStr((Object[])jsonObject);
@@ -181,7 +184,8 @@ public class LSON {
 			List<String> field_json = new ArrayList<>();
 			Field[] fields = object.getClass().getDeclaredFields();
 			for (Field field : fields) {
-				field_json_copy.add(fieldToJsonStr(object, field));
+				if(!field.getType().getName().equals(object.getClass().getName()))
+					field_json_copy.add(fieldToJsonStr(object, field));
 			}
 			field_json_copy.stream().filter(a->a!=null).forEach(field_json::add);
 			for (int i = 0; i < field_json.size(); i++) {
@@ -256,6 +260,8 @@ public class LSON {
 		LSON l=new LSON();
 		System.out.println(l.toJson(object));
 		System.out.println(LuckyUtils.getDate(new Date()));
+		ScanConfig s=ScanConfig.defaultScanConfig();
+		System.out.println(l.toJson(s));
 	}
 	
 	public String formatJson(Object jsonObject) {
