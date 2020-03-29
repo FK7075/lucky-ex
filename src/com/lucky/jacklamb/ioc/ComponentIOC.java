@@ -10,8 +10,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.lucky.jacklamb.annotation.ioc.Bean;
-import com.lucky.jacklamb.annotation.ioc.BeanFactory;
 import com.lucky.jacklamb.annotation.ioc.Component;
+import com.lucky.jacklamb.annotation.ioc.Configuration;
 import com.lucky.jacklamb.annotation.mvc.ExceptionHander;
 import com.lucky.jacklamb.annotation.mvc.LuckyFilter;
 import com.lucky.jacklamb.annotation.mvc.LuckyListener;
@@ -19,7 +19,11 @@ import com.lucky.jacklamb.annotation.mvc.LuckyServlet;
 import com.lucky.jacklamb.aop.util.PointRunFactory;
 import com.lucky.jacklamb.exception.NotAddIOCComponent;
 import com.lucky.jacklamb.exception.NotFindBeanException;
+import com.lucky.jacklamb.ioc.config.AppConfig;
 import com.lucky.jacklamb.ioc.config.LuckyConfig;
+import com.lucky.jacklamb.ioc.config.ScanConfig;
+import com.lucky.jacklamb.ioc.config.ServerConfig;
+import com.lucky.jacklamb.ioc.config.WebConfig;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
 /**
@@ -106,21 +110,28 @@ public class ComponentIOC extends ComponentFactory {
 				Object aspect = PointRunFactory.Aspect(AspectAOP.getAspectIOC().getAspectMap(), "component", beanID, component);
 				addAppMap(beanID, aspect);
 				log.info("@Component       =>   [id="+beanID+" class="+aspect+"]");
-			} else if (component.isAnnotationPresent(BeanFactory.class)) {
+			} else if (component.isAnnotationPresent(Configuration.class)) {
 				Object obj = component.newInstance();
 				Method[] methods=component.getDeclaredMethods();
 				for(Method met:methods) {
-					if(met.isAnnotationPresent(Bean.class)&&!LuckyConfig.class.isAssignableFrom(met.getReturnType())) {
+					if(met.isAnnotationPresent(Bean.class)) {
 						Object invoke = met.invoke(obj);
 						Bean bean=met.getAnnotation(Bean.class);
 						if("".equals(bean.value())) {
-							String Id=component.getSimpleName()+"."+met.getName();
-							addAppMap(Id, invoke);
-							log.info("@Bean            =>   [id="+Id+" class="+invoke+"]");
+							beanID=component.getSimpleName()+"."+met.getName();
 						}else {
-							addAppMap(bean.value(),invoke);
-							log.info("@Bean            =>   [id="+bean.value()+" class="+invoke+"]");
+							beanID=bean.value();
 						}
+						if(!LuckyConfig.class.isAssignableFrom(met.getReturnType())) {
+							addAppMap(beanID, invoke);
+						}else if(ScanConfig.class.isAssignableFrom(met.getReturnType())) {
+							addAppMap(beanID, AppConfig.getAppConfig().getScanConfig());
+						}else if(WebConfig.class.isAssignableFrom(met.getReturnType())) {
+							addAppMap(beanID, AppConfig.getAppConfig().getWebConfig());
+						}else if(ServerConfig.class.isAssignableFrom(met.getReturnType())) {
+							addAppMap(beanID, AppConfig.getAppConfig().getServerConfig());
+						}
+						log.info("@Bean            =>   [id="+beanID+" class="+invoke+"]");
 						
 					}
 				}

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
 import com.lucky.jacklamb.annotation.ioc.Autowired;
 import com.lucky.jacklamb.annotation.ioc.Value;
 import com.lucky.jacklamb.exception.InjectionPropertiesException;
-import com.lucky.jacklamb.ioc.config.Configuration;
+import com.lucky.jacklamb.ioc.config.AppConfig;
 import com.lucky.jacklamb.ioc.scan.ScanFactory;
 import com.lucky.jacklamb.servlet.Model;
 import com.lucky.jacklamb.tcconversion.typechange.JavaConversion;
@@ -156,7 +156,7 @@ public final class IOCContainers {
 	 * 得到有关包扫描的配置信息
 	 */
 	public void scanConfigToComponentIOC() {
-		Configuration.getConfiguration().getScanConfig();
+		AppConfig.getAppConfig().getScanConfig();
 	}
 	
 	/**

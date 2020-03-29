@@ -40,7 +40,7 @@ import com.lucky.jacklamb.enums.PrimaryType;
 import com.lucky.jacklamb.enums.Sort;
 import com.lucky.jacklamb.exception.NotFindFlieException;
 import com.lucky.jacklamb.file.ini.INIConfig;
-import com.lucky.jacklamb.ioc.config.Configuration;
+import com.lucky.jacklamb.ioc.config.AppConfig;
 import com.lucky.jacklamb.query.QueryBuilder;
 import com.lucky.jacklamb.query.SqlAndObject;
 import com.lucky.jacklamb.query.SqlFragProce;
@@ -92,7 +92,7 @@ public class LuckyMapperProxy {
 	 * @throws IOException
 	 */
 	private <T> void  initIniMap(Class<T> clazz) throws IOException {
-		String iniSql = Configuration.getConfiguration().getScanConfig().getSqlIniPath();
+		String iniSql = AppConfig.getAppConfig().getScanConfig().getSqlIniPath();
 		InputStream ini = this.getClass().getResourceAsStream("/"+iniSql);
 		if(ini!=null) {
 			INIConfig app=new INIConfig(iniSql);

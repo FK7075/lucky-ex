@@ -17,7 +17,7 @@ import com.lucky.jacklamb.annotation.mvc.Download;
 import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.ControllerAndMethod;
-import com.lucky.jacklamb.ioc.config.Configuration;
+import com.lucky.jacklamb.ioc.config.AppConfig;
 import com.lucky.jacklamb.ioc.config.WebConfig;
 import com.lucky.jacklamb.ioc.exception.LuckyExceptionDispose;
 import com.lucky.jacklamb.mapping.AnnotationOperation;
@@ -38,7 +38,7 @@ public class LuckyDispatherServlet extends HttpServlet {
 	public void init(ServletConfig config) {
 		ApplicationBeans.createApplicationBeans();
 		anop = new AnnotationOperation();
-		webCfg=Configuration.getConfiguration().getWebConfig();
+		webCfg=AppConfig.getAppConfig().getWebConfig();
 		urlParsMap=new UrlParsMap();
 		responseControl=new ResponseControl();
 	}

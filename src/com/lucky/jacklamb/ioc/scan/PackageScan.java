@@ -14,10 +14,9 @@ import javax.websocket.server.ServerEndpoint;
 import org.apache.log4j.Logger;
 
 import com.lucky.jacklamb.annotation.aop.Aspect;
-import com.lucky.jacklamb.annotation.ioc.AppConfig;
 import com.lucky.jacklamb.annotation.ioc.Bean;
-import com.lucky.jacklamb.annotation.ioc.BeanFactory;
 import com.lucky.jacklamb.annotation.ioc.Component;
+import com.lucky.jacklamb.annotation.ioc.Configuration;
 import com.lucky.jacklamb.annotation.ioc.Controller;
 import com.lucky.jacklamb.annotation.ioc.Repository;
 import com.lucky.jacklamb.annotation.ioc.Service;
@@ -223,7 +222,7 @@ public class PackageScan extends Scan {
 				}else {
 					fileClass=Class.forName(className);
 				}
-				if(fileClass.isAnnotationPresent(BeanFactory.class)) {
+				if(fileClass.isAnnotationPresent(Configuration.class)) {
 					Method[] beanMethods=fileClass.getDeclaredMethods();
 					Class<?> returnType;
 					Object config;
@@ -239,7 +238,7 @@ public class PackageScan extends Scan {
 						}
 					}
 				}
-				if(ApplicationConfig.class.isAssignableFrom(fileClass)&&fileClass.isAnnotationPresent(AppConfig.class)) {
+				if(ApplicationConfig.class.isAssignableFrom(fileClass)&&fileClass.isAnnotationPresent(Configuration.class)) {
 					appConfig=(ApplicationConfig) fileClass.newInstance();
 				}
 			}else if(file.isDirectory()){
@@ -277,7 +276,7 @@ public class PackageScan extends Scan {
 				else if(fileClass.isAnnotationPresent(Repository.class)||fileClass.isAnnotationPresent(Mapper.class))
 					repositoryClass.add(fileClass);
 				else if(fileClass.isAnnotationPresent(Component.class)
-						||fileClass.isAnnotationPresent(BeanFactory.class)
+						||fileClass.isAnnotationPresent(Configuration.class)
 						||fileClass.isAnnotationPresent(ExceptionHander.class)
 						||fileClass.isAnnotationPresent(LuckyServlet.class)
 						||fileClass.isAnnotationPresent(LuckyFilter.class)

@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import com.lucky.jacklamb.ioc.config.Configuration;
+import com.lucky.jacklamb.ioc.config.AppConfig;
 import com.lucky.jacklamb.ioc.config.ServerConfig;
 
 public class LuckyShutdown {
 	
-	private final ServerConfig serverCfg=Configuration.getConfiguration().getServerConfig();
+	private final ServerConfig serverCfg=AppConfig.getAppConfig().getServerConfig();
 	
 	public void shutdown() throws IOException {
         Socket socket = new Socket("localhost", serverCfg.getClosePort());

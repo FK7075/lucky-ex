@@ -1,6 +1,6 @@
 package com.lucky.jacklamb.ioc.scan;
 
-import com.lucky.jacklamb.ioc.config.Configuration;
+import com.lucky.jacklamb.ioc.config.AppConfig;
 
 public class ScanFactory {
 	
@@ -11,14 +11,14 @@ public class ScanFactory {
 	public static Scan createScan() {
 		if(PackageScan.class.getClassLoader().getResource("")==null) {
 			if(jar==null) {
-				jar= new JarScan(Configuration.applicationClass);
+				jar= new JarScan(AppConfig.applicationClass);
 				jar.init();
 			}
 			return jar;	
 		}else {
 			if("java.net.URLClassLoader".equals(PackageScan.class.getClassLoader().getClass().getName())) {
 				if(jar==null) {
-					jar= new URClassLoaderJarScan(Configuration.applicationClass);
+					jar= new URClassLoaderJarScan(AppConfig.applicationClass);
 					jar.init();
 					return jar;
 				}

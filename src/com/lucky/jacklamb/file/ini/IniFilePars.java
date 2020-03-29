@@ -383,6 +383,12 @@ public class IniFilePars {
 		if(sectionMap.containsKey("url-encoding")) {
 			server.setURIEncoding(sectionMap.get("url-encoding"));
 		}
+		if(sectionMap.containsKey("autoDeploy")) {
+			server.setAutoDeploy(Boolean.parseBoolean(sectionMap.get("autoDeploy")));
+		}
+		if(sectionMap.containsKey("reloadable")) {
+			server.setReloadable(Boolean.parseBoolean(sectionMap.get("reloadable")));
+		}
 	}
 	
 	private void setScanConfig(ScanConfig scan,Map<String, String> sectionMap) {

@@ -16,10 +16,9 @@ import javax.websocket.server.ServerEndpoint;
 import org.apache.log4j.Logger;
 
 import com.lucky.jacklamb.annotation.aop.Aspect;
-import com.lucky.jacklamb.annotation.ioc.AppConfig;
 import com.lucky.jacklamb.annotation.ioc.Bean;
-import com.lucky.jacklamb.annotation.ioc.BeanFactory;
 import com.lucky.jacklamb.annotation.ioc.Component;
+import com.lucky.jacklamb.annotation.ioc.Configuration;
 import com.lucky.jacklamb.annotation.ioc.Controller;
 import com.lucky.jacklamb.annotation.ioc.Repository;
 import com.lucky.jacklamb.annotation.ioc.Service;
@@ -115,7 +114,7 @@ public class JarScan extends Scan {
 							|| fileClass.isAnnotationPresent(Mapper.class))
 						repositoryClass.add(fileClass);
 					else if (fileClass.isAnnotationPresent(Component.class)
-							|| fileClass.isAnnotationPresent(BeanFactory.class)
+							|| fileClass.isAnnotationPresent(Configuration.class)
 							|| fileClass.isAnnotationPresent(ExceptionHander.class)
 							|| fileClass.isAnnotationPresent(LuckyServlet.class)
 							|| fileClass.isAnnotationPresent(LuckyFilter.class)
@@ -159,7 +158,7 @@ public class JarScan extends Scan {
 				name = name.substring(0, name.length() - 6);
 				String clzzName = name.replaceAll("/", "\\.");
 				Class<?> fileClass = Class.forName(clzzName);
-				if(fileClass.isAnnotationPresent(BeanFactory.class)) {
+				if(fileClass.isAnnotationPresent(Configuration.class)) {
 					Method[] beanMethods=fileClass.getDeclaredMethods();
 					Class<?> returnType;
 					Object config;
@@ -176,7 +175,7 @@ public class JarScan extends Scan {
 						}
 					}
 				}
-				if(ApplicationConfig.class.isAssignableFrom(fileClass)&&fileClass.isAnnotationPresent(AppConfig.class)) {
+				if(ApplicationConfig.class.isAssignableFrom(fileClass)&&fileClass.isAnnotationPresent(Configuration.class)) {
 					appConfig=(ApplicationConfig) fileClass.newInstance();
 				}
 			}

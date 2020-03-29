@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.lucky.jacklamb.ioc.config.Configuration;
+import com.lucky.jacklamb.ioc.config.AppConfig;
 import com.lucky.jacklamb.ioc.scan.ScanFactory;
 
 public class DataSource {
@@ -286,7 +286,7 @@ public class DataSource {
 		maxStatements=0;
 		maxStatementsPerConnection=0;
 		List<String> suffixlist = new ArrayList<>();
-		suffixlist.addAll(Configuration.getConfiguration().getScanConfig().getPojoPackSuffix());
+		suffixlist.addAll(AppConfig.getAppConfig().getScanConfig().getPojoPackSuffix());
 		caeateTable=ScanFactory.createScan().loadComponent(suffixlist);
 		log=false;
 		cache=false;

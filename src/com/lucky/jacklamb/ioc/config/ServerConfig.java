@@ -30,6 +30,10 @@ public class ServerConfig implements LuckyConfig  {
 	
 	private int port;
 	
+	private boolean autoDeploy;
+	
+	private boolean reloadable;
+	
 	private int closePort;
 	
 	private String shutdown;
@@ -55,6 +59,22 @@ public class ServerConfig implements LuckyConfig  {
 	private Set<EventListener> listeners;
 	
 	
+	public boolean isAutoDeploy() {
+		return autoDeploy;
+	}
+
+	public void setAutoDeploy(boolean autoDeploy) {
+		this.autoDeploy = autoDeploy;
+	}
+
+	public boolean isReloadable() {
+		return reloadable;
+	}
+
+	public void setReloadable(boolean reloadable) {
+		this.reloadable = reloadable;
+	}
+
 	public String getURIEncoding() {
 		return URIEncoding;
 	}
@@ -233,6 +253,8 @@ public class ServerConfig implements LuckyConfig  {
 			serverConfig.setBaseDir("Lucky/tomcat/");
 			serverConfig.setDocBase("Lucky/project/");
 			serverConfig.setURIEncoding("UTF-8");
+			serverConfig.setAutoDeploy(false);
+			serverConfig.setReloadable(false);
 		}
 		return serverConfig;
 	}

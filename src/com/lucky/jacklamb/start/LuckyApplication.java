@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.apache.tomcat.websocket.server.WsSci;
 
 import com.lucky.jacklamb.ioc.ApplicationBeans;
-import com.lucky.jacklamb.ioc.config.Configuration;
+import com.lucky.jacklamb.ioc.config.AppConfig;
 import com.lucky.jacklamb.ioc.config.ServerConfig;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
@@ -24,22 +24,23 @@ public class LuckyApplication {
 	 * @param applicationClass
 	 */
 	public static void run(Class<?> applicationClass) {
-		Configuration.applicationClass=applicationClass;
+		AppConfig.applicationClass=applicationClass;
 		run();
 	}
 	
 	private static void run() {
-		ServerConfig serverCfg=Configuration.getConfiguration().getServerConfig();
+		ServerConfig serverCfg=AppConfig.getAppConfig().getServerConfig();
 		long start= System.currentTimeMillis();
 		Tomcat tomcat = new Tomcat();
 		tomcat.setPort(serverCfg.getPort());
 		tomcat.setBaseDir(serverCfg.getBaseDir());
-		tomcat.getHost().setAutoDeploy(false);
+		tomcat.getHost().setAutoDeploy(serverCfg.isAutoDeploy());
 		tomcat.getServer().setPort(serverCfg.getClosePort());
 		tomcat.getServer().setShutdown(serverCfg.getShutdown());
         StandardContext context =new StandardContext();
         context.setSessionTimeout(serverCfg.getSessionTimeout());
         context.setPath(serverCfg.getContextPath());
+        context.setReloadable(serverCfg.isReloadable());
         String docBase = serverCfg.getDocBase();
 		File doc=new File(docBase);
 		if(!doc.isDirectory())

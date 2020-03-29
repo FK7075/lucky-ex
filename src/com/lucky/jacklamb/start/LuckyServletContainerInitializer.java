@@ -15,12 +15,12 @@ import javax.servlet.ServletRegistration;
 import org.apache.log4j.Logger;
 
 import com.lucky.jacklamb.ioc.ApplicationBeans;
-import com.lucky.jacklamb.ioc.config.Configuration;
+import com.lucky.jacklamb.ioc.config.AppConfig;
 import com.lucky.jacklamb.ioc.config.ServerConfig;
 
 public class LuckyServletContainerInitializer implements ServletContainerInitializer {
 	
-	public final ServerConfig serverCfg=Configuration.getConfiguration().getServerConfig();
+	public final ServerConfig serverCfg=AppConfig.getAppConfig().getServerConfig();
 	
 	public static Logger log=Logger.getLogger(LuckyServletContainerInitializer.class);
 	

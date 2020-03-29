@@ -18,7 +18,7 @@ import com.lucky.jacklamb.enums.RequestMethod;
 import com.lucky.jacklamb.ioc.ApplicationBeans;
 import com.lucky.jacklamb.ioc.ControllerAndMethod;
 import com.lucky.jacklamb.ioc.URLAndRequestMethod;
-import com.lucky.jacklamb.ioc.config.Configuration;
+import com.lucky.jacklamb.ioc.config.AppConfig;
 import com.lucky.jacklamb.servlet.LuckyWebContext;
 import com.lucky.jacklamb.servlet.Model;
 
@@ -125,7 +125,7 @@ public class UrlParsMap {
 		if(controllerClass.getSimpleName().contains("$$EnhancerByCGLIB$$"))
 			controllerClass=controllerClass.getSuperclass();
 		Controller cont=controllerClass.getAnnotation(Controller.class);
-		List<String> globalprefixAndSuffix=Configuration.getConfiguration().getWebConfig().getHanderPrefixAndSuffix();
+		List<String> globalprefixAndSuffix=AppConfig.getAppConfig().getWebConfig().getHanderPrefixAndSuffix();
  		come.setPrefix(globalprefixAndSuffix.get(0));
 		come.setSuffix(globalprefixAndSuffix.get(1));
 		if(!"".equals(cont.prefix()))

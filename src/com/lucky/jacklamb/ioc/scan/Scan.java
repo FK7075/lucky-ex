@@ -8,7 +8,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.lucky.jacklamb.ioc.config.ApplicationConfig;
-import com.lucky.jacklamb.ioc.config.Configuration;
+import com.lucky.jacklamb.ioc.config.AppConfig;
 import com.lucky.jacklamb.ioc.config.ScanConfig;
 import com.lucky.jacklamb.utils.LuckyUtils;
 
@@ -64,7 +64,7 @@ public abstract class Scan {
 	/**
 	 * È«¾ÖÅäÖÃÀà
 	 */
-	private Configuration configuration;
+	private AppConfig configuration;
 	
 	protected boolean isFirst=true;
 	
@@ -79,7 +79,7 @@ public abstract class Scan {
 	}
 	
 	public void init() {
-		configuration=Configuration.getConfiguration();
+		configuration=AppConfig.getAppConfig();
 		if(configuration.getScanConfig().getScanMode()==com.lucky.jacklamb.enums.Scan.AUTO_SCAN) {
 			log.info(LuckyUtils.time()+"   LUCKY-SCAN-MODE => AUTO_SCAN");
 			autoScan();
